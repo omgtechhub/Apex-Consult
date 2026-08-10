@@ -1,0 +1,642 @@
+@import "tailwindcss";
+
+/* Class-based dark mode. Tailwind v4 defaults `dark:` to the OS media query;
+   this repoints it at a `.dark` class on <html> so the toggle can override the
+   system preference rather than only echo it. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ==========================================================================
+   Tailwind v4 theme
+   --------------------------------------------------------------------------
+   Exposes the brand palette to Tailwind's utility generator so components can
+   use `text-gold-500` / `bg-ink-900` instead of arbitrary `[#c9981a]` values.
+   Arbitrary values bypass the design system: they can't be re-themed, they
+   don't appear in autocomplete, and a palette change means a find-and-replace
+   across 7,000 lines.
+   ========================================================================== */
+
+@theme {
+  --color-gold-50: #fffbeb;
+  --color-gold-100: #fef3c7;
+  --color-gold-200: #fde68a;
+  --color-gold-300: #fcd34d;
+  --color-gold-400: #e8b84b;
+  --color-gold-500: #c9981a;
+  --color-gold-600: #b7860f;
+  --color-gold-700: #a07812;
+  --color-gold-800: #78520d;
+  --color-gold-900: #633f0f;
+
+  --color-ink-50: #f8f7f5;
+  --color-ink-100: #f0ede8;
+  --color-ink-200: #e2ddd6;
+  --color-ink-300: #c8c1b6;
+  --color-ink-400: #a89e90;
+  --color-ink-500: #8a7e6e;
+  --color-ink-600: #6b5f50;
+  --color-ink-700: #4a4238;
+  --color-ink-800: #2e2820;
+  --color-ink-900: #1a1510;
+  --color-ink-950: #0a0a0a;
+
+  --color-canvas: #faf9f7;
+
+  /* Raised card/panel surface. Separate from `canvas` so cards can sit a step
+     above the page in both themes. */
+  --color-surface: #ffffff;
+
+  /* Permanently dark surface: heroes, the footer, the mobile-menu scrim.
+
+     These read as dark in BOTH themes, which is why they cannot use `ink-950`.
+     `ink-950` is the darkest *text* colour and has to invert to near-white in
+     dark mode; a token doing double duty as ink and as a surface would make one
+     of those two jobs impossible. Splitting them is what makes the dark theme
+     a token change rather than a rewrite. */
+  --color-surface-dark: #0a0a0a;
+
+  --font-display: var(--font-display), Georgia, serif;
+  --font-body: var(--font-body), system-ui, sans-serif;
+
+  /* Motion tokens — the CSS mirror of src/lib/motion.ts. Keep them in sync:
+     CSS transitions and Framer animations must feel like one system. */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-silk: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-exit: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-emphasized: cubic-bezier(0.83, 0, 0.17, 1);
+  --ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ==========================================================================
+   Dark theme
+   --------------------------------------------------------------------------
+   Implemented purely by re-pointing theme tokens. Because Tailwind v4 compiles
+   `bg-ink-200/60` to `color-mix(… var(--color-ink-200) …)`, overriding the
+   variable flows through to every utility — including opacity modifiers,
+   gradients and arbitrary values — without a single `dark:` class in the app.
+
+   The ink ramp inverts: `ink-950` is the strongest text colour in both themes,
+   so it goes near-black in light and near-white in dark. `surface-dark` does
+   NOT invert; heroes and the footer stay dark either way.
+
+   Values are hand-tuned rather than mathematically flipped. A pure inversion
+   of a warm cream palette produces a cold blue-grey, so each step keeps a
+   little of the original warmth, and the mid-tones are lifted so body copy
+   clears AA on the dark surface instead of landing at the ~3:1 that a naive
+   inversion gives.
+   ========================================================================== */
+
+.dark {
+  /* Page and card surfaces */
+  --color-canvas: #0f0f11;
+  --color-surface: #17171a;
+
+  /* Ink ramp, inverted. 950 = primary text, 50 = faintest hairline. */
+  --color-ink-50: #16161a;
+  --color-ink-100: #1e1e23;
+  --color-ink-200: #2b2b31;
+  --color-ink-300: #6f6a63;
+  --color-ink-400: #8b857c;
+  --color-ink-500: #a49d93;
+  --color-ink-600: #c2bbb0;
+  --color-ink-700: #d9d3c9;
+  --color-ink-800: #e9e5dd;
+  --color-ink-900: #f3f0ea;
+  --color-ink-950: #f8f6f2;
+
+  /* Gold shifts slightly warmer and lighter: the light-mode 500 is too dim
+     against a dark ground to carry links and eyebrow text. */
+  --color-gold-100: #3a2f12;
+  --color-gold-200: #4d3d17;
+  --color-gold-400: #f0c65e;
+  --color-gold-500: #e0ab2e;
+  --color-gold-600: #c9981a;
+  --color-gold-700: #a97f14;
+
+  color-scheme: dark;
+}
+
+/* Surfaces defined as literal rgba rather than tokens need their own overrides. */
+.dark .glass {
+  background: rgba(23, 23, 26, 0.72);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* The photo-halo is canvas-coloured, so it has to follow the canvas. */
+.dark .on-photo {
+  text-shadow:
+    0 1px 2px rgba(15, 15, 17, 0.95),
+    0 0 12px rgba(15, 15, 17, 0.85),
+    0 0 28px rgba(15, 15, 17, 0.6);
+}
+
+/* Layered shadows are near-invisible on a dark ground; deepen them so cards
+   keep their lift instead of flattening into the page. */
+.dark .shadow-layered {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 4px 8px rgba(0, 0, 0, 0.35),
+    0 12px 24px rgba(0, 0, 0, 0.3),
+    0 24px 48px rgba(0, 0, 0, 0.28);
+}
+
+/* Theme changes should feel like a dimmer, not a strobe. Transitions are
+   scoped to colour so no layout or transform animates. */
+@media (prefers-reduced-motion: no-preference) {
+  html.theme-ready body,
+  html.theme-ready body * {
+    transition:
+      background-color 220ms var(--ease-standard),
+      border-color 220ms var(--ease-standard),
+      color 220ms var(--ease-standard);
+  }
+}
+
+/* ==========================================================================
+   Lenis
+   --------------------------------------------------------------------------
+   Required for the smooth-scroll provider. `scroll-behavior: auto` is not
+   optional: a native smooth-scroll on <html> fights Lenis's rAF loop and
+   produces a visible stutter on every anchor jump.
+   ========================================================================== */
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+/* Opt a subtree out of Lenis (modals, code blocks, map panes). */
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Cross-origin iframes swallow wheel events and desync the loop. */
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+@layer base {
+  :root {
+    /* Gold Palette */
+    --gold-50: #fffbeb;
+    --gold-100: #fef3c7;
+    --gold-200: #fde68a;
+    --gold-300: #fcd34d;
+    --gold-400: #fbbf24;
+    --gold-500: #c9981a;
+    --gold-600: #b7860f;
+    --gold-700: #92650a;
+    --gold-800: #78520d;
+    --gold-900: #633f0f;
+    --gold-950: #1c0f00;
+
+    /* Core */
+    --apex-gold: #c9981a;
+    --apex-gold-light: #e8b84b;
+    --apex-gold-dark: #a07812;
+    --apex-black: #0a0a0a;
+    --apex-dark: #111111;
+    --apex-warm-white: #faf9f7;
+    --apex-white: #ffffff;
+    --apex-gray-50: #f8f7f5;
+    --apex-gray-100: #f0ede8;
+    --apex-gray-200: #e2ddd6;
+    --apex-gray-300: #c8c1b6;
+    --apex-gray-400: #a89e90;
+    --apex-gray-500: #8a7e6e;
+    --apex-gray-600: #6b5f50;
+    --apex-gray-700: #4a4238;
+    --apex-gray-800: #2e2820;
+    --apex-gray-900: #1a1510;
+
+    /* Gradients */
+    --gradient-gold: linear-gradient(135deg, #e8b84b 0%, #c9981a 50%, #a07812 100%);
+    --gradient-gold-soft: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%);
+    --gradient-dark: linear-gradient(135deg, #111111 0%, #1a1510 100%);
+    --gradient-hero: linear-gradient(180deg, #faf9f7 0%, #f0ede8 100%);
+
+    /* Spacing 8pt system */
+    --space-1: 8px;
+    --space-2: 16px;
+    --space-3: 24px;
+    --space-4: 32px;
+    --space-5: 40px;
+    --space-6: 48px;
+    --space-7: 56px;
+    --space-8: 64px;
+    --space-10: 80px;
+    --space-12: 96px;
+    --space-16: 128px;
+    --space-20: 160px;
+
+    /* Shadows */
+    --shadow-xs: 0 1px 2px 0 rgba(10,10,10,0.05);
+    --shadow-sm: 0 2px 8px 0 rgba(10,10,10,0.06), 0 1px 2px 0 rgba(10,10,10,0.04);
+    --shadow-md: 0 4px 24px 0 rgba(10,10,10,0.08), 0 2px 8px 0 rgba(10,10,10,0.04);
+    --shadow-lg: 0 8px 40px 0 rgba(10,10,10,0.12), 0 4px 16px 0 rgba(10,10,10,0.06);
+    --shadow-xl: 0 16px 64px 0 rgba(10,10,10,0.16), 0 8px 24px 0 rgba(10,10,10,0.08);
+    --shadow-gold: 0 8px 32px 0 rgba(201,152,26,0.25), 0 2px 8px 0 rgba(201,152,26,0.12);
+    --shadow-gold-lg: 0 16px 48px 0 rgba(201,152,26,0.3), 0 8px 24px 0 rgba(201,152,26,0.15);
+
+    /* Border radius */
+    --radius-xs: 4px;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --radius-2xl: 32px;
+    --radius-full: 9999px;
+
+    /* Transitions */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    /* Scroll smoothing is owned by Lenis, which needs `auto` here to avoid
+       double-interpolating. The @media block at the end of this file restores
+       native smooth scrolling for reduced-motion users, where Lenis never
+       mounts and anchor jumps would otherwise be instant. */
+    scroll-behavior: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* Keeps anchored headings clear of the fixed 80px header. */
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    background-color: var(--apex-warm-white);
+    color: var(--apex-dark);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: rgba(201, 152, 26, 0.2);
+    color: var(--apex-dark);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--apex-gold);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Gold gradient text */
+  .text-gold-gradient {
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Noise texture overlay */
+  .noise {
+    position: relative;
+  }
+  .noise::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    border-radius: inherit;
+  }
+
+  /* Premium card shine */
+  .card-shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .card-shine::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .card-shine:hover::before {
+    left: 100%;
+  }
+
+  /* Glow effects */
+  .glow-gold {
+    box-shadow: var(--shadow-gold);
+  }
+  .glow-gold-lg {
+    box-shadow: var(--shadow-gold-lg);
+  }
+
+  /* Subtle background patterns */
+  .bg-dot-pattern {
+    background-image: radial-gradient(circle, rgba(201,152,26,0.12) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .bg-grid-pattern {
+    background-image: 
+      linear-gradient(rgba(201,152,26,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,152,26,0.05) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  /* Scroll-driven reveal */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+
+  @keyframes pulse-gold {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(201, 152, 26, 0.4); }
+    50% { box-shadow: 0 0 0 12px rgba(201, 152, 26, 0); }
+  }
+
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  @keyframes ticker {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-pulse-gold {
+    animation: pulse-gold 2s ease-in-out infinite;
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 20s linear infinite;
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(90deg, #f0ede8 0%, #e8e2d9 50%, #f0ede8 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+  }
+
+  /* Skeleton loading */
+  .skeleton {
+    background: linear-gradient(90deg, #f0ede8 25%, #e8e2d9 50%, #f0ede8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 6px;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  Premium detail layer                                              */
+  /* ------------------------------------------------------------------ */
+
+  /* Entrance for popovers and floating panels. The keyframes for this
+     existed but the utility class did not — WhatsAppFloat referenced
+     `animate-scaleIn` and silently got nothing. */
+  .animate-scale-in {
+    animation: scaleIn 300ms var(--ease-entrance) both;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 500ms var(--ease-entrance) both;
+  }
+
+  /* Slow-drifting gradient. Animating `background-position` on a 200% canvas
+     stays on the compositor; animating gradient colour stops does not. */
+  @keyframes gradient-drift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient-drift 12s ease-in-out infinite;
+  }
+
+  /* Conic sweep for animated borders. The rotation runs on a pseudo-element
+     behind the content so the text itself is never repainted. */
+  @keyframes border-sweep {
+    to { transform: rotate(1turn); }
+  }
+
+  .border-sweep {
+    position: relative;
+    isolation: isolate;
+  }
+  .border-sweep::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      rgba(201, 152, 26, 0.6) 60deg,
+      transparent 120deg
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 300ms var(--ease-standard);
+    z-index: -1;
+  }
+  .border-sweep:hover::before,
+  .border-sweep:focus-within::before {
+    opacity: 1;
+    animation: border-sweep 3s linear infinite;
+  }
+
+  /* Glass layers. Two variants because backdrop-blur over a light surface
+     needs far less saturation boost than over a dark one. */
+  .glass {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid rgba(226, 221, 214, 0.6);
+  }
+
+  .glass-dark {
+    background: rgba(10, 10, 10, 0.55);
+    backdrop-filter: blur(24px) saturate(120%);
+    -webkit-backdrop-filter: blur(24px) saturate(120%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Multi-stop shadow. A single large shadow reads as a flat drop; stacking
+     a tight contact shadow under a wide ambient one reads as depth. */
+  .shadow-layered {
+    box-shadow:
+      0 1px 2px rgba(10, 10, 10, 0.04),
+      0 4px 8px rgba(10, 10, 10, 0.04),
+      0 12px 24px rgba(10, 10, 10, 0.05),
+      0 24px 48px rgba(10, 10, 10, 0.05);
+  }
+
+  .shadow-layered-gold {
+    box-shadow:
+      0 1px 2px rgba(201, 152, 26, 0.08),
+      0 4px 12px rgba(201, 152, 26, 0.12),
+      0 12px 32px rgba(201, 152, 26, 0.16),
+      0 24px 56px rgba(201, 152, 26, 0.12);
+  }
+
+  /* Film grain. Fixed-position so it doesn't resample while scrolling, which
+     is what makes cheap noise overlays shimmer. */
+  .grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    opacity: 0.4;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.35'/%3E%3C/svg%3E");
+  }
+
+  /* Promotes to its own compositor layer. Apply to elements that are about to
+     animate — never leave it on permanently, it costs GPU memory per layer. */
+  /* Type sitting over a photograph.
+
+     A soft same-colour-as-canvas halo, not a drop shadow. It lifts glyph edges
+     off whatever happens to be behind them — a dark bookshelf, a bright window —
+     without darkening the text or putting a visible box around it. This is what
+     lets the scrims stay light enough to actually see the picture.
+
+     Paired variants: `.on-photo` for dark ink over a light image, `.on-photo-dark`
+     for white type over a dark one. */
+  .on-photo {
+    text-shadow:
+      0 1px 2px rgba(250, 249, 247, 0.95),
+      0 0 12px rgba(250, 249, 247, 0.85),
+      0 0 28px rgba(250, 249, 247, 0.6);
+  }
+
+  .on-photo-dark {
+    text-shadow:
+      0 1px 3px rgba(10, 10, 10, 0.7),
+      0 0 18px rgba(10, 10, 10, 0.5);
+  }
+
+  .gpu {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  /* Number counter animation */
+  @keyframes countUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* ==========================================================================
+   Reduced motion
+   --------------------------------------------------------------------------
+   Outside @layer so it wins against layered utilities without relying purely
+   on !important.
+
+   This only governs *CSS* animation. Framer Motion runs through the Web
+   Animations API and inline styles, which these rules cannot reach — every
+   motion component handles it explicitly via `useReducedMotion`, and Lenis is
+   never constructed at all. Both halves are required.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Lenis is disabled under reduced motion, so hand anchor scrolling back to
+     the browser. Native smooth scroll is a single sustained move rather than
+     the parallax-driven motion these users are opting out of. */
+  html {
+    scroll-behavior: smooth;
+  }
+}
