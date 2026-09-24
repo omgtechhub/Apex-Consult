@@ -86,6 +86,7 @@ const navLinks = [
   { label: "About", href: "/about" },
   { label: "Services", href: "/services", hasDropdown: true },
   { label: "Study Abroad", href: "/study-abroad" },
+  { label: "Scholarships", href: "/scholarships" },
   { label: "Resources", href: "/resources" },
   { label: "Blog", href: "/blog" },
   { label: "Pricing", href: "/pricing" },
