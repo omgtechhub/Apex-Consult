@@ -17,7 +17,7 @@
  * can't be nudged by velocity mid-flight.
  */
 
-import { useRef, Children } from "react";
+import { useRef, useState, useEffect, Children } from "react";
 import {
   motion,
   useAnimationFrame,
@@ -55,6 +55,43 @@ export function Marquee({
   const prefersReduced = useReducedMotion() ?? false;
   const smooth = useSmoothScrollOptional();
 
+  /**
+   * The strip only animates while it is actually on screen and the tab is in
+   * the foreground.
+   *
+   * `useAnimationFrame` otherwise runs for the lifetime of the page: this
+   * component sits near the top of the home page, so it kept writing a
+   * transform (and driving a spring) every frame for all ~10,000px of scrolling
+   * below it, where it cannot be seen. Gating on visibility makes the work
+   * proportional to what the user can actually perceive.
+   */
+  const root = useRef<HTMLDivElement>(null);
+  const [onScreen, setOnScreen] = useState(false);
+  const [tabVisible, setTabVisible] = useState(true);
+
+  useEffect(() => {
+    const el = root.current;
+    if (!el) return;
+
+    // `rootMargin` starts the drift just before the strip scrolls into view, so
+    // it is never caught mid-stall at the moment it appears.
+    const io = new IntersectionObserver(
+      ([entry]) => setOnScreen(entry.isIntersecting),
+      { rootMargin: "200px 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const onVisibility = () => setTabVisible(!document.hidden);
+    onVisibility();
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => document.removeEventListener("visibilitychange", onVisibility);
+  }, []);
+
+  const running = onScreen && tabVisible && !prefersReduced;
+
   const baseX = useMotionValue(0);
   const hovering = useRef(false);
   const directionFactor = useRef(1);
@@ -88,7 +125,7 @@ export function Marquee({
   );
 
   useAnimationFrame((_, delta) => {
-    if (prefersReduced) return;
+    if (!running) return;
     if (pauseOnHover && hovering.current) return;
 
     let moveBy = directionFactor.current * baseVelocity * (delta / 1000);
@@ -107,12 +144,16 @@ export function Marquee({
 
   return (
     <div
+      ref={root}
       className={cn("overflow-hidden whitespace-nowrap", className)}
       onPointerEnter={() => (hovering.current = true)}
       onPointerLeave={() => (hovering.current = false)}
     >
+      {/* `will-change` is applied only while the strip is actually moving.
+          Left on permanently it pins a compositor layer for an element that is
+          off-screen for most of the page. */}
       <motion.div
-        className="flex w-max flex-nowrap will-change-transform"
+        className={cn("flex w-max flex-nowrap", running && "will-change-transform")}
         style={prefersReduced ? undefined : { x, rotate }}
       >
         {/* Two identical copies: the wrap at -50% lands the second copy exactly

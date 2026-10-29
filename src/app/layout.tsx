@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Playfair_Display, DM_Sans } from "next/font/google";
+import { Playfair_Display, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { Navigation } from "@/components/layout/Navigation";
 import { Footer } from "@/components/layout/Footer";
@@ -7,24 +7,30 @@ import { WhatsAppFloat } from "@/components/ui/WhatsAppFloat";
 import { SmoothScrollProvider } from "@/components/motion/SmoothScrollProvider";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
 
+/**
+ * Only the weights the design actually uses are requested — each one is a
+ * separate woff2 download, which is felt most on a phone.
+ *
+ * Playfair drops 800: `font-extrabold` appears nowhere in the codebase, and
+ * `font-black` (900) is what the headings actually use (64 occurrences).
+ * DM Sans drops 300: `font-light` appears nowhere either.
+ *
+ * `Inter` used to be loaded here as `--font-sans` and was never referenced
+ * again — not by globals.css, not by a `font-sans` utility, nowhere. It cost a
+ * whole extra family on every page load for nothing, so it is gone.
+ */
 const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700", "900"],
 });
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
-  weight: ["300", "400", "500", "600", "700"],
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -108,7 +114,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${dmSans.variable} ${inter.variable}`}>
+    <html
+      lang="en"
+      className={`${playfair.variable} ${dmSans.variable}`}
+      /*
+        The bootstrap script below adds `.dark` to this element while the
+        browser is still parsing <head> — before React hydrates. That is the
+        documented Next.js way to avoid a theme flash, and it necessarily means
+        the client's className differs from the server's. `suppressHydrationWarning`
+        tells React that difference is intentional *for this element only*; it
+        does not extend to children, so a genuine mismatch anywhere else in the
+        tree is still reported.
+      */
+      suppressHydrationWarning
+    >
       <head>
         {/*
           Theme bootstrap. Must run before first paint and therefore cannot be
@@ -117,13 +136,15 @@ export default function RootLayout({
           navigation. `beforeInteractive` is not enough either; this has to be
           synchronous and inline in <head>.
 
-          It also adds `theme-ready` on the next frame, which is what gates the
-          colour transitions in globals.css. Without that gate the very first
-          paint animates from light to dark, turning the flash into a fade.
+          No longer flags `theme-ready`: the colour transition it used to gate
+          is now applied only while a switch is actually in flight (see
+          `.theme-transition` in globals.css and ThemeToggle). Leaving a live
+          transition on every element for the whole session was costing a ~2.8x
+          style-recalculation penalty on every frame.
         */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var s=localStorage.getItem('theme');var d=s?s==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}requestAnimationFrame(function(){document.documentElement.classList.add('theme-ready');});})();`,
+            __html: `(function(){try{var s=localStorage.getItem('theme');var d=s?s==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();`,
           }}
         />
 

@@ -4,14 +4,30 @@ import { useSyncExternalStore } from "react";
 
 const QUERY = "(pointer: fine)";
 
+/**
+ * One MediaQueryList for the whole app, created lazily so this module stays
+ * importable on the server.
+ *
+ * `getSnapshot` is called by React on every render and again on every store
+ * check, so building a fresh MediaQueryList in there allocated a new native
+ * object dozens of times per interaction. Matching against a cached list is
+ * free and returns the identical value.
+ */
+let mediaQuery: MediaQueryList | null = null;
+
+function getMediaQuery(): MediaQueryList {
+  if (!mediaQuery) mediaQuery = window.matchMedia(QUERY);
+  return mediaQuery;
+}
+
 function subscribe(onChange: () => void) {
-  const mq = window.matchMedia(QUERY);
+  const mq = getMediaQuery();
   mq.addEventListener("change", onChange);
   return () => mq.removeEventListener("change", onChange);
 }
 
 function getSnapshot() {
-  return window.matchMedia(QUERY).matches;
+  return getMediaQuery().matches;
 }
 
 // The server can't know the input device. Reporting `false` means pointer-driven

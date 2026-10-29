@@ -11,6 +11,28 @@ import {
 const SCHOLARSHIP_API_URL =
   process.env.SCHOLARSHIP_API_URL || "https://apex-scholarship-api.onrender.com";
 
+/**
+ * Hard ceiling on how long a visitor waits for the Pipeline API.
+ *
+ * Without this, `fetch` has no timeout at all: a sleeping free-tier instance
+ * left the scholarships page hanging for ~65s on the first request after idle,
+ * and because nothing threw, the fallback below never engaged. Eight seconds
+ * is comfortably above a warm response (~300ms local, ~5s warm remote) and far
+ * below what anyone will sit through.
+ */
+const REQUEST_TIMEOUT_MS = 8_000;
+
+/**
+ * `AbortSignal.timeout` is the whole reason the fallback can ever fire on a
+ * hang — see REQUEST_TIMEOUT_MS. Guarded because it is a relatively recent
+ * addition; on a runtime without it we simply fetch untimed rather than crash.
+ */
+function timeoutSignal(): AbortSignal | undefined {
+  return typeof AbortSignal !== "undefined" && "timeout" in AbortSignal
+    ? AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+    : undefined;
+}
+
 // ─── Fallback dataset ─────────────────────────────────────────────────────────
 // Used when the Pipeline API is unreachable. Field names exactly mirror the
 // backend API response shape so the same components render both paths.
@@ -221,6 +243,7 @@ export const FALLBACK_SCHOLARSHIPS: Scholarship[] = [
 
 // ─── Fallback filtering ───────────────────────────────────────────────────────
 
+
 function filterFallbackScholarships(params?: ScholarshipQueryParams): ScholarshipsResponse {
   let filtered: Scholarship[] = [...FALLBACK_SCHOLARSHIPS];
 
@@ -284,6 +307,7 @@ export async function getScholarships(
     const res = await fetch(url.toString(), {
       next: { revalidate: 1800 },
       headers: { Accept: "application/json" },
+      signal: timeoutSignal(),
     });
 
     if (!res.ok) {
@@ -303,8 +327,35 @@ export async function getScholarships(
     }
 
     const payload = envelope.data;
+    const scholarships = payload.data ?? [];
+
+    /**
+     * A successful response carrying zero scholarships is treated as "backend
+     * has nothing to publish yet" and falls back to the curated dataset.
+     *
+     * This is the case the fallback was written for and the one it used to
+     * miss: the Pipeline only exposes scholarships that have a PUBLISHED
+     * article, so while article generation is incomplete the API answers
+     * `{success: true, data: [], total: 0}`. That is not an error, so every
+     * guard above passes and the page rendered an empty "No scholarships
+     * found" state while six perfectly good entries sat unused.
+     *
+     * The visitor's own filters are re-applied to the fallback rather than
+     * bypassed, so searching or filtering still narrows the list and a query
+     * that genuinely matches nothing still shows the empty state. Falling back
+     * only on *unfiltered* requests was the obvious alternative, but it reads
+     * as broken: the page would list Chevening while searching "Chevening"
+     * returned nothing.
+     */
+    if (scholarships.length === 0) {
+      console.warn(
+        "[scholarships] API returned no published scholarships — using fallback dataset",
+      );
+      return filterFallbackScholarships(params);
+    }
+
     return {
-      scholarships: payload.data ?? [],
+      scholarships,
       total: payload.total ?? 0,
       page: payload.page ?? 1,
       limit: payload.limit ?? 12,
@@ -332,6 +383,7 @@ export async function getScholarshipBySlug(slug: string): Promise<Scholarship | 
     const res = await fetch(url, {
       next: { revalidate: 1800 },
       headers: { Accept: "application/json" },
+      signal: timeoutSignal(),
     });
 
     if (!res.ok) {

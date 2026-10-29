@@ -19,8 +19,6 @@
 
 import { createContext, useContext, useEffect, useMemo, useRef } from "react";
 import Lenis from "lenis";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motionValue, useReducedMotion, type MotionValue } from "framer-motion";
 import { usePathname } from "next/navigation";
 
@@ -44,23 +42,40 @@ type SmoothScrollContextValue = {
   scrollTo: (target: string | number | HTMLElement, options?: ScrollToOptions) => void;
   stop: () => void;
   start: () => void;
+  /**
+   * Run a callback on every scroll event, inside the existing rAF loop.
+   * Returns an unsubscribe function.
+   *
+   * This exists so GSAP can be kept out of this file — see the note on the
+   * provider below. Callbacks run synchronously on the scroll frame, which is
+   * what `ScrollTrigger.update()` requires to stay in sync with Lenis.
+   */
+  onScroll: (cb: () => void) => () => void;
+  /**
+   * Run a callback whenever document geometry may have changed: fonts swapped,
+   * window `load`, or a route change. Returns an unsubscribe function.
+   */
+  onRefresh: (cb: () => void) => () => void;
 };
 
 const SmoothScrollContext = createContext<SmoothScrollContextValue | null>(null);
 
 /**
- * Registered at module scope so it happens exactly once, before any component
- * can build a ScrollTrigger. Guarded for SSR — ScrollTrigger touches `window`
- * on registration.
+ * GSAP deliberately does NOT appear in this file.
+ * ----------------------------------------------------------------------------
+ * This provider lives in the root layout, so anything it imports is downloaded
+ * and parsed on every route. It used to import `gsap` + `ScrollTrigger` purely
+ * to call `ScrollTrigger.update()` on each scroll event — which put ~112KB of
+ * GSAP on every page, while the only component that actually builds a
+ * ScrollTrigger (`BatchReveal`) is used on a single route. On a phone that is
+ * download, parse and compile cost paid by every visitor for a feature almost
+ * none of them reach.
  *
- * `lagSmoothing(0)` matters here: GSAP's default lag smoothing fast-forwards
- * the ticker after a long frame, which fights Lenis's own interpolation and
- * shows up as a jolt when the main thread is briefly busy.
+ * Instead the provider publishes `onScroll` / `onRefresh`, and
+ * `useScrollTriggerSync` — which owns the GSAP import and the plugin
+ * registration — subscribes to them. GSAP now ships only in the chunks of
+ * routes that genuinely use it.
  */
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-  gsap.ticker.lagSmoothing(0);
-}
 
 export function useSmoothScroll(): SmoothScrollContextValue {
   const ctx = useContext(SmoothScrollContext);
@@ -87,6 +102,18 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
   const velocity = useMemo(() => motionValue(0), []);
   const progress = useMemo(() => motionValue(0), []);
 
+  /**
+   * Subscriber sets live in refs so adding a listener never re-renders the tree
+   * and never changes the context value's identity.
+   *
+   * The effects below iterate these sets directly. The refs are stable for the
+   * provider's lifetime, so there is nothing to keep in sync and no need to
+   * mirror a "latest callback" into another ref — which would mean writing to a
+   * ref during render, something concurrent rendering does not allow.
+   */
+  const scrollSubs = useRef(new Set<() => void>());
+  const refreshSubs = useRef(new Set<() => void>());
+
   useEffect(() => {
     if (prefersReduced) return;
 
@@ -110,9 +137,11 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
       progress.set(e.progress);
       // Non-negotiable for GSAP: Lenis interpolates scroll on its own rAF loop,
       // so ScrollTrigger's cached scroll position goes stale the moment smooth
-      // scrolling is enabled. Without this call every pin and scrub drifts out
-      // of sync with the actual viewport.
-      ScrollTrigger.update();
+      // scrolling is enabled. Without a sync every pin and scrub drifts out of
+      // sync with the actual viewport. `useScrollTriggerSync` subscribes here
+      // and calls `ScrollTrigger.update()` itself, which keeps GSAP out of this
+      // always-loaded module. With no GSAP on the page this is an empty loop.
+      for (const cb of scrollSubs.current) cb();
     };
     instance.on("scroll", handleScroll);
 
@@ -126,7 +155,9 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     // Pins are measured from the document, so they must be recalculated once
     // fonts have swapped and images have settled — otherwise every trigger is
     // anchored to a pre-layout position.
-    const refresh = () => ScrollTrigger.refresh();
+    const refresh = () => {
+      for (const cb of refreshSubs.current) cb();
+    };
     document.fonts?.ready.then(refresh);
     window.addEventListener("load", refresh);
 
@@ -161,7 +192,7 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
         // The new route has a different document height and different trigger
         // positions; without this, pins from the previous page's measurements
         // fire at the wrong scroll offsets.
-        ScrollTrigger.refresh();
+        for (const cb of refreshSubs.current) cb();
       });
     });
 
@@ -197,6 +228,18 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
       },
       stop: () => lenisRef.current?.stop(),
       start: () => lenisRef.current?.start(),
+      onScroll: (cb: () => void) => {
+        scrollSubs.current.add(cb);
+        return () => {
+          scrollSubs.current.delete(cb);
+        };
+      },
+      onRefresh: (cb: () => void) => {
+        refreshSubs.current.add(cb);
+        return () => {
+          refreshSubs.current.delete(cb);
+        };
+      },
     }),
     [velocity, progress]
   );

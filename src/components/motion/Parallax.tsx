@@ -61,20 +61,31 @@ export function Parallax({
     opacityRange?.[1] ?? 1,
   ]);
 
-  if (prefersReduced) {
-    return <div className={className}>{children}</div>;
-  }
-
+  /**
+   * Same element type in both cases, for the reason documented in `Tilt`:
+   * swapping between `<div>` and `<motion.div>` across renders makes React tear
+   * down and rebuild the children.
+   *
+   * `useReducedMotion()` returns `null` during SSR and resolves on the client,
+   * so for a visitor who *has* reduced motion enabled this value flips right
+   * after hydration — remounting everything inside for exactly the users least
+   * well served by things being rebuilt underneath them. Keeping one element and
+   * dropping the styles avoids it.
+   */
   return (
     <motion.div
       ref={ref}
       className={className}
-      style={{
-        y,
-        scale: scaleRange ? scale : undefined,
-        opacity: opacityRange ? opacity : undefined,
-        willChange: "transform",
-      }}
+      style={
+        prefersReduced
+          ? undefined
+          : {
+              y,
+              scale: scaleRange ? scale : undefined,
+              opacity: opacityRange ? opacity : undefined,
+              willChange: "transform",
+            }
+      }
     >
       {children}
     </motion.div>

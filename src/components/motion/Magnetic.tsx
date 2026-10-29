@@ -76,20 +76,40 @@ export function Magnetic({
     cy.set(0);
   }, [x, y, cx, cy]);
 
-  if (prefersReduced || !finePointer) {
-    return <div className={className}>{children}</div>;
-  }
+  const enabled = !prefersReduced && !!finePointer;
 
+  /**
+   * One stable element structure, whether or not the magnet is active.
+   * ---------------------------------------------------------------------------
+   * The disabled path used to early-return a single plain `<div>` while the
+   * active path rendered two nested `motion.div`s. Both the element type and the
+   * nesting depth therefore changed between the hydrating render — where
+   * `useFinePointer` must report `false`, because the server cannot know the
+   * input device — and the very next render on any machine with a mouse.
+   *
+   * React responds to that by discarding this subtree and mounting a fresh one,
+   * so everything inside is destroyed and recreated a tick after hydration. Any
+   * imperative state attached to those nodes by something else (GSAP inline
+   * styles and ScrollTriggers, for instance) is silently lost — the same defect
+   * that disabled the card entrance animation on /services through `Tilt`.
+   *
+   * Rendering the same two wrappers in both cases and switching only the styles
+   * and handlers keeps the children mounted exactly once. The active layout is
+   * unchanged; touch and reduced-motion users simply get the inert version of
+   * the structure desktop already had.
+   */
   return (
     <motion.div
       ref={ref}
       className={className}
-      style={{ x: sx, y: sy }}
-      onPointerEnter={handleEnter}
-      onPointerMove={handleMove}
-      onPointerLeave={handleLeave}
+      style={enabled ? { x: sx, y: sy } : undefined}
+      onPointerEnter={enabled ? handleEnter : undefined}
+      onPointerMove={enabled ? handleMove : undefined}
+      onPointerLeave={enabled ? handleLeave : undefined}
     >
-      <motion.div style={{ x: scx, y: scy }}>{children}</motion.div>
+      <motion.div style={enabled ? { x: scx, y: scy } : undefined}>
+        {children}
+      </motion.div>
     </motion.div>
   );
 }

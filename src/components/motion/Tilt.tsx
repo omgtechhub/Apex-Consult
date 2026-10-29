@@ -88,27 +88,52 @@ export function Tilt({
     hover.set(0);
   }, [px, py, hover]);
 
-  if (prefersReduced || !finePointer) {
-    return <div className={className}>{children}</div>;
-  }
+  const enabled = !prefersReduced && !!finePointer;
 
+  /**
+   * Always a `motion.div`, even when the tilt is inert.
+   * ---------------------------------------------------------------------------
+   * This used to early-return a plain `<div>` when tilt was disabled. That looks
+   * harmless and is not: `useFinePointer` cannot know the input device during
+   * SSR, so it reports `false` on the server and on the hydrating render, then
+   * flips to `true` on any machine with a mouse. Returning a different element
+   * type for those two renders makes React tear down this subtree and build a
+   * brand new one.
+   *
+   * Everything inside is therefore destroyed and recreated one tick after
+   * hydration — which silently broke the entrance animation on /services.
+   * `BatchReveal` had already run `gsap.set(card, { opacity: 0 })` and attached
+   * ScrollTriggers to the *first* set of cards; React then replaced those nodes,
+   * so the live cards had no inline opacity (they rendered fully visible) and
+   * every trigger was left pointing at a detached element. The cards never hid
+   * and never animated, and nothing errored.
+   *
+   * Keeping one stable element type means the children mount exactly once. When
+   * tilt is inert the component just renders as a plain div would: no `relative`
+   * class, no pointer handlers, no MotionValue styles, no sheen — so there is no
+   * behavioural or cost difference for touch and reduced-motion users.
+   */
   return (
     <motion.div
       ref={ref}
-      className={cn("relative", className)}
-      onPointerEnter={handleEnter}
-      onPointerMove={handleMove}
-      onPointerLeave={handleLeave}
-      style={{
-        rotateX,
-        rotateY,
-        z,
-        transformPerspective: 1000,
-        transformStyle: "preserve-3d",
-      }}
+      className={enabled ? cn("relative", className) : className}
+      onPointerEnter={enabled ? handleEnter : undefined}
+      onPointerMove={enabled ? handleMove : undefined}
+      onPointerLeave={enabled ? handleLeave : undefined}
+      style={
+        enabled
+          ? {
+              rotateX,
+              rotateY,
+              z,
+              transformPerspective: 1000,
+              transformStyle: "preserve-3d",
+            }
+          : undefined
+      }
     >
       {children}
-      {sheen && (
+      {enabled && sheen && (
         <motion.span
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 rounded-[inherit] mix-blend-soft-light"

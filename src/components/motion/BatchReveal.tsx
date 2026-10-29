@@ -26,6 +26,7 @@ import { useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { useScrollTriggerSync } from "./useScrollTriggerSync";
 
 type BatchRevealProps = {
   children: React.ReactNode;
@@ -48,6 +49,12 @@ export function BatchReveal({
   as = "div",
 }: BatchRevealProps) {
   const root = useRef<HTMLDivElement>(null);
+
+  // Keeps ScrollTrigger's cached scroll position in step with Lenis. This used
+  // to be wired inside SmoothScrollProvider, which forced GSAP onto every
+  // route; it now belongs to the components that actually use GSAP.
+  useScrollTriggerSync();
+
   // A union of intrinsic tags gives `ref` an intersection type no single
   // element ref can satisfy. Widening to ElementType keeps the public `as` API
   // while letting the ref resolve to the container we actually render.

@@ -141,10 +141,24 @@
 }
 
 /* Theme changes should feel like a dimmer, not a strobe. Transitions are
-   scoped to colour so no layout or transform animates. */
+   scoped to colour so no layout or transform animates.
+   --------------------------------------------------------------------------
+   This is applied ONLY while a theme switch is in flight, never at rest.
+   `ThemeToggle` adds `.theme-transition` to <html>, flips `.dark`, then strips
+   the class once the 220ms fade has finished.
+
+   The previous version gated this on `.theme-ready`, a class added once on
+   first frame and then left on forever — so every element on the page carried
+   a live `transition` for the entire session. Measured on the home page that
+   was 1191 of 1258 nodes, and it made a full-tree style recalculation ~2.8x
+   more expensive (170ms vs 61ms). Every Framer/Lenis/GSAP style write pays
+   that tax, which is what made scrolling stutter.
+
+   Scoping it to the switch itself keeps the crossfade and costs nothing at
+   rest. */
 @media (prefers-reduced-motion: no-preference) {
-  html.theme-ready body,
-  html.theme-ready body * {
+  html.theme-transition body,
+  html.theme-transition body * {
     transition:
       background-color 220ms var(--ease-standard),
       border-color 220ms var(--ease-standard),
@@ -415,9 +429,18 @@ html.lenis body {
     50% { transform: translateY(-8px); }
   }
 
+  /* Expanding halo, done on the compositor.
+     --------------------------------------------------------------------------
+     This used to animate `box-shadow` spread, which cannot be composited: the
+     browser repainted the element on every frame, forever, and this dot sits
+     above the fold on the home page on every device including phones.
+
+     `transform` + `opacity` on a pseudo-element produce the same expanding
+     ring entirely on the GPU, with no repaint. The element is 6px and the old
+     spread reached 12px on each side, so scale(5) lands on the same 30px. */
   @keyframes pulse-gold {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(201, 152, 26, 0.4); }
-    50% { box-shadow: 0 0 0 12px rgba(201, 152, 26, 0); }
+    0%, 100% { transform: scale(1); opacity: 0.4; }
+    50% { transform: scale(5); opacity: 0; }
   }
 
   @keyframes spin-slow {
@@ -439,8 +462,21 @@ html.lenis body {
     animation: float 6s ease-in-out infinite;
   }
 
+  /* The halo is drawn by a child pseudo-element so the dot itself keeps its
+     own size and colour — scaling the dot would scale the dot. */
   .animate-pulse-gold {
+    position: relative;
+  }
+
+  .animate-pulse-gold::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: rgb(201, 152, 26);
     animation: pulse-gold 2s ease-in-out infinite;
+    /* Decorative only: it must never grow the element's hit area. */
+    pointer-events: none;
   }
 
   .animate-spin-slow {
@@ -531,18 +567,62 @@ html.lenis body {
 
   /* Glass layers. Two variants because backdrop-blur over a light surface
      needs far less saturation boost than over a dark one. */
+  /* Do not hand-write `-webkit-backdrop-filter` here.
+     --------------------------------------------------------------------------
+     Lightning CSS (via @tailwindcss/postcss) treats the prefixed property as
+     the same declaration as the standard one and keeps whichever comes last.
+     With the manual `-webkit-` line present it shipped ONLY the prefixed form:
+
+       .glass-dark{-webkit-backdrop-filter:blur(24px)saturate(120%);...}
+
+     Modern Chrome no longer honours `-webkit-backdrop-filter` (verified: a
+     webkit-only declaration computes to `none`, the unprefixed one works), and
+     Firefox never supported the prefixed spelling at all. The result was that
+     the glass effect silently rendered nowhere, on any browser, while the CSS
+     looked correct.
+
+     Lightning CSS adds whatever prefixes the browserslist targets actually
+     need. Letting it do that is the fix. */
   .glass {
     background: rgba(255, 255, 255, 0.72);
     backdrop-filter: blur(20px) saturate(140%);
-    -webkit-backdrop-filter: blur(20px) saturate(140%);
     border: 1px solid rgba(226, 221, 214, 0.6);
   }
 
   .glass-dark {
     background: rgba(10, 10, 10, 0.55);
     backdrop-filter: blur(24px) saturate(120%);
-    -webkit-backdrop-filter: blur(24px) saturate(120%);
     border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Phones get the same look without the live blur.
+     --------------------------------------------------------------------------
+     `backdrop-filter` is the single most expensive thing on this page for a
+     mobile GPU: the compositor has to snapshot the region behind the element
+     and re-run a 20-24px blur whenever anything underneath it moves. The hero
+     stacks several of these over a parallaxing photograph, so on a phone that
+     is a full-viewport blur recomputed every frame, for decoration.
+
+     Dropping the filter and raising the background opacity keeps the contrast
+     the text was designed against — the panels still read as tinted glass over
+     the photo, they just stop costing a frame. Desktop keeps the real blur.
+
+     Also honours `prefers-reduced-transparency` on every viewport: users who
+     ask for less transparency get the opaque treatment regardless of width. */
+  @media (max-width: 768px), (prefers-reduced-transparency: reduce) {
+    .glass {
+      backdrop-filter: none;
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .glass-dark {
+      backdrop-filter: none;
+      background: rgba(10, 10, 10, 0.82);
+    }
+
+    .dark .glass {
+      background: rgba(23, 23, 26, 0.92);
+    }
   }
 
   /* Multi-stop shadow. A single large shadow reads as a flat drop; stacking

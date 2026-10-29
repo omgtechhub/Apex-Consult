@@ -25,6 +25,7 @@ import { useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { useScrollTriggerSync } from "./useScrollTriggerSync";
 import { cn } from "@/lib/utils";
 
 type PinnedRevealProps = {
@@ -48,6 +49,9 @@ export function PinnedReveal({
   distance = 1,
 }: PinnedRevealProps) {
   const root = useRef<HTMLDivElement>(null);
+
+  // Keeps ScrollTrigger in step with Lenis; see useScrollTriggerSync.
+  useScrollTriggerSync();
 
   useGSAP(
     () => {
@@ -136,6 +140,9 @@ export function HorizontalScroll({
 }: HorizontalScrollProps) {
   const root = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
+
+  // Keeps ScrollTrigger in step with Lenis; see useScrollTriggerSync.
+  useScrollTriggerSync();
 
   useGSAP(
     () => {

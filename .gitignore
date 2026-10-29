@@ -20,3 +20,6 @@ Thumbs.db
 # Editor
 .vscode/
 .idea/
+
+# TypeScript incremental build cache — regenerated on every build
+tsconfig.tsbuildinfo

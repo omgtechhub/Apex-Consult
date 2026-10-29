@@ -28,6 +28,17 @@ type Theme = "light" | "dark";
 
 const THEME_EVENT = "apex:themechange";
 
+/** Must outlast the 220ms colour transition in globals.css. */
+const THEME_FADE_MS = 260;
+
+/**
+ * Module-scoped rather than a ref: the toggle is rendered in both the desktop
+ * header and the mobile drawer, so two instances exist at once and they must
+ * share one timer. A per-instance ref would let one instance's timeout clear
+ * the class out from under the other's in-flight fade.
+ */
+let fadeTimer: ReturnType<typeof setTimeout> | null = null;
+
 /**
  * The source of truth is the `.dark` class on <html>, which the inline
  * bootstrap script sets before first paint. `useSyncExternalStore` reads it
@@ -58,7 +69,19 @@ export function ThemeToggle({ className }: { className?: string }) {
 
   function toggle() {
     const next: Theme = theme === "dark" ? "light" : "dark";
-    document.documentElement.classList.toggle("dark", next === "dark");
+    const root = document.documentElement;
+
+    // The colour crossfade lives behind `.theme-transition`, which exists only
+    // for the duration of the switch. Keeping it on permanently would put a
+    // live `transition` on every element in the document and make every style
+    // recalculation markedly more expensive — see globals.css.
+    //
+    // A pending timer is cleared first so rapid double-toggles don't let an
+    // earlier timeout strip the class while a later switch is still fading.
+    if (fadeTimer !== null) clearTimeout(fadeTimer);
+    root.classList.add("theme-transition");
+
+    root.classList.toggle("dark", next === "dark");
     try {
       localStorage.setItem("theme", next);
     } catch {
@@ -66,6 +89,12 @@ export function ThemeToggle({ className }: { className?: string }) {
       // session; only persistence is lost, which is not worth failing over.
     }
     window.dispatchEvent(new Event(THEME_EVENT));
+
+    // Slightly longer than the 220ms transition so the fade always completes.
+    fadeTimer = setTimeout(() => {
+      root.classList.remove("theme-transition");
+      fadeTimer = null;
+    }, THEME_FADE_MS);
   }
 
   const isDark = theme === "dark";
