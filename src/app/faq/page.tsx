@@ -136,8 +136,33 @@ export default function FAQPage() {
     }))
     .filter((cat) => cat.items.length > 0);
 
+  /**
+   * FAQPage structured data.
+   *
+   * Built from the same `faqData` the page renders, so the two can never
+   * disagree — a hand-maintained second copy of 18 answers would drift on the
+   * first edit. This is the highest-value schema on the site for AI assistants:
+   * it hands them question/answer pairs already in the shape they answer in,
+   * rather than asking them to infer Q&A from accordion markup.
+   */
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqData.flatMap((group) =>
+      group.items.map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: { "@type": "Answer", text: item.a },
+      })),
+    ),
+  };
+
   return (
     <div className="bg-canvas min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <PageHero image="reading-room" position="object-[center_35%]">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}

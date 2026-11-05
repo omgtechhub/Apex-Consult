@@ -6,6 +6,14 @@ import { Footer } from "@/components/layout/Footer";
 import { WhatsAppFloat } from "@/components/ui/WhatsAppFloat";
 import { SmoothScrollProvider } from "@/components/motion/SmoothScrollProvider";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
+import {
+  SITE_URL,
+  SITE_NAME,
+  SITE_DESCRIPTION,
+  CONTACT_PHONE,
+  CONTACT_WHATSAPP,
+  absoluteUrl,
+} from "@/lib/seo";
 
 /**
  * Lora + Roboto — the pairing used by the reference design this brand follows.
@@ -54,7 +62,8 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://altivance.com"),
+  metadataBase: new URL(SITE_URL),
+  alternates: { canonical: "/" },
   title: {
     default: "Altivance Academic Consultancy | Where Academic Excellence Meets Results",
     template: "%s | Altivance Academic Consultancy",
@@ -80,26 +89,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://altivance.com",
+    url: SITE_URL,
     siteName: "Altivance Academic Consultancy",
     title: "Altivance Academic Consultancy | Where Academic Excellence Meets Results",
     description:
       "Transform your academic journey with Nigeria's most trusted consultancy. Expert project writing, research assistance, study abroad guidance, and more.",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Altivance Academic Consultancy",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Altivance Academic Consultancy",
     description:
       "Where Academic Excellence Meets Results. Nigeria's premier academic consultancy.",
-    images: ["/og-image.jpg"],
     creator: "@altivanceacademic",
   },
   robots: {
@@ -112,9 +112,6 @@ export const metadata: Metadata = {
       "max-image-preview": "large",
       "max-snippet": -1,
     },
-  },
-  verification: {
-    google: "your-google-verification-code",
   },
 };
 
@@ -179,25 +176,28 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "EducationalOrganization",
-              name: "Altivance Academic Consultancy",
+              name: SITE_NAME,
               alternateName: "Altivance Academic",
-              url: "https://altivance.com",
-              logo: "https://altivance.com/logo.png",
-              description:
-                "Nigeria's premier academic consultancy offering project writing, research assistance, study abroad guidance, and more.",
+              url: SITE_URL,
+              logo: absoluteUrl("/logo.png"),
+              description: SITE_DESCRIPTION,
+              foundingDate: "2017",
+
+              areaServed: { "@type": "Country", name: "Nigeria" },
+
+              knowsLanguage: "en",
+
               address: {
                 "@type": "PostalAddress",
                 addressCountry: "NG",
               },
               contactPoint: {
                 "@type": "ContactPoint",
-                telephone: "+234-708-432-1204",
+                telephone: CONTACT_PHONE,
                 contactType: "customer service",
                 availableLanguage: "English",
               },
-              sameAs: [
-                "https://wa.me/2347084321204",
-              ],
+              sameAs: [CONTACT_WHATSAPP],
             }),
           }}
         />
