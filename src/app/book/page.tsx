@@ -8,7 +8,7 @@ import { TextReveal } from "@/components/motion/TextReveal";
 
 import { SoftBreak } from "@/components/ui/SoftBreak";
 export const metadata: Metadata = {
-  title: "Book a Consultation | Altivance Academic Consultancy",
+  title: "Book a Consultation",
   description:
     "Book your free 15-minute consultation with Altivance Academic Consultancy experts. Get personalized guidance for your academic project, research, or study abroad needs.",
 };
@@ -43,7 +43,23 @@ export default function BookPage() {
 
       <div className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
 
-        <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
+        {/*
+          `grid-cols-1` is load-bearing, not decoration.
+
+          Without it there is no column template below `lg`, so the single
+          implicit column is sized `auto` — whose floor is the widest item's
+          min-content. The booking form's date strip has a min-content of
+          ~728px, so on a phone the column resolved to 778px inside a 487px
+          container and step 2 ("Choose your schedule") was simply cut off at
+          the screen edge, unreachable: the card clips with `overflow-hidden`,
+          so the page never even grew a scrollbar to reveal it.
+
+          Tailwind's `grid-cols-1` emits `repeat(1, minmax(0, 1fr))`. The
+          explicit 0 minimum is what lets the column shrink to its container,
+          after which the date strip's own `overflow-x-auto` scrolls as
+          intended. Measured: 777.6px -> 455.2px at a 487px viewport.
+        */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16">
           {/* Left panel */}
           <Stagger className="lg:col-span-2" each={0.08}>
             <StaggerItem choreography="blurRise">

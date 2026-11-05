@@ -110,6 +110,45 @@ export const PAYABLE_SERVICES = [
   "Other",
 ] as const;
 
+/**
+ * Service page slug -> the exact `PAYABLE_SERVICES` label to preselect.
+ * ----------------------------------------------------------------------------
+ * WHY A MAP AND NOT A SLUGIFY
+ *
+ * The two vocabularies genuinely differ: the URL says `proofreading`, the
+ * payment record says "Project Editing & Proofreading"; `cv-sop` becomes
+ * "CV & Statement of Purpose". No transformation gets from one to the other,
+ * and a near miss is worse than none - `PaymentForm` preselects by exact
+ * string match, so an unrecognised value silently leaves the dropdown empty
+ * and the customer has to find their own service again on the last step
+ * before paying.
+ *
+ * Keys mirror `serviceData` in src/app/services/[slug]/page.tsx. Values must
+ * stay character-identical to `PAYABLE_SERVICES` above; `satisfies` enforces
+ * that at build time rather than leaving it to a careful reader.
+ */
+export const SERVICE_SLUG_TO_PAYABLE = {
+  "project-writing": "Project Writing",
+  proofreading: "Project Editing & Proofreading",
+  "research-assistance": "Research Assistance",
+  "data-analysis": "Data Analysis (SPSS/R)",
+  "cv-sop": "CV & Statement of Purpose",
+  admission: "Admission Guidance",
+  scholarship: "Scholarship Guidance",
+  "business-proposals": "Business Proposal",
+  "journal-formatting": "Journal Formatting",
+  assignments: "Assignment Assistance",
+} satisfies Record<string, (typeof PAYABLE_SERVICES)[number]>;
+
+/**
+ * The `/pay` link for a service page, with the service preselected.
+ * Falls back to the bare payment page for a slug with no payable equivalent.
+ */
+export function payHrefForService(slug: string): string {
+  const label = (SERVICE_SLUG_TO_PAYABLE as Record<string, string>)[slug];
+  return label ? `/pay?service=${encodeURIComponent(label)}` : "/pay";
+}
+
 /* -------------------------------------------------------------------------- */
 /*  Schema                                                                    */
 /* -------------------------------------------------------------------------- */

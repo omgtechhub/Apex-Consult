@@ -11,7 +11,7 @@ import { Tactile } from "@/components/motion/Tactile";
 
 import { SoftBreak } from "@/components/ui/SoftBreak";
 export const metadata: Metadata = {
-  title: "Testimonials | Altivance Academic Consultancy",
+  title: "Testimonials",
   description:
     "Read what 5,000+ satisfied clients say about Altivance Academic Consultancy. Real reviews from real students.",
 };

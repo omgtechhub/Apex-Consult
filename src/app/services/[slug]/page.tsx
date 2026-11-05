@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, ArrowLeft } from "lucide-react";
+import { ArrowRight, CheckCircle2, ArrowLeft, CreditCard } from "lucide-react";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
 import { PageHero } from "@/components/layout/PageHero";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { Tactile } from "@/components/motion/Tactile";
 import { stagger } from "@/lib/motion";
+import { payHrefForService } from "@/lib/payments/options";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -178,7 +179,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const service = serviceData[slug];
   return {
-    title: service ? `${service.title} | Altivance Academic Consultancy` : "Service | Altivance Academic Consultancy",
+    title: service ? service.title : "Service",
     description: service?.shortDesc || "Expert academic service from Altivance Academic Consultancy.",
   };
 }
@@ -294,6 +295,17 @@ export default async function ServicePage({ params }: Props) {
                   className="flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r from-brand-400 to-brand-500 text-on-brand text-sm font-semibold rounded-xl overflow-hidden transition-shadow hover:shadow-layered-brand"
                 >
                   Book Now <ArrowRight className="w-4 h-4" />
+                </Tactile>
+                {/* The payment route off a service page did not exist. Every
+                    button here led to /book or WhatsApp, so a client who had
+                    already agreed a price and only wanted to pay was sent
+                    back to the consultation form - and `/pay` itself was
+                    reachable only from a single footer link. */}
+                <Tactile
+                  href={payHrefForService(slug)}
+                  className="flex items-center justify-center gap-2 w-full py-3 border border-ink-200 text-ink-900 text-sm font-semibold rounded-xl overflow-hidden transition-colors hover:border-brand-400 hover:bg-brand-50"
+                >
+                  <CreditCard className="w-4 h-4" /> Pay for This Service
                 </Tactile>
                 <Tactile
                   href="https://wa.me/2347084321204"

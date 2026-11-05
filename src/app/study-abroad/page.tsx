@@ -11,7 +11,7 @@ import { Tactile } from "@/components/motion/Tactile";
 
 import { SoftBreak } from "@/components/ui/SoftBreak";
 export const metadata: Metadata = {
-  title: "Study Abroad Consultancy | Altivance Academic Consultancy",
+  title: "Study Abroad Consultancy",
   description:
     "Complete study abroad guidance — university selection, applications, visa documentation, scholarship, SOP writing. Get admitted to your dream university.",
 };

@@ -8,7 +8,7 @@ import { NewsletterForm } from "@/components/blog/NewsletterForm";
 
 import { SoftBreak } from "@/components/ui/SoftBreak";
 export const metadata: Metadata = {
-  title: "Blog | Altivance Academic Consultancy",
+  title: "Blog",
   description:
     "Expert tips on academic writing, research, study abroad, scholarships, and career development from Altivance Academic Consultancy.",
 };

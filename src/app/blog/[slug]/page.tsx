@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
   return {
-    title: `${title} | Altivance Academic Consultancy Blog`,
+    title: `${title} | Blog`,
     description: `Read our expert insights on ${title} from Altivance Academic Consultancy.`,
   };
 }

@@ -11,7 +11,7 @@ import { stagger } from "@/lib/motion";
 
 import { SoftBreak } from "@/components/ui/SoftBreak";
 export const metadata: Metadata = {
-  title: "About Us | Altivance Academic Consultancy",
+  title: "About Us",
   description:
     "Learn about Altivance Academic Consultancy — Nigeria's premier academic consultancy with 7+ years of excellence, 5,000+ satisfied clients, and a team of expert consultants.",
 };

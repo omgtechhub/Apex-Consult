@@ -4,6 +4,7 @@ import { MarkdownContent } from "@/lib/markdown";
 import Link from "next/link";
 import { ArrowRight, ExternalLink, CheckCircle, FileText, Clock, Globe, BookOpen } from "lucide-react";
 import { getScholarshipBySlug } from "@/lib/scholarships/client";
+import { absoluteUrl } from "@/lib/seo";
 import {
   formatDegreeLevel,
   formatFundingType,
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const s = await getScholarshipBySlug(slug);
 
   if (!s) {
-    return { title: "Scholarship Not Found | Altivance Academic Consultancy" };
+    return { title: "Scholarship Not Found" };
   }
 
   const seo = s.article?.seo;
@@ -33,13 +34,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description: seo?.metaDescription ?? fallbackDescription,
     keywords: seo?.keywords,
     alternates: {
-      canonical: seo?.canonicalUrl ?? `https://altivance.com/scholarships/${s.slug}`,
+      canonical: seo?.canonicalUrl ?? absoluteUrl(`/scholarships/${s.slug}`),
     },
     openGraph: {
       type: "article",
       title: seo?.ogTitle ?? s.title,
       description: seo?.ogDescription ?? fallbackDescription,
-      url: `https://altivance.com/scholarships/${s.slug}`,
+      url: absoluteUrl(`/scholarships/${s.slug}`),
       publishedTime: s.article?.publishedAt ?? undefined,
       images: seo?.ogImage ? [{ url: seo.ogImage }] : [],
     },

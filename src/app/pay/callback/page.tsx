@@ -17,7 +17,7 @@ import { formatNaira } from "@/lib/payments/paystack";
 import { settlePayment, type SettlementOutcome } from "@/lib/payments/settle";
 
 export const metadata: Metadata = {
-  title: "Payment Status | Altivance Academic Consultancy",
+  title: "Payment Status",
   robots: { index: false, follow: false },
 };
 

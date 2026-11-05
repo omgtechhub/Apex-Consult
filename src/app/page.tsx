@@ -7,6 +7,7 @@ import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { CTASection } from "@/components/home/CTASection";
 import { FAQPreview } from "@/components/home/FAQPreview";
 import { MarqueeStrip } from "@/components/home/MarqueeStrip";
+import { SITE_URL } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Altivance Academic Consultancy | Where Academic Excellence Meets Results",
@@ -26,7 +27,7 @@ export default function HomePage() {
             "@type": "WebPage",
             name: "Altivance Academic Consultancy",
             description: "Where Academic Excellence Meets Results",
-            url: "https://altivance.com",
+            url: SITE_URL,
             mainEntity: {
               "@type": "EducationalOrganization",
               name: "Altivance Academic Consultancy",

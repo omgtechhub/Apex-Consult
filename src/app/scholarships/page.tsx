@@ -10,16 +10,17 @@ import {
   isDeadlinePassed,
 } from "@/lib/scholarships/utils";
 import type { DegreeLevel, FundingType } from "@/lib/scholarships/types";
+import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Global Scholarships Directory | Altivance Academic Consultancy",
+  title: "Global Scholarships Directory",
   description:
     "Browse fully-funded, partial, and tuition-only international scholarships for undergraduate, master's, and PhD students. Verified opportunities curated by Altivance Academic Consultancy.",
   openGraph: {
     title: "Global Scholarships Directory | Altivance Academic Consultancy",
     description:
       "Browse verified international scholarships — Chevening, Commonwealth, Fulbright, and more.",
-    url: "https://altivance.com/scholarships",
+    url: absoluteUrl("/scholarships"),
   },
 };
 

@@ -14,7 +14,7 @@ import { BatchReveal } from "@/components/motion/BatchReveal";
 
 import { SoftBreak } from "@/components/ui/SoftBreak";
 export const metadata: Metadata = {
-  title: "Our Services | Altivance Academic Consultancy",
+  title: "Our Services",
   description:
     "Explore all 20+ academic services at Altivance Academic Consultancy — project writing, research, data analysis, study abroad, proofreading, and more.",
 };

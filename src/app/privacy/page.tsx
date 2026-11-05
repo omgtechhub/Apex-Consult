@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LegalShell, LegalSection } from "@/components/layout/LegalShell";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Altivance Academic Consultancy",
+  title: "Privacy Policy",
 };
 
 export default function PrivacyPage() {

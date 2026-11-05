@@ -9,7 +9,7 @@ import { TextReveal } from "@/components/motion/TextReveal";
 
 import { SoftBreak } from "@/components/ui/SoftBreak";
 export const metadata: Metadata = {
-  title: "Contact Us | Altivance Academic Consultancy",
+  title: "Contact Us",
   description:
     "Get in touch with Altivance Academic Consultancy. WhatsApp, email, or fill out our form. We respond within 2 hours.",
 };
@@ -91,7 +91,7 @@ export default function ContactPage() {
 
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
 
-        <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16">
           {/* Left - Contact info */}
           <Stagger className="lg:col-span-2 space-y-6" each={0.07}>
             {contactInfo.map((info) => (

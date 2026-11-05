@@ -13,7 +13,7 @@ import { stagger } from "@/lib/motion";
 
 import { SoftBreak } from "@/components/ui/SoftBreak";
 export const metadata: Metadata = {
-  title: "Pricing | Altivance Academic Consultancy",
+  title: "Pricing",
   description:
     "Undergraduate projects from ₦65,000, master’s theses from ₦110,000, PhD dissertations from ₦290,000. Per-component rates for analysis, editing and admissions. No hidden fees.",
 };

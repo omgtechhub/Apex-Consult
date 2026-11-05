@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LegalShell, LegalSection } from "@/components/layout/LegalShell";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Altivance Academic Consultancy",
+  title: "Terms of Service",
 };
 
 export default function TermsPage() {

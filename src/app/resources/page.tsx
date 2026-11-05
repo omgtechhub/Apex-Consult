@@ -9,7 +9,7 @@ import { Tactile } from "@/components/motion/Tactile";
 
 import { SoftBreak } from "@/components/ui/SoftBreak";
 export const metadata: Metadata = {
-  title: "Resources | Altivance Academic Consultancy",
+  title: "Resources",
   description:
     "Free academic resources — guides, templates, checklists, and tools from Altivance Academic Consultancy.",
 };

@@ -18,7 +18,7 @@ import { SoftBreak } from "@/components/ui/SoftBreak";
 import { isLiveMode, isPaystackConfigured } from "@/lib/payments/paystack";
 
 export const metadata: Metadata = {
-  title: "Make a Payment | Altivance Academic Consultancy",
+  title: "Make a Payment",
   description:
     "Pay for your project, thesis or consultancy securely through Paystack — card, bank transfer, USSD or mobile money. Instalments of 50%, 30% and 20% are supported.",
   // A payment page has nothing to rank for and should not appear in results.
@@ -102,7 +102,7 @@ export default async function PayPage({
       <div className="pointer-events-none fixed inset-0 bg-grid-pattern opacity-30" />
 
       <div className="relative mx-auto max-w-[1400px] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-        <div className="grid gap-12 lg:grid-cols-5 lg:gap-16">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-5 lg:gap-16">
           {/* Left column — reassurance, which is the whole job of a payment
               page's supporting copy. Nothing here competes with the form. */}
           <Stagger className="lg:col-span-2" each={0.08}>
