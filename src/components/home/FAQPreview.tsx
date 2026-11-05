@@ -10,9 +10,10 @@ import { TextReveal } from "@/components/motion/TextReveal";
 import { Collapse } from "@/components/motion/Collapse";
 import { duration, ease, spring, stagger } from "@/lib/motion";
 
+import { SoftBreak } from "@/components/ui/SoftBreak";
 const faqs = [
   {
-    q: "How do I get started with Apex Academic Consultancy?",
+    q: "How do I get started with Altivance Academic Consultancy?",
     a: "Simply book a free 15-minute consultation through our website, send us a WhatsApp message at +234 708 432 1204, or fill out our contact form. We'll assess your needs and provide a custom quote within 24 hours.",
   },
   {
@@ -54,13 +55,13 @@ export function FAQPreview() {
           <div className="lg:w-96 flex-shrink-0">
             <Reveal choreography="fade" className="flex items-center gap-2 mb-4">
               <motion.div
-                className="h-px bg-gradient-to-r from-gold-500 to-transparent"
+                className="h-px bg-gradient-to-r from-brand-500 to-transparent"
                 initial={{ width: 0 }}
                 whileInView={{ width: 32 }}
                 viewport={{ once: true }}
                 transition={{ duration: duration.slow, ease: ease.silk }}
               />
-              <span className="text-gold-500 text-xs font-bold tracking-[0.2em] uppercase">
+              <span className="text-brand-500 text-xs font-bold tracking-[0.2em] uppercase">
                 FAQ
               </span>
             </Reveal>
@@ -70,13 +71,13 @@ export function FAQPreview() {
               className="text-[clamp(2rem,3.5vw,2.75rem)] font-black font-display text-ink-950 leading-tight mb-4"
             >
               <TextReveal text="Frequently" />
-              <br />
+              <SoftBreak />
               <TextReveal text="asked" delay={0.08} />
-              <br />
+              <SoftBreak />
               <TextReveal
                 text="questions."
                 delay={0.16}
-                className="bg-gradient-to-br from-gold-400 via-gold-500 to-gold-700 bg-clip-text text-transparent"
+                className="bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 bg-clip-text text-transparent"
                 mode="line"
               />
             </h2>
@@ -89,7 +90,7 @@ export function FAQPreview() {
               <div className="space-y-3">
                 <Link
                   href="/faq"
-                  className="group flex items-center gap-2 text-sm font-semibold text-gold-500 transition-colors hover:text-gold-700"
+                  className="group flex items-center gap-2 text-sm font-semibold text-brand-500 transition-colors hover:text-brand-700"
                 >
                   View all FAQs
                   <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 ease-[var(--ease-entrance)] group-hover:translate-x-1" />
@@ -120,22 +121,22 @@ export function FAQPreview() {
                     className={cn(
                       "bg-surface border rounded-2xl transition-colors duration-300",
                       isOpen
-                        ? "border-gold-500/30 shadow-[0_4px_24px_rgba(201,152,26,0.08)]"
-                        : "border-ink-200/60 hover:border-gold-500/20"
+                        ? "border-brand-500/30 shadow-[0_4px_24px_rgba(99,3,3,0.08)]"
+                        : "border-ink-200/60 hover:border-brand-500/20"
                     )}
                   >
                     <h3>
                       <button
                         id={`faq-trigger-${i}`}
                         onClick={() => setOpenIndex(isOpen ? null : i)}
-                        className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2"
+                        className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
                         aria-expanded={isOpen}
                         aria-controls={`faq-panel-${i}`}
                       >
                         <span
                           className={cn(
                             "font-semibold text-sm leading-relaxed font-body transition-colors",
-                            isOpen ? "text-gold-500" : "text-ink-950"
+                            isOpen ? "text-brand-500" : "text-ink-950"
                           )}
                         >
                           {faq.q}
@@ -148,7 +149,7 @@ export function FAQPreview() {
                           <ChevronDown
                             className={cn(
                               "w-4 h-4 transition-colors",
-                              isOpen ? "text-gold-500" : "text-ink-500"
+                              isOpen ? "text-brand-500" : "text-ink-500"
                             )}
                           />
                         </motion.span>

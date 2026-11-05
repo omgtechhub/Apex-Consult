@@ -43,7 +43,7 @@ function Submit({ label }: { label: string }) {
     <button
       type="submit"
       disabled={pending}
-      className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 px-5 py-2.5 text-sm font-semibold text-white shadow-layered-gold disabled:opacity-70"
+      className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-brand-400 to-brand-500 px-5 py-2.5 text-sm font-semibold text-on-brand shadow-layered-brand disabled:opacity-70"
     >
       {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
       {pending ? "Saving…" : label}
@@ -52,7 +52,7 @@ function Submit({ label }: { label: string }) {
 }
 
 const field =
-  "w-full rounded-xl border border-ink-200 bg-surface px-4 py-2.5 text-sm text-ink-950 placeholder:text-ink-400 focus:border-gold-500/50 focus:outline-none focus:ring-2 focus:ring-gold-500/30";
+  "w-full rounded-xl border border-ink-200 bg-surface px-4 py-2.5 text-sm text-ink-950 placeholder:text-ink-400 focus:border-brand-500/50 focus:outline-none focus:ring-2 focus:ring-brand-500/30";
 const label = "mb-1.5 block text-xs font-semibold text-ink-600";
 
 export function PostEditor({
@@ -139,7 +139,7 @@ export function PostEditor({
                 name="published"
                 type="checkbox"
                 defaultChecked={post?.published}
-                className="mt-0.5 h-4 w-4 rounded border-ink-300 text-gold-500 focus:ring-gold-500/40"
+                className="mt-0.5 h-4 w-4 rounded border-ink-300 text-brand-500 focus:ring-brand-500/40"
               />
               <span>
                 <span className="block text-sm font-semibold text-ink-950">Published</span>

@@ -9,7 +9,7 @@ import { FAQPreview } from "@/components/home/FAQPreview";
 import { MarqueeStrip } from "@/components/home/MarqueeStrip";
 
 export const metadata: Metadata = {
-  title: "Apex Academic Consultancy | Where Academic Excellence Meets Results",
+  title: "Altivance Academic Consultancy | Where Academic Excellence Meets Results",
   description:
     "Nigeria's #1 academic consultancy. Expert project writing, data analysis, study abroad guidance, and more. 5,000+ students served. Book your free consultation today.",
 };
@@ -24,12 +24,12 @@ export default function HomePage() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebPage",
-            name: "Apex Academic Consultancy",
+            name: "Altivance Academic Consultancy",
             description: "Where Academic Excellence Meets Results",
-            url: "https://apexacademicconsultancy.com",
+            url: "https://altivance.com",
             mainEntity: {
               "@type": "EducationalOrganization",
-              name: "Apex Academic Consultancy",
+              name: "Altivance Academic Consultancy",
               offers: [
                 { "@type": "Offer", name: "Project Writing" },
                 { "@type": "Offer", name: "Research Assistance" },

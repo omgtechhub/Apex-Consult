@@ -70,7 +70,7 @@ export default async function AdminPostsPage({
         </div>
         <Link
           href="/admin/posts/new"
-          className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 px-4 py-2.5 text-sm font-semibold text-white shadow-layered-gold"
+          className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-brand-400 to-brand-500 px-4 py-2.5 text-sm font-semibold text-on-brand shadow-layered-brand"
         >
           <Plus className="h-4 w-4" /> New post
         </Link>
@@ -80,7 +80,7 @@ export default async function AdminPostsPage({
         <Link
           href="/admin/posts"
           className={`rounded-full border px-3.5 py-1.5 text-xs font-medium ${
-            !status ? "border-gold-500/40 bg-gold-100 text-gold-700" : "border-ink-200 text-ink-600"
+            !status ? "border-brand-500/40 bg-brand-100 text-brand-700" : "border-ink-200 text-ink-600"
           }`}
         >
           All
@@ -88,7 +88,7 @@ export default async function AdminPostsPage({
         <Link
           href="/admin/posts?status=draft"
           className={`rounded-full border px-3.5 py-1.5 text-xs font-medium ${
-            status === "draft" ? "border-gold-500/40 bg-gold-100 text-gold-700" : "border-ink-200 text-ink-600"
+            status === "draft" ? "border-brand-500/40 bg-brand-100 text-brand-700" : "border-ink-200 text-ink-600"
           }`}
         >
           Drafts
@@ -98,7 +98,7 @@ export default async function AdminPostsPage({
       {rows.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-ink-300 bg-surface p-12 text-center">
           <p className="text-sm text-ink-600">No posts yet.</p>
-          <Link href="/admin/posts/new" className="mt-3 inline-block text-sm font-semibold text-gold-600 hover:underline">
+          <Link href="/admin/posts/new" className="mt-3 inline-block text-sm font-semibold text-brand-600 hover:underline">
             Write the first one
           </Link>
         </div>
@@ -128,14 +128,14 @@ export default async function AdminPostsPage({
                     <input type="hidden" name="id" value={p.id} />
                     <button
                       type="submit"
-                      className="rounded-lg border border-ink-200 px-3 py-1.5 text-xs font-medium text-ink-600 transition-colors hover:border-gold-500/40 hover:text-gold-700"
+                      className="rounded-lg border border-ink-200 px-3 py-1.5 text-xs font-medium text-ink-600 transition-colors hover:border-brand-500/40 hover:text-brand-700"
                     >
                       {p.published ? "Unpublish" : "Publish"}
                     </button>
                   </form>
                   <Link
                     href={`/admin/posts/${p.id}`}
-                    className="flex items-center gap-1.5 rounded-lg border border-ink-200 px-3 py-1.5 text-xs font-medium text-ink-600 transition-colors hover:border-gold-500/40 hover:text-gold-700"
+                    className="flex items-center gap-1.5 rounded-lg border border-ink-200 px-3 py-1.5 text-xs font-medium text-ink-600 transition-colors hover:border-brand-500/40 hover:text-brand-700"
                   >
                     <Pencil className="h-3 w-3" /> Edit
                   </Link>

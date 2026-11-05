@@ -23,3 +23,11 @@ Thumbs.db
 
 # TypeScript incremental build cache — regenerated on every build
 tsconfig.tsbuildinfo
+
+# Shareable preview build (npm run preview)
+/.next-preview/
+
+# Local tunnel binary fetched by scripts/share.mjs (~53 MB, not source)
+/tools/
+
+.vercel

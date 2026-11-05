@@ -19,7 +19,7 @@ export default function NotFound() {
         */}
         <StaggerItem choreography="fade" duration={0.9}>
           <div
-            className="text-[12rem] font-black leading-none font-display mb-0 animate-gradient bg-gradient-to-br from-gold-200 via-gold-500 to-gold-700 bg-clip-text text-transparent select-none"
+            className="text-[12rem] font-black leading-none font-display mb-0 animate-gradient bg-gradient-to-br from-brand-200 via-brand-500 to-brand-700 bg-clip-text text-transparent select-none"
             aria-hidden="true"
           >
             404
@@ -42,7 +42,7 @@ export default function NotFound() {
             <Magnetic strength={0.2} contentStrength={0.35}>
               <Tactile
                 href="/"
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-gold-400 to-gold-500 text-white font-semibold text-sm rounded-xl shadow-layered-gold"
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-400 to-brand-500 text-on-brand font-semibold text-sm rounded-xl shadow-layered-brand"
               >
                 <Home className="w-4 h-4" />
                 Back to Home
@@ -50,8 +50,8 @@ export default function NotFound() {
             </Magnetic>
             <Tactile
               href="/services"
-              rippleColor="rgba(201,152,26,0.25)"
-              className="group flex items-center justify-center gap-2 px-6 py-3 border border-ink-200 text-ink-700 font-semibold text-sm rounded-xl hover:border-gold-500/30"
+              rippleColor="rgba(99,3,3,0.25)"
+              className="group flex items-center justify-center gap-2 px-6 py-3 border border-ink-200 text-ink-700 font-semibold text-sm rounded-xl hover:border-brand-500/30"
             >
               Our Services
               <ArrowRight className="w-4 h-4 transition-transform duration-300 ease-standard group-hover:translate-x-1" />
@@ -64,7 +64,7 @@ export default function NotFound() {
             Need immediate help?{" "}
             <a
               href="https://wa.me/2347084321204"
-              className="text-gold-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded"
+              className="text-brand-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
               target="_blank"
               rel="noopener noreferrer"
             >

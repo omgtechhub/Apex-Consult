@@ -54,7 +54,7 @@ export function NewsletterForm() {
   }
 
   return (
-    <div className="mt-16 bg-gradient-to-r from-gold-100 to-gold-200/50 border border-gold-200/60 rounded-3xl p-8 lg:p-10 text-center">
+    <div className="mt-16 bg-gradient-to-r from-brand-100 to-brand-200/50 border border-brand-200/60 rounded-3xl p-8 lg:p-10 text-center">
       <AnimatePresence mode="wait" initial={false}>
         {status === "success" ? (
           <motion.div
@@ -106,14 +106,14 @@ export function NewsletterForm() {
                 placeholder="Your email address"
                 required
                 autoComplete="email"
-                className="flex-1 px-4 py-3 bg-surface border border-ink-200 rounded-xl text-sm text-ink-950 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-gold-500/30 focus:border-gold-500/50 transition-all duration-200 ease-standard"
+                className="flex-1 px-4 py-3 bg-surface border border-ink-200 rounded-xl text-sm text-ink-950 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500/50 transition-all duration-200 ease-standard"
               />
               <motion.button
                 type="submit"
                 disabled={status === "pending"}
                 whileHover={prefersReduced || status === "pending" ? undefined : { scale: 1.02, y: -1 }}
                 whileTap={prefersReduced || status === "pending" ? undefined : { scale: 0.975 }}
-                className="px-5 py-3 min-w-[9.5rem] bg-gradient-to-r from-gold-400 to-gold-500 text-white font-semibold text-sm rounded-xl shadow-layered-gold whitespace-nowrap disabled:opacity-70 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2"
+                className="px-5 py-3 min-w-[9.5rem] bg-gradient-to-r from-brand-400 to-brand-500 text-on-brand font-semibold text-sm rounded-xl shadow-layered-brand whitespace-nowrap disabled:opacity-70 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
               >
                 <SubmitLabel
                   pending={status === "pending"}

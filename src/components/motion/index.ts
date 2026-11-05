@@ -1,5 +1,5 @@
 /**
- * Apex motion primitives — single import surface.
+ * Altivance motion primitives — single import surface.
  *
  * Every component here is client-side and reduced-motion aware. Tokens live in
  * `@/lib/motion`; hooks live in `@/hooks`.

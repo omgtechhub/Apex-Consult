@@ -14,8 +14,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
   return {
-    title: `${title} | Apex Academic Consultancy Blog`,
-    description: `Read our expert insights on ${title} from Apex Academic Consultancy.`,
+    title: `${title} | Altivance Academic Consultancy Blog`,
+    description: `Read our expert insights on ${title} from Altivance Academic Consultancy.`,
   };
 }
 
@@ -79,7 +79,7 @@ Ensure all sources cited follow your required referencing style (APA, MLA, Harva
 
 ## Need Help?
 
-Our expert team at Apex Academic Consultancy has helped hundreds of students develop successful research
+Our expert team at Altivance Academic Consultancy has helped hundreds of students develop successful research
 proposals. Book a free consultation to discuss your specific needs.
   `,
 };
@@ -90,9 +90,9 @@ export default function BlogPostPage() {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <Reveal choreography="fade" duration={0.4}>
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-ink-500 mb-10">
-            <Link href="/" className="hover:text-gold-500 transition-colors duration-200 ease-standard">Home</Link>
+            <Link href="/" className="hover:text-brand-500 transition-colors duration-200 ease-standard">Home</Link>
             <span>/</span>
-            <Link href="/blog" className="hover:text-gold-500 transition-colors duration-200 ease-standard">Blog</Link>
+            <Link href="/blog" className="hover:text-brand-500 transition-colors duration-200 ease-standard">Blog</Link>
             <span>/</span>
             <span className="text-ink-950 truncate max-w-[200px]">{samplePost.title}</span>
           </nav>
@@ -106,7 +106,7 @@ export default function BlogPostPage() {
                 <Stagger each={0.07}>
                   <StaggerItem choreography="blurRise">
                     <div className="flex items-center gap-3 mb-6">
-                      <span className="px-3 py-1 bg-gold-100 text-gold-700 text-xs font-bold rounded-full">
+                      <span className="px-3 py-1 bg-brand-100 text-brand-700 text-xs font-bold rounded-full">
                         {samplePost.category}
                       </span>
                       <div className="flex items-center gap-1.5 text-xs text-ink-500">
@@ -125,7 +125,7 @@ export default function BlogPostPage() {
 
                   <StaggerItem choreography="blurRise">
                     <div className="flex items-center gap-3 mb-8 pb-8 border-b border-ink-100">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold-400 to-gold-500 flex items-center justify-center text-white font-bold text-sm">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-400 to-brand-500 flex items-center justify-center text-on-brand font-bold text-sm">
                         CO
                       </div>
                       <div>
@@ -180,7 +180,7 @@ export default function BlogPostPage() {
                 <div className="mt-10 pt-8 border-t border-ink-100">
                   <Link
                     href="/blog"
-                    className="group inline-flex items-center gap-2 text-sm text-ink-600 hover:text-gold-500 transition-colors duration-200 ease-standard"
+                    className="group inline-flex items-center gap-2 text-sm text-ink-600 hover:text-brand-500 transition-colors duration-200 ease-standard"
                   >
                     <ArrowLeft className="w-4 h-4 transition-transform duration-300 ease-standard group-hover:-translate-x-1" />
                     Back to Blog
@@ -194,7 +194,7 @@ export default function BlogPostPage() {
           <Stagger as="div" className="space-y-5" each={0.1}>
             <StaggerItem choreography="slideLeft">
               <aside className="bg-surface rounded-2xl p-6 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gold-100 rounded-full blur-2xl" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-100 rounded-full blur-2xl" />
                 <div className="relative">
                   <h3 className="font-bold text-ink-950 text-base font-display mb-2">
                     Need expert help?
@@ -204,7 +204,7 @@ export default function BlogPostPage() {
                   </p>
                   <Link
                     href="/book"
-                    className="group flex items-center justify-center gap-2 w-full py-2.5 bg-gradient-to-r from-gold-400 to-gold-500 text-ink-950 text-xs font-semibold rounded-xl hover:shadow-layered-gold active:scale-[0.98] transition-all duration-200 ease-standard"
+                    className="group flex items-center justify-center gap-2 w-full py-2.5 bg-gradient-to-r from-brand-400 to-brand-500 text-on-brand text-xs font-semibold rounded-xl hover:shadow-layered-brand active:scale-[0.98] transition-all duration-200 ease-standard"
                   >
                     Book Free Consultation
                     <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 ease-standard group-hover:translate-x-1" />
@@ -221,7 +221,7 @@ export default function BlogPostPage() {
                     <Link
                       key={s}
                       href="/services"
-                      className="group flex items-center gap-2 text-xs text-ink-600 hover:text-gold-500 transition-colors duration-200 ease-standard py-1.5"
+                      className="group flex items-center gap-2 text-xs text-ink-600 hover:text-brand-500 transition-colors duration-200 ease-standard py-1.5"
                     >
                       <ArrowRight className="w-3 h-3 transition-transform duration-300 ease-standard group-hover:translate-x-0.5" />
                       {s}

@@ -77,10 +77,10 @@ export default async function AdminDashboard() {
           <Link
             key={t.label}
             href={t.href}
-            className="group rounded-2xl border border-ink-200/60 bg-surface p-5 transition-all hover:-translate-y-0.5 hover:border-gold-500/30 hover:shadow-layered"
+            className="group rounded-2xl border border-ink-200/60 bg-surface p-5 transition-all hover:-translate-y-0.5 hover:border-brand-500/30 hover:shadow-layered"
           >
             <div className="mb-3 flex items-center justify-between">
-              <t.icon className="h-4 w-4 text-gold-500" />
+              <t.icon className="h-4 w-4 text-brand-500" />
               <span className="text-3xl font-black tabular-nums text-ink-950 font-display">
                 {t.value}
               </span>

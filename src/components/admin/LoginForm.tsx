@@ -20,7 +20,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 px-5 py-3 text-sm font-semibold text-white shadow-layered-gold transition-opacity disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2"
+      className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-400 to-brand-500 px-5 py-3 text-sm font-semibold text-on-brand shadow-layered-brand transition-opacity disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
     >
       {pending ? (
         <>
@@ -55,7 +55,7 @@ export function LoginForm({
         <div className="mb-8 flex flex-col items-center text-center">
           <Image src="/logo.png" alt="" width={48} height={48} className="mb-4 h-12 w-12 object-contain" />
           <h1 className="font-display text-2xl font-black text-ink-950">Staff sign in</h1>
-          <p className="mt-1 text-sm text-ink-500">Apex Academic Consultancy</p>
+          <p className="mt-1 text-sm text-ink-500">Altivance Academic Consultancy</p>
         </div>
 
         <form
@@ -84,8 +84,8 @@ export function LoginForm({
             required
             autoComplete="username"
             autoFocus
-            className="mb-4 w-full rounded-xl border border-ink-200 bg-surface px-4 py-3 text-sm text-ink-950 placeholder:text-ink-400 focus:border-gold-500/50 focus:outline-none focus:ring-2 focus:ring-gold-500/30"
-            placeholder="you@apexacademic.com"
+            className="mb-4 w-full rounded-xl border border-ink-200 bg-surface px-4 py-3 text-sm text-ink-950 placeholder:text-ink-400 focus:border-brand-500/50 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
+            placeholder="you@altivance.com"
           />
 
           <label htmlFor="password" className="mb-1.5 block text-xs font-semibold text-ink-600">
@@ -97,7 +97,7 @@ export function LoginForm({
             type="password"
             required
             autoComplete="current-password"
-            className="w-full rounded-xl border border-ink-200 bg-surface px-4 py-3 text-sm text-ink-950 focus:border-gold-500/50 focus:outline-none focus:ring-2 focus:ring-gold-500/30"
+            className="w-full rounded-xl border border-ink-200 bg-surface px-4 py-3 text-sm text-ink-950 focus:border-brand-500/50 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
           />
 
           <SubmitButton />

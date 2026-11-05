@@ -6,10 +6,11 @@ import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
 import { PageHero } from "@/components/layout/PageHero";
 import { TextReveal } from "@/components/motion/TextReveal";
 
+import { SoftBreak } from "@/components/ui/SoftBreak";
 export const metadata: Metadata = {
-  title: "Book a Consultation | Apex Academic Consultancy",
+  title: "Book a Consultation | Altivance Academic Consultancy",
   description:
-    "Book your free 15-minute consultation with Apex Academic Consultancy experts. Get personalized guidance for your academic project, research, or study abroad needs.",
+    "Book your free 15-minute consultation with Altivance Academic Consultancy experts. Get personalized guidance for your academic project, research, or study abroad needs.",
 };
 
 const benefits = [
@@ -29,7 +30,7 @@ export default function BookPage() {
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal choreography="fade" duration={0.4}>
             <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-ink-400">
-              <Link href="/" className="hover:text-gold-500 transition-colors duration-200 ease-standard">Home</Link>
+              <Link href="/" className="hover:text-brand-500 transition-colors duration-200 ease-standard">Home</Link>
               <span>/</span>
               <span className="text-white">Book Consultation</span>
             </nav>
@@ -47,20 +48,20 @@ export default function BookPage() {
           <Stagger className="lg:col-span-2" each={0.08}>
             <StaggerItem choreography="blurRise">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-px bg-gradient-to-r from-gold-500 to-transparent" />
-                <span className="text-gold-500 text-xs font-bold tracking-[0.2em] uppercase">Book Now</span>
+                <div className="w-8 h-px bg-gradient-to-r from-brand-500 to-transparent" />
+                <span className="text-brand-500 text-xs font-bold tracking-[0.2em] uppercase">Book Now</span>
               </div>
             </StaggerItem>
 
             <StaggerItem choreography="fade">
               <h1 className="text-[clamp(2rem,4vw,3.5rem)] font-black font-display text-ink-950 leading-tight mb-5 text-balance">
                 Let&apos;s talk
-                <br />
+                <SoftBreak />
                 <TextReveal
                   text="about your goals."
                   mode="line"
                   delay={0.12}
-                  className="bg-gradient-to-br from-gold-400 via-gold-500 to-gold-700 bg-clip-text text-transparent"
+                  className="bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 bg-clip-text text-transparent"
                 />
               </h1>
             </StaggerItem>
@@ -76,8 +77,8 @@ export default function BookPage() {
                 {benefits.map((benefit) => (
                   <StaggerItem key={benefit.text} choreography="slideRight">
                     <div className="flex items-center gap-3 group">
-                      <div className="w-9 h-9 rounded-xl bg-gold-100 flex items-center justify-center flex-shrink-0 transition-transform duration-300 ease-overshoot group-hover:scale-110">
-                        <benefit.icon className="w-4.5 h-4.5 text-gold-500" />
+                      <div className="w-9 h-9 rounded-xl bg-brand-100 flex items-center justify-center flex-shrink-0 transition-transform duration-300 ease-overshoot group-hover:scale-110">
+                        <benefit.icon className="w-4.5 h-4.5 text-brand-500" />
                       </div>
                       <span className="text-sm text-ink-700 font-medium">{benefit.text}</span>
                     </div>
@@ -116,7 +117,7 @@ export default function BookPage() {
                 <Stagger className="flex gap-1 mb-3" each={0.06} delayChildren={0.15}>
                   {[1, 2, 3, 4, 5].map((i) => (
                     <StaggerItem key={i} choreography="scale" as="span">
-                      <Star className="w-4 h-4 fill-gold-500 text-gold-500" />
+                      <Star className="w-4 h-4 fill-accent-400 text-accent-600" />
                     </StaggerItem>
                   ))}
                 </Stagger>
@@ -125,7 +126,7 @@ export default function BookPage() {
                   by Thursday. Exceptional speed and quality!&rdquo;
                 </p>
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gold-400 to-gold-500 flex items-center justify-center text-ink-950 text-xs font-bold">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-brand-500 flex items-center justify-center text-on-brand text-xs font-bold">
                     KA
                   </div>
                   <div>

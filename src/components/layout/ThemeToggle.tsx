@@ -26,7 +26,7 @@ import { cn } from "@/lib/utils";
 
 type Theme = "light" | "dark";
 
-const THEME_EVENT = "apex:themechange";
+const THEME_EVENT = "altivance:themechange";
 
 /** Must outlast the 220ms colour transition in globals.css. */
 const THEME_FADE_MS = 260;
@@ -113,8 +113,8 @@ export function ThemeToggle({ className }: { className?: string }) {
       aria-pressed={theme === null ? undefined : isDark}
       className={cn(
         "relative grid h-9 w-9 place-items-center rounded-lg border border-ink-200 bg-surface text-ink-600",
-        "transition-colors duration-200 ease-standard hover:text-gold-500 hover:border-gold-500/40",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500",
+        "transition-colors duration-200 ease-standard hover:text-brand-500 hover:border-brand-500/40",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
         className
       )}
     >

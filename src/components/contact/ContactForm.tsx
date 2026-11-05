@@ -18,7 +18,7 @@ import { duration, ease, spring, stagger } from "@/lib/motion";
 
 /** Shared input styling — kept in one place so every field animates alike. */
 const fieldBase =
-  "w-full px-4 py-3 bg-canvas border rounded-xl text-sm text-ink-950 placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-gold-500/30 focus:border-gold-500/50 transition-[border-color,box-shadow,background-color] duration-200";
+  "w-full px-4 py-3 bg-canvas border rounded-xl text-sm text-ink-950 placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500/50 transition-[border-color,box-shadow,background-color] duration-200";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -243,7 +243,7 @@ export function ContactForm() {
             <motion.button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3.5 bg-gradient-to-r from-gold-400 to-gold-500 text-white font-semibold text-sm rounded-xl transition-shadow duration-200 hover:shadow-layered-gold disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full py-3.5 bg-gradient-to-r from-brand-400 to-brand-500 text-on-brand font-semibold text-sm rounded-xl transition-shadow duration-200 hover:shadow-layered-brand disabled:opacity-60 disabled:cursor-not-allowed"
               whileHover={prefersReduced || isSubmitting ? undefined : { scale: 1.01, y: -1 }}
               whileTap={prefersReduced || isSubmitting ? undefined : { scale: 0.985 }}
               transition={spring.snappy}

@@ -22,7 +22,9 @@ export function ScrollProgress() {
   return (
     <motion.div
       aria-hidden="true"
-      className="fixed inset-x-0 top-0 z-[60] h-[2px] origin-left bg-gradient-to-r from-gold-400 via-gold-500 to-gold-700"
+      // Red into yellow: the brand's two accents in the one element that is on
+      // screen for the whole of every page.
+      className="fixed inset-x-0 top-0 z-[60] h-[2px] origin-left bg-gradient-to-r from-brand-600 via-brand-500 to-accent-400"
       style={{
         scaleX: prefersReduced ? scrollYProgress : scaleX,
         willChange: "transform",

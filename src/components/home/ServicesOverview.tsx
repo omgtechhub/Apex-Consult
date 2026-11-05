@@ -10,6 +10,7 @@ import { TextReveal } from "@/components/motion/TextReveal";
 import { Tilt } from "@/components/motion/Tilt";
 import { duration, ease, spring, stagger } from "@/lib/motion";
 
+import { SoftBreak } from "@/components/ui/SoftBreak";
 const categories = [
   { id: "all", label: "All Services" },
   { id: "academic", label: "Academic" },
@@ -28,7 +29,7 @@ const services = [
     category: "academic",
     badge: "Most Popular",
     href: "/services/project-writing",
-    accent: "#c9981a",
+    accent: "#630303",
   },
   {
     id: 2,
@@ -38,7 +39,7 @@ const services = [
     desc: "Expert editing, proofreading, and formatting services that transform good work into exceptional, submission-ready documents.",
     category: "academic",
     href: "/services/proofreading",
-    accent: "#c9981a",
+    accent: "#630303",
   },
   {
     id: 3,
@@ -48,7 +49,7 @@ const services = [
     desc: "Literature reviews, research design, data collection frameworks, and theoretical guidance from subject matter experts.",
     category: "research",
     href: "/services/research-assistance",
-    accent: "#c9981a",
+    accent: "#630303",
   },
   {
     id: 4,
@@ -59,7 +60,7 @@ const services = [
     category: "research",
     badge: "High Demand",
     href: "/services/data-analysis",
-    accent: "#c9981a",
+    accent: "#630303",
   },
   {
     id: 5,
@@ -69,7 +70,7 @@ const services = [
     desc: "End-to-end guidance for international university applications, visa documentation, and scholarship applications.",
     category: "abroad",
     href: "/study-abroad",
-    accent: "#c9981a",
+    accent: "#630303",
   },
   {
     id: 6,
@@ -79,7 +80,7 @@ const services = [
     desc: "Strategic guidance for undergraduate, postgraduate, and PhD applications to top universities worldwide.",
     category: "abroad",
     href: "/services/admission",
-    accent: "#c9981a",
+    accent: "#630303",
   },
   {
     id: 7,
@@ -89,7 +90,7 @@ const services = [
     desc: "Identify, apply, and win scholarships with our expert guidance on essays, recommendations, and application strategy.",
     category: "abroad",
     href: "/services/scholarship",
-    accent: "#c9981a",
+    accent: "#630303",
   },
   {
     id: 8,
@@ -99,7 +100,7 @@ const services = [
     desc: "Professionally crafted CVs, Statements of Purpose, and Recommendation Letters that make you stand out.",
     category: "professional",
     href: "/services/cv-sop",
-    accent: "#c9981a",
+    accent: "#630303",
   },
   {
     id: 9,
@@ -109,7 +110,7 @@ const services = [
     desc: "Well-structured, persuasive business proposals tailored to your industry and target audience.",
     category: "professional",
     href: "/services/business-proposals",
-    accent: "#c9981a",
+    accent: "#630303",
   },
   {
     id: 10,
@@ -119,7 +120,7 @@ const services = [
     desc: "Professional formatting to journal guidelines with guidance on submission, peer review, and publication.",
     category: "research",
     href: "/services/journal-formatting",
-    accent: "#c9981a",
+    accent: "#630303",
   },
   {
     id: 11,
@@ -129,7 +130,7 @@ const services = [
     desc: "Individual and group assignment support across all disciplines with timely delivery guaranteed.",
     category: "academic",
     href: "/services/assignments",
-    accent: "#c9981a",
+    accent: "#630303",
   },
   {
     id: 12,
@@ -140,7 +141,7 @@ const services = [
     category: "professional",
     badge: "Premium",
     href: "/book",
-    accent: "#c9981a",
+    accent: "#630303",
   },
 ];
 
@@ -170,13 +171,13 @@ export function ServicesOverview() {
         <div className="max-w-3xl mb-16">
           <Reveal choreography="fade" className="flex items-center gap-2 mb-4">
             <motion.div
-              className="h-px bg-gradient-to-r from-gold-500 to-transparent"
+              className="h-px bg-gradient-to-r from-brand-500 to-transparent"
               initial={{ width: 0 }}
               whileInView={{ width: 32 }}
               viewport={{ once: true }}
               transition={{ duration: duration.slow, ease: ease.silk }}
             />
-            <span className="text-gold-500 text-xs font-bold tracking-[0.2em] uppercase">
+            <span className="text-brand-500 text-xs font-bold tracking-[0.2em] uppercase">
               What We Do
             </span>
           </Reveal>
@@ -186,11 +187,11 @@ export function ServicesOverview() {
             className="text-[clamp(2rem,4vw,3.5rem)] font-black font-display text-ink-950 leading-tight mb-4"
           >
             <TextReveal text="Every academic need," />
-            <br />
+            <SoftBreak />
             <TextReveal
               text="expertly handled."
               delay={0.12}
-              className="bg-gradient-to-br from-gold-400 via-gold-500 to-gold-700 bg-clip-text text-transparent"
+              className="bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 bg-clip-text text-transparent"
               mode="line"
             />
           </h2>
@@ -224,7 +225,7 @@ export function ServicesOverview() {
                   {isActive && (
                     <motion.span
                       layoutId="service-filter-pill"
-                      className="absolute inset-0 rounded-full bg-gradient-to-r from-gold-400 to-gold-500 shadow-md"
+                      className="absolute inset-0 rounded-full bg-gradient-to-r from-brand-400 to-brand-500 shadow-md"
                       transition={spring.snappy}
                     />
                   )}
@@ -262,26 +263,26 @@ export function ServicesOverview() {
                 <Tilt max={5} lift={6} className="h-full rounded-2xl">
                   <Link
                     href={service.href}
-                    className="group relative flex h-full flex-col bg-canvas border border-ink-200/60 rounded-2xl p-6 overflow-hidden card-shine transition-[border-color,box-shadow] duration-300 hover:border-gold-500/30 hover:shadow-layered"
+                    className="group relative flex h-full flex-col bg-canvas border border-ink-200/60 rounded-2xl p-6 overflow-hidden card-shine transition-[border-color,box-shadow] duration-300 hover:border-brand-500/30 hover:shadow-layered"
                   >
                     {/* Badge */}
                     {service.badge && (
-                      <div className="absolute top-4 right-4 px-2 py-0.5 rounded-full bg-gold-100 text-gold-700 text-[10px] font-bold uppercase tracking-wide">
+                      <div className="absolute top-4 right-4 px-2 py-0.5 rounded-full bg-brand-100 text-brand-700 text-[10px] font-bold uppercase tracking-wide">
                         {service.badge}
                       </div>
                     )}
 
                     {/* Icon — springs on hover so the card has a focal point */}
                     <motion.div
-                      className="w-12 h-12 rounded-xl bg-gradient-to-br from-gold-100 to-gold-200 flex items-center justify-center mb-4 transition-colors duration-300 group-hover:from-gold-400 group-hover:to-gold-500"
+                      className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-100 to-brand-200 flex items-center justify-center mb-4 transition-colors duration-300 group-hover:from-brand-400 group-hover:to-brand-500"
                       whileHover={prefersReduced ? undefined : { scale: 1.08, rotate: -4 }}
                       transition={spring.bouncy}
                     >
-                      <service.icon className="w-5.5 h-5.5 text-gold-500 group-hover:text-white transition-colors duration-300" />
+                      <service.icon className="w-5.5 h-5.5 text-brand-500 group-hover:text-white transition-colors duration-300" />
                     </motion.div>
 
                     {/* Content */}
-                    <h3 className="font-bold text-ink-950 text-base mb-2 font-display leading-tight transition-colors group-hover:text-gold-500">
+                    <h3 className="font-bold text-ink-950 text-base mb-2 font-display leading-tight transition-colors group-hover:text-brand-500">
                       {service.name}
                     </h3>
                     <p className="text-sm text-ink-500 leading-relaxed mb-4 line-clamp-2">
@@ -290,13 +291,13 @@ export function ServicesOverview() {
 
                     {/* CTA — pinned to the bottom so cards of differing text
                         length still align on a single baseline */}
-                    <div className="mt-auto flex items-center gap-1.5 text-xs font-semibold text-gold-500">
+                    <div className="mt-auto flex items-center gap-1.5 text-xs font-semibold text-brand-500">
                       Learn more
                       <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 ease-[var(--ease-entrance)] group-hover:translate-x-1" />
                     </div>
 
                     {/* Bottom accent */}
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-gold-400 to-gold-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-brand-400 to-brand-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
                   </Link>
                 </Tilt>
               </motion.div>
@@ -308,7 +309,7 @@ export function ServicesOverview() {
         <Reveal choreography="rise" className="mt-12 text-center">
           <Link
             href="/services"
-            className="border-sweep inline-flex items-center gap-2 px-6 py-3 border border-gold-500/30 text-gold-500 font-semibold text-sm rounded-xl transition-all duration-200 hover:bg-gold-100/50 hover:border-gold-500/60"
+            className="border-sweep inline-flex items-center gap-2 px-6 py-3 border border-brand-500/30 text-brand-500 font-semibold text-sm rounded-xl transition-all duration-200 hover:bg-brand-100/50 hover:border-brand-500/60"
           >
             View All 20+ Services
             <ArrowRight className="w-4 h-4 transition-transform duration-300 ease-[var(--ease-entrance)] hover:translate-x-1" />

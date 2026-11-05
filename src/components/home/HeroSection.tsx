@@ -19,6 +19,7 @@ import { useSmoothScroll } from "@/components/motion/SmoothScrollProvider";
 import { usePointerParallax } from "@/hooks/usePointerParallax";
 import { duration, ease, spring, stagger, travel } from "@/lib/motion";
 
+import { SoftBreak } from "@/components/ui/SoftBreak";
 const floatingStats = [
   { value: "5,000+", label: "Clients Served", icon: "🎓" },
   { value: "98%", label: "Satisfaction Rate", icon: "⭐" },
@@ -123,9 +124,16 @@ export function HeroSection() {
   const cueOpacity = useTransform(damped, [0, 0.35], [1, 0]);
 
   return (
+    /*
+      `accent-gold-fixed` pins this band's accent to gold in BOTH themes. The
+      hero is a permanently-dark photographic section, so it is the one place on
+      the site where the light theme has no light ground to work against —
+      letting it flip to red here made the band disagree with itself.
+      See globals.css.
+    */
     <section
       ref={heroRef}
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-surface-dark pt-24 pb-16"
+      className="accent-gold-fixed relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-surface-dark pt-24 pb-16"
       aria-label="Hero section"
     >
       {/*
@@ -180,7 +188,7 @@ export function HeroSection() {
       >
         <div className="glass-dark rounded-2xl p-4 shadow-lg">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gold-400 to-gold-500 flex items-center justify-center text-white text-sm">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-400 to-brand-500 flex items-center justify-center text-on-brand text-sm">
               🎓
             </div>
             <div>
@@ -210,7 +218,7 @@ export function HeroSection() {
                   ...spring.bouncy,
                 }}
               >
-                <Star className="w-3 h-3 fill-gold-500 text-gold-500" />
+                <Star className="w-3 h-3 fill-accent-400 text-accent-600" />
               </motion.span>
             ))}
           </div>
@@ -226,7 +234,7 @@ export function HeroSection() {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: duration.slower, delay: 1.2, ease: ease.entrance }}
       >
-        <div className="bg-gradient-to-br from-gold-500 to-gold-700 rounded-2xl p-4 shadow-lg text-white">
+        <div className="bg-gradient-to-br from-brand-500 to-brand-700 rounded-2xl p-4 shadow-lg text-on-brand">
           <div className="text-2xl font-bold font-display">98%</div>
           <div className="text-[10px] opacity-80 mt-0.5">Success Rate</div>
         </div>
@@ -261,7 +269,7 @@ export function HeroSection() {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Badge */}
         <Beat index={0} className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-dark shadow-sm mb-8" >
-          <span className="w-1.5 h-1.5 rounded-full bg-gold-500 animate-pulse-gold" />
+          <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse-brand" />
           <span className="text-xs font-semibold text-ink-100 tracking-wide">
             Nigeria&apos;s #1 Academic Consultancy
           </span>
@@ -276,7 +284,7 @@ export function HeroSection() {
               <TextReveal
                 text="Academic"
                 delay={0.18}
-                className="bg-gradient-to-br from-gold-400 via-gold-500 to-gold-700 bg-clip-text text-transparent"
+                className="bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 bg-clip-text text-transparent"
                 mode="line"
               />
               {/* Underline draws itself once the word has landed */}
@@ -288,7 +296,7 @@ export function HeroSection() {
               >
                 <motion.path
                   d="M2 8C50 4 150 10 298 4"
-                  stroke="url(#gold-line)"
+                  stroke="url(#brand-line)"
                   strokeWidth="3"
                   strokeLinecap="round"
                   initial={{ pathLength: 0, opacity: 0 }}
@@ -300,14 +308,18 @@ export function HeroSection() {
                   }}
                 />
                 <defs>
-                  <linearGradient id="gold-line" x1="0" y1="0" x2="300" y2="0">
-                    <stop offset="0%" stopColor="#e8b84b" />
-                    <stop offset="100%" stopColor="#a07812" />
+                  <linearGradient id="brand-line" x1="0" y1="0" x2="300" y2="0">
+                    {/* Fixed ruby, not `brand-*`: this band's brand tokens
+                        are gold. The lifted 400 step is used because the
+                        underline sits on a dark photograph, where #630303
+                        reads as 1.27:1 and simply disappears. */}
+                    <stop offset="0%" stopColor="#b30f0f" />
+                    <stop offset="100%" stopColor="#630303" />
                   </linearGradient>
                 </defs>
               </svg>
             </span>
-            <br />
+            <SoftBreak />
             <TextReveal text="Excellence" delay={0.32} className="text-white" />{" "}
             <TextReveal text="Meets Results" delay={0.4} className="text-ink-300" />
           </h1>
@@ -324,7 +336,7 @@ export function HeroSection() {
           <Magnetic strength={0.28}>
             <Tactile
               href="/book"
-              className="group flex items-center gap-3 px-7 py-4 bg-gradient-to-r from-gold-400 to-gold-500 text-white font-semibold text-base rounded-2xl shadow-layered-gold overflow-hidden"
+              className="group flex items-center gap-3 px-7 py-4 bg-gradient-to-r from-brand-400 to-brand-500 text-on-brand font-semibold text-base rounded-2xl shadow-layered-brand overflow-hidden"
             >
               Book Free Consultation
               <span className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center transition-colors duration-200 group-hover:bg-white/30">
@@ -334,8 +346,8 @@ export function HeroSection() {
           </Magnetic>
           <Tactile
             href="/services"
-            rippleColor="rgba(201,152,26,0.16)"
-            className="flex items-center gap-2 px-7 py-4 bg-surface border border-ink-200 text-ink-950 font-semibold text-base rounded-2xl overflow-hidden transition-colors duration-300 hover:border-gold-500/40 hover:bg-surface"
+            rippleColor="rgba(252,198,35,0.18)"
+            className="flex items-center gap-2 px-7 py-4 bg-surface border border-ink-200 text-ink-950 font-semibold text-base rounded-2xl overflow-hidden transition-colors duration-300 hover:border-brand-500/40 hover:bg-surface"
           >
             Explore Services
           </Tactile>
@@ -357,7 +369,7 @@ export function HeroSection() {
                     ease: ease.entrance,
                   }}
                 >
-                  <CheckCircle2 className="w-4 h-4 text-gold-500 flex-shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-brand-500 flex-shrink-0" />
                   <span className="hidden sm:inline">{service}</span>
                 </motion.span>
               )
@@ -377,8 +389,12 @@ export function HeroSection() {
           ))}
         </Beat>
 
-        {/* Trusted by strip */}
-        <Beat index={6} className="mt-16" >
+        {/* Trusted by strip — desktop and large tablet only (>=768px).
+            Six university pills wrap to three or four rows on a phone, which
+            pushed the hero well past a single screen and made it read as an
+            oddly long band. The content is not lost: it is duplicated by the
+            trust section further down the page. */}
+        <Beat index={6} className="mt-16 hidden md:block" >
           <p className="text-xs text-ink-400 uppercase tracking-[0.15em] font-semibold mb-4">
             Students from top institutions
           </p>
@@ -408,13 +424,21 @@ export function HeroSection() {
           inner button owns its entrance. Putting a scroll-driven `opacity` in
           `style` on the same element would statically override the `animate`
           opacity and the entrance would never be seen. */}
+      {/* Desktop and large tablet only, matching the trusted-by strip above.
+          The cue is absolutely positioned against the section's bottom edge, so
+          once the strip stops rendering on a phone that edge sits directly under
+          the stats row and the cue lands on top of it — measured at 2px of
+          overlap on a Pixel 7 and 9px on an iPhone 13 and SE. It costs no layout
+          height to drop it (it is out of flow), the hero stays exactly one
+          screen tall, and on a phone the half-visible stats row already signals
+          that the page continues. */}
       <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden md:block"
         style={prefersReduced ? undefined : { opacity: cueOpacity }}
       >
         <motion.button
           onClick={() => scrollTo("#services-overview", { offset: -80 })}
-          className="flex flex-col items-center gap-2 text-ink-400 transition-colors hover:text-gold-500 group"
+          className="flex flex-col items-center gap-2 text-ink-400 transition-colors hover:text-brand-500 group"
           aria-label="Scroll to services"
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -427,7 +451,7 @@ export function HeroSection() {
             animate={prefersReduced ? undefined : { y: [0, 5, 0] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: ease.soft }}
           >
-            <ChevronDown className="w-4 h-4 group-hover:text-gold-500" />
+            <ChevronDown className="w-4 h-4 group-hover:text-brand-500" />
           </motion.span>
         </motion.button>
       </motion.div>

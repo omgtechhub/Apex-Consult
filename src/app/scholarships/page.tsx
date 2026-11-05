@@ -12,14 +12,14 @@ import {
 import type { DegreeLevel, FundingType } from "@/lib/scholarships/types";
 
 export const metadata: Metadata = {
-  title: "Global Scholarships Directory | Apex Academic Consultancy",
+  title: "Global Scholarships Directory | Altivance Academic Consultancy",
   description:
-    "Browse fully-funded, partial, and tuition-only international scholarships for undergraduate, master's, and PhD students. Verified opportunities curated by Apex Academic Consultancy.",
+    "Browse fully-funded, partial, and tuition-only international scholarships for undergraduate, master's, and PhD students. Verified opportunities curated by Altivance Academic Consultancy.",
   openGraph: {
-    title: "Global Scholarships Directory | Apex Academic Consultancy",
+    title: "Global Scholarships Directory | Altivance Academic Consultancy",
     description:
       "Browse verified international scholarships — Chevening, Commonwealth, Fulbright, and more.",
-    url: "https://apexacademicconsultancy.com/scholarships",
+    url: "https://altivance.com/scholarships",
   },
 };
 
@@ -86,7 +86,7 @@ export default async function ScholarshipsPage({
                 name="search"
                 defaultValue={search}
                 placeholder="Search scholarships..."
-                className="w-full px-4 py-2.5 bg-surface border border-ink-200 rounded-xl text-sm focus:outline-none focus:border-gold-500"
+                className="w-full px-4 py-2.5 bg-surface border border-ink-200 rounded-xl text-sm focus:outline-none focus:border-brand-500"
                 aria-label="Search scholarships by name or description"
               />
             </div>
@@ -98,7 +98,7 @@ export default async function ScholarshipsPage({
                 name="country"
                 defaultValue={country}
                 placeholder="Country"
-                className="w-full px-4 py-2.5 bg-surface border border-ink-200 rounded-xl text-sm focus:outline-none focus:border-gold-500"
+                className="w-full px-4 py-2.5 bg-surface border border-ink-200 rounded-xl text-sm focus:outline-none focus:border-brand-500"
                 aria-label="Filter by host country"
               />
             </div>
@@ -109,7 +109,7 @@ export default async function ScholarshipsPage({
                 name="degreeLevel"
                 defaultValue={degreeLevel}
                 aria-label="Filter by degree level"
-                className="w-full px-4 py-2.5 bg-surface border border-ink-200 rounded-xl text-sm text-ink-800 focus:outline-none focus:border-gold-500"
+                className="w-full px-4 py-2.5 bg-surface border border-ink-200 rounded-xl text-sm text-ink-800 focus:outline-none focus:border-brand-500"
               >
                 <option value="">All Degree Levels</option>
                 <option value="UNDERGRADUATE">Undergraduate</option>
@@ -128,7 +128,7 @@ export default async function ScholarshipsPage({
                 name="fundingType"
                 defaultValue={fundingType}
                 aria-label="Filter by funding type"
-                className="w-full px-4 py-2.5 bg-surface border border-ink-200 rounded-xl text-sm text-ink-800 focus:outline-none focus:border-gold-500"
+                className="w-full px-4 py-2.5 bg-surface border border-ink-200 rounded-xl text-sm text-ink-800 focus:outline-none focus:border-brand-500"
               >
                 <option value="">All Funding Types</option>
                 <option value="FULL">Fully Funded</option>
@@ -142,7 +142,7 @@ export default async function ScholarshipsPage({
             <div className="flex gap-2 w-full sm:w-auto">
               <button
                 type="submit"
-                className="flex-1 sm:flex-initial px-6 py-2.5 bg-gold-500 text-white font-semibold text-sm rounded-xl hover:bg-gold-600 transition-colors"
+                className="flex-1 sm:flex-initial px-6 py-2.5 bg-brand-500 text-on-brand font-semibold text-sm rounded-xl hover:bg-brand-600 transition-colors"
               >
                 Filter
               </button>
@@ -164,7 +164,7 @@ export default async function ScholarshipsPage({
         {scholarships.length === 0 ? (
           /* Empty state */
           <div className="text-center py-20 bg-surface rounded-3xl border border-ink-200/60 max-w-2xl mx-auto p-8">
-            <GraduationCap className="w-12 h-12 text-gold-500 mx-auto mb-4" aria-hidden="true" />
+            <GraduationCap className="w-12 h-12 text-brand-500 mx-auto mb-4" aria-hidden="true" />
             <h3 className="text-xl font-bold mb-2">No scholarships found</h3>
             <p className="text-ink-600 text-sm mb-6">
               Try broadening your search query or resetting your filters to see available
@@ -172,7 +172,7 @@ export default async function ScholarshipsPage({
             </p>
             <Link
               href="/scholarships"
-              className="inline-block px-6 py-2.5 bg-gold-500 text-white font-semibold text-sm rounded-xl"
+              className="inline-block px-6 py-2.5 bg-brand-500 text-on-brand font-semibold text-sm rounded-xl"
             >
               Reset all filters
             </Link>
@@ -199,12 +199,12 @@ export default async function ScholarshipsPage({
                 return (
                   <div
                     key={s.id}
-                    className="bg-surface border border-ink-200/60 rounded-2xl p-6 flex flex-col justify-between hover:border-gold-500/30 hover:shadow-md transition-all duration-300"
+                    className="bg-surface border border-ink-200/60 rounded-2xl p-6 flex flex-col justify-between hover:border-brand-500/30 hover:shadow-md transition-all duration-300"
                   >
                     <div>
                       <div className="flex items-center justify-between gap-2 mb-3">
                         {s.country && (
-                          <span className="text-xs font-bold text-gold-600 bg-gold-500/10 px-2.5 py-1 rounded-lg">
+                          <span className="text-xs font-bold text-brand-600 bg-brand-500/10 px-2.5 py-1 rounded-lg">
                             {s.country}
                           </span>
                         )}
@@ -215,7 +215,7 @@ export default async function ScholarshipsPage({
                         )}
                       </div>
 
-                      <h3 className="font-bold text-lg mb-2 text-ink-950 hover:text-gold-600 transition-colors">
+                      <h3 className="font-bold text-lg mb-2 text-ink-950 hover:text-brand-600 transition-colors">
                         <Link href={`/scholarships/${s.slug}`}>{s.title}</Link>
                       </h3>
 
@@ -226,15 +226,15 @@ export default async function ScholarshipsPage({
 
                     <div className="pt-4 border-t border-ink-200/40">
                       <div className="flex justify-between items-center text-xs mb-2">
-                        <span className="font-semibold text-gold-600">
+                        <span className="font-semibold text-brand-600">
                           {formatFundingType(s.fundingType, s.fundingAmount, s.currency)}
                         </span>
                         <Link
                           href={`/scholarships/${s.slug}`}
-                          className="text-ink-950 font-semibold flex items-center gap-1 hover:text-gold-600 transition-colors"
+                          className="text-ink-950 font-semibold flex items-center gap-1 hover:text-brand-600 transition-colors"
                           aria-label={`View details for ${s.title}`}
                         >
-                          View Details <ArrowRight className="w-3.5 h-3.5 text-gold-500" />
+                          View Details <ArrowRight className="w-3.5 h-3.5 text-brand-500" />
                         </Link>
                       </div>
                       {s.deadline && (
@@ -284,7 +284,7 @@ export default async function ScholarshipsPage({
                     aria-current={p === page ? "page" : undefined}
                     className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-semibold transition-colors ${
                       p === page
-                        ? "bg-gold-500 text-white"
+                        ? "bg-brand-500 text-white"
                         : "border border-ink-200 text-ink-700 hover:bg-surface"
                     }`}
                   >

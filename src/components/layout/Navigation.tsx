@@ -265,8 +265,8 @@ export function Navigation() {
             {/* Logo */}
             <Link
               href="/"
-              className="flex items-center gap-2.5 group rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500"
-              aria-label="Apex Academic Consultancy - Home"
+              className="flex items-center gap-2.5 group rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              aria-label="Altivance Academic Consultancy - Home"
             >
               <motion.div
                 className="relative w-9 h-9 flex items-center justify-center"
@@ -287,9 +287,9 @@ export function Navigation() {
               </motion.div>
               <div className="flex flex-col">
                 <span className="text-ink-950 font-bold text-sm leading-tight font-display tracking-tight">
-                  APEX ACADEMIC
+                  ALTIVANCE ACADEMIC
                 </span>
-                <span className="text-gold-500 text-[10px] font-semibold tracking-[0.15em] uppercase leading-tight font-body">
+                <span className="text-brand-500 text-[10px] font-semibold tracking-[0.15em] uppercase leading-tight font-body">
                   Consultancy
                 </span>
               </div>
@@ -328,8 +328,8 @@ export function Navigation() {
                         onClick={() => setServicesOpen((o) => !o)}
                         onFocus={openMenu}
                         className={cn(
-                          "relative flex items-center gap-1 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500",
-                          isActive ? "text-gold-500" : "text-ink-700 hover:text-ink-950"
+                          "relative flex items-center gap-1 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
+                          isActive ? "text-brand-500" : "text-ink-700 hover:text-ink-950"
                         )}
                         aria-expanded={servicesOpen}
                         aria-haspopup="true"
@@ -401,15 +401,20 @@ export function Navigation() {
                                       },
                                     }}
                                   >
+                                      {/* Not prefetched: ten service pages,
+                                          behind a hover dropdown. Prefetching
+                                          all of them on every page load cost
+                                          far more than it ever saved. */}
                                     <Link
                                       href={service.href}
-                                      className="flex items-start gap-3 p-3 rounded-xl transition-colors duration-200 hover:bg-canvas group/item focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500"
+                                      prefetch={false}
+                                      className="flex items-start gap-3 p-3 rounded-xl transition-colors duration-200 hover:bg-canvas group/item focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                                     >
-                                      <div className="w-9 h-9 rounded-lg bg-gold-100 flex items-center justify-center flex-shrink-0 transition-all duration-200 group-hover/item:bg-gradient-to-br group-hover/item:from-gold-400 group-hover/item:to-gold-500">
-                                        <service.icon className="w-4.5 h-4.5 text-gold-500 transition-colors duration-200 group-hover/item:text-white" />
+                                      <div className="w-9 h-9 rounded-lg bg-brand-100 flex items-center justify-center flex-shrink-0 transition-all duration-200 group-hover/item:bg-gradient-to-br group-hover/item:from-brand-400 group-hover/item:to-brand-500">
+                                        <service.icon className="w-4.5 h-4.5 text-brand-500 transition-colors duration-200 group-hover/item:text-white" />
                                       </div>
                                       <div>
-                                        <div className="text-sm font-semibold text-ink-950 transition-colors group-hover/item:text-gold-500">
+                                        <div className="text-sm font-semibold text-ink-950 transition-colors group-hover/item:text-brand-500">
                                           {service.name}
                                         </div>
                                         <div className="text-xs text-ink-500 mt-0.5">
@@ -426,7 +431,8 @@ export function Navigation() {
                                 </span>
                                 <Link
                                   href="/services"
-                                  className="group/all text-xs font-semibold text-gold-500 hover:text-gold-700 flex items-center gap-1 transition-colors"
+                                  prefetch={false}
+                                  className="group/all text-xs font-semibold text-brand-500 hover:text-brand-700 flex items-center gap-1 transition-colors"
                                 >
                                   See all services
                                   <ArrowRight className="w-3 h-3 transition-transform duration-300 ease-[var(--ease-entrance)] group-hover/all:translate-x-0.5" />
@@ -444,10 +450,28 @@ export function Navigation() {
                   <Link
                     key={link.label}
                     href={link.href}
+                    /*
+                     * Not prefetched on sight.
+                     *
+                     * These nine links were responsible for 37 RSC prefetch
+                     * requests and 338KB on a single page view — each URL
+                     * fetched three to five times, in a 500ms burst during
+                     * hydration, because the header re-renders and Next
+                     * re-registers each Link when it does. That is 338KB of
+                     * contention with the page the visitor is actually
+                     * reading, and on a phone it is the difference between
+                     * "quick" and "chronically sluggish".
+                     *
+                     * Next still prefetches on hover, so a desktop visitor
+                     * who is about to click still gets the fast navigation.
+                     * A phone has no hover and so was paying the entire cost
+                     * for none of the benefit.
+                     */
+                    prefetch={false}
                     onMouseEnter={() => setHoveredLink(link.label)}
                     className={cn(
-                      "relative px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500",
-                      isActive ? "text-gold-500" : "text-ink-700 hover:text-ink-950"
+                      "relative px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
+                      isActive ? "text-brand-500" : "text-ink-700 hover:text-ink-950"
                     )}
                   >
                     {hoveredLink === link.label && (
@@ -463,7 +487,7 @@ export function Navigation() {
                     {isActive && (
                       <motion.span
                         layoutId="nav-active-underline"
-                        className="absolute left-3.5 right-3.5 -bottom-0.5 h-0.5 rounded-full bg-gradient-to-r from-gold-400 to-gold-500"
+                        className="absolute left-3.5 right-3.5 -bottom-0.5 h-0.5 rounded-full bg-gradient-to-r from-brand-400 to-brand-500"
                         transition={spring.snappy}
                       />
                     )}
@@ -486,7 +510,7 @@ export function Navigation() {
               <Tactile
                 href="/book"
                 lift={1}
-                className="px-4 py-2.5 bg-gradient-to-r from-gold-400 to-gold-500 text-white text-sm font-semibold rounded-lg overflow-hidden transition-shadow duration-200 hover:shadow-[0_4px_16px_rgba(201,152,26,0.35)]"
+                className="px-4 py-2.5 bg-gradient-to-r from-brand-400 to-brand-500 text-on-brand text-sm font-semibold rounded-lg overflow-hidden transition-shadow duration-200 hover:shadow-[0_4px_16px_rgba(99,3,3,0.35)]"
               >
                 Book Consultation
               </Tactile>
@@ -502,7 +526,7 @@ export function Navigation() {
             {/* Mobile Menu Toggle */}
             <motion.button
               onClick={() => setIsOpen((o) => !o)}
-              className="p-2.5 rounded-xl hover:bg-ink-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500"
+              className="p-2.5 rounded-xl hover:bg-ink-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               aria-label={isOpen ? "Close menu" : "Open menu"}
               aria-expanded={isOpen}
               aria-controls="mobile-menu"
@@ -575,12 +599,12 @@ export function Navigation() {
                       className="w-8 h-8 object-contain"
                     />
                     <span className="font-bold text-sm text-ink-950 font-display">
-                      APEX ACADEMIC
+                      ALTIVANCE ACADEMIC
                     </span>
                   </Link>
                   <button
                     onClick={() => setIsOpen(false)}
-                    className="p-2 rounded-lg hover:bg-ink-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500"
+                    className="p-2 rounded-lg hover:bg-ink-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                     aria-label="Close menu"
                   >
                     <X className="w-4 h-4" />
@@ -618,7 +642,7 @@ export function Navigation() {
                         <motion.div key={link.label} variants={itemVariants}>
                           <button
                             onClick={() => setMobileServicesOpen((o) => !o)}
-                            className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-ink-700 hover:bg-ink-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500"
+                            className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-ink-700 hover:bg-ink-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                             aria-expanded={mobileServicesOpen}
                             aria-controls="mobile-services-panel"
                           >
@@ -649,8 +673,9 @@ export function Navigation() {
                                     <Link
                                       key={s.name}
                                       href={s.href}
+                                      prefetch={false}
                                       onClick={() => setIsOpen(false)}
-                                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-ink-600 hover:text-gold-500 hover:bg-gold-100/50 transition-colors"
+                                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-ink-600 hover:text-brand-500 hover:bg-brand-100/50 transition-colors"
                                     >
                                       <s.icon className="w-3.5 h-3.5" />
                                       {s.name}
@@ -668,11 +693,12 @@ export function Navigation() {
                       <motion.div key={link.label} variants={itemVariants}>
                         <Link
                           href={link.href}
+                          prefetch={false}
                           onClick={() => setIsOpen(false)}
                           className={cn(
                             "block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                             pathname === link.href
-                              ? "text-gold-500 bg-gold-100/50"
+                              ? "text-brand-500 bg-brand-100/50"
                               : "text-ink-700 hover:bg-ink-100"
                           )}
                         >
@@ -697,7 +723,7 @@ export function Navigation() {
                   <Tactile
                     href="/book"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gradient-to-r from-gold-400 to-gold-500 text-white text-sm font-semibold rounded-xl shadow-lg overflow-hidden"
+                    className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gradient-to-r from-brand-400 to-brand-500 text-on-brand text-sm font-semibold rounded-xl shadow-lg overflow-hidden"
                   >
                     Book Consultation
                     <ArrowRight className="w-4 h-4" />
@@ -705,7 +731,7 @@ export function Navigation() {
                   <Tactile
                     href="https://wa.me/2347084321204"
                     external
-                    rippleColor="rgba(201,152,26,0.16)"
+                    rippleColor="rgba(99,3,3,0.16)"
                     className="flex items-center justify-center gap-2 w-full px-4 py-3 border border-ink-200 text-ink-700 text-sm font-medium rounded-xl overflow-hidden transition-colors hover:bg-ink-100"
                   >
                     <Phone className="w-4 h-4" />

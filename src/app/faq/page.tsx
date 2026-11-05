@@ -10,13 +10,14 @@ import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
 import { PageHero } from "@/components/layout/PageHero";
 import { spring, stagger } from "@/lib/motion";
 
+import { SoftBreak } from "@/components/ui/SoftBreak";
 const faqData = [
   {
     category: "General",
     items: [
       {
-        q: "What is Apex Academic Consultancy?",
-        a: "Apex Academic Consultancy is Nigeria's premier academic support service offering project writing, research assistance, data analysis, study abroad guidance, and more. We've served 5,000+ students and professionals since 2017.",
+        q: "What is Altivance Academic Consultancy?",
+        a: "Altivance Academic Consultancy is Nigeria's premier academic support service offering project writing, research assistance, data analysis, study abroad guidance, and more. We've served 5,000+ students and professionals since 2017.",
       },
       {
         q: "How do I get started?",
@@ -75,11 +76,11 @@ const faqData = [
     items: [
       {
         q: "How much do your services cost?",
-        a: "Prices start from ₦5,000 for simple tasks and go up based on complexity, length, and urgency. Book a free consultation for a custom quote tailored to your project.",
+        a: "Pricing depends on academic level, scope and deadline. Complete projects start at ₦65,000 for undergraduate, ₦110,000 for a master's thesis and ₦290,000 for a PhD dissertation. Single components cost far less — a chapter from ₦10,000, data analysis from ₦22,000, proofreading at ₦1,800 per 1,000 words. See the pricing page for the full rate card, or book a free consultation for a written, itemised quote.",
       },
       {
         q: "What payment methods do you accept?",
-        a: "We accept bank transfers, Flutterwave, Paystack, and mobile money. International clients can use Stripe. We also offer installment payment plans.",
+        a: "Everything goes through Paystack, our secure payment gateway — card, bank transfer, USSD and mobile money, including international cards. Direct bank transfer is available too. Standard installment terms are 50% to begin, 30% at draft delivery and 20% on final delivery.",
       },
       {
         q: "Do you offer discounts?",
@@ -141,7 +142,7 @@ export default function FAQPage() {
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-ink-400 mb-10">
-          <Link href="/" className="hover:text-gold-500 transition-colors">Home</Link>
+          <Link href="/" className="hover:text-brand-500 transition-colors">Home</Link>
           <span>/</span>
           <span className="text-white">FAQ</span>
         </nav>
@@ -149,19 +150,21 @@ export default function FAQPage() {
         {/* Header */}
         <div className="text-center max-w-xl mx-auto mb-12">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-8 h-px bg-gradient-to-r from-gold-500 to-transparent" />
-            <span className="text-gold-500 text-xs font-bold tracking-[0.2em] uppercase">FAQ</span>
-            <div className="w-8 h-px bg-gradient-to-l from-gold-500 to-transparent" />
+            <div className="w-8 h-px bg-gradient-to-r from-brand-500 to-transparent" />
+            <span className="text-brand-500 text-xs font-bold tracking-[0.2em] uppercase">FAQ</span>
+            <div className="w-8 h-px bg-gradient-to-l from-brand-500 to-transparent" />
           </div>
           <h1 className="text-[clamp(2rem,4vw,3.5rem)] font-black font-display text-white leading-tight mb-4">
             Frequently Asked
-            <br />
-            <span style={{
-              background: "linear-gradient(135deg, #e8b84b 0%, #c9981a 50%, #a07812 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}>
+            <SoftBreak />
+            {/* Token gradient, not an inline hex triple.
+                The hardcoded `#b30f0f -> #630303 -> #3d0202` that used to live
+                here could not follow the theme or this band's gold pin, so it
+                stayed red on the photograph while every other hero headline on
+                the site went gold. Utilities compile to `var(--color-brand-*)`,
+                which `.accent-gold-fixed` re-points — so this now matches the
+                other heroes by construction instead of by hand. */}
+            <span className="bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 bg-clip-text text-transparent">
               Questions
             </span>
           </h1>
@@ -179,7 +182,7 @@ export default function FAQPage() {
               placeholder="Search FAQs..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-11 pr-4 py-3.5 bg-surface border border-ink-200 rounded-2xl text-sm text-ink-950 placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-gold-500/30 focus:border-gold-500/50 transition-all"
+              className="w-full pl-11 pr-4 py-3.5 bg-surface border border-ink-200 rounded-2xl text-sm text-ink-950 placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500/50 transition-all"
             />
           </div>
         </div>
@@ -201,15 +204,21 @@ export default function FAQPage() {
                   transition={spring.snappy}
                   className={cn(
                     "relative px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200",
+                    // `text-on-brand`, not `text-white`: the pill behind this
+                    // label is a brand fill, and in this band the brand fill is
+                    // gold. White on #fcc623 is 1.6:1 — the label would be
+                    // unreadable. `on-brand` is the token that tracks the fill
+                    // (white on red, near-black on gold), which is exactly the
+                    // job it exists for.
                     isActive
-                      ? "text-white"
-                      : "bg-surface border border-ink-200 text-ink-600 hover:border-gold-500/30"
+                      ? "text-on-brand"
+                      : "bg-surface border border-ink-200 text-ink-600 hover:border-brand-500/30"
                   )}
                 >
                   {isActive && (
                     <motion.span
                       layoutId="faq-filter-pill"
-                      className="absolute inset-0 rounded-full bg-gradient-to-r from-gold-400 to-gold-500 shadow-md"
+                      className="absolute inset-0 rounded-full bg-gradient-to-r from-brand-400 to-brand-500 shadow-md"
                       transition={spring.snappy}
                     />
                   )}
@@ -228,7 +237,7 @@ export default function FAQPage() {
         <div className="max-w-3xl mx-auto space-y-8">
           {filtered.map((category) => (
             <Reveal key={category.category} choreography="rise">
-              <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-gold-500 mb-4">
+              <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-brand-500 mb-4">
                 {category.category}
               </h2>
               <div className="space-y-3">
@@ -241,22 +250,22 @@ export default function FAQPage() {
                       className={cn(
                         "bg-surface border rounded-2xl transition-colors duration-300",
                         isOpen
-                          ? "border-gold-500/30 shadow-[0_4px_24px_rgba(201,152,26,0.08)]"
-                          : "border-ink-200/60 hover:border-gold-500/20"
+                          ? "border-brand-500/30 shadow-[0_4px_24px_rgba(99,3,3,0.08)]"
+                          : "border-ink-200/60 hover:border-brand-500/20"
                       )}
                     >
                       <h3>
                         <button
                           id={`faq-trigger-${key}`}
                           onClick={() => toggleItem(key)}
-                          className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2"
+                          className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
                           aria-expanded={isOpen}
                           aria-controls={`faq-panel-${key}`}
                         >
                           <span
                             className={cn(
                               "font-semibold text-sm leading-relaxed transition-colors",
-                              isOpen ? "text-gold-500" : "text-ink-950"
+                              isOpen ? "text-brand-500" : "text-ink-950"
                             )}
                           >
                             {item.q}
@@ -269,7 +278,7 @@ export default function FAQPage() {
                             <ChevronDown
                               className={cn(
                                 "w-4 h-4 transition-colors",
-                                isOpen ? "text-gold-500" : "text-ink-500"
+                                isOpen ? "text-brand-500" : "text-ink-500"
                               )}
                             />
                           </motion.span>
@@ -302,7 +311,7 @@ export default function FAQPage() {
           choreography="scale"
           className="max-w-3xl mx-auto mt-16 bg-surface rounded-3xl p-8 lg:p-10 relative overflow-hidden text-center grain"
         >
-          <div className="absolute top-0 right-0 w-48 h-48 bg-gold-100 rounded-full blur-2xl" />
+          <div className="absolute top-0 right-0 w-48 h-48 bg-brand-100 rounded-full blur-2xl" />
           <div className="relative">
             <h2 className="text-2xl font-black font-display text-ink-950 mb-3">
               Still have questions?
@@ -321,7 +330,7 @@ export default function FAQPage() {
               </a>
               <Link
                 href="/book"
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-gold-400 to-gold-500 text-ink-950 font-semibold text-sm rounded-xl"
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-400 to-brand-500 text-on-brand font-semibold text-sm rounded-xl"
               >
                 Book Free Consultation <ArrowRight className="w-4 h-4" />
               </Link>

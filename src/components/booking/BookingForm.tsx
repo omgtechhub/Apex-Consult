@@ -18,7 +18,7 @@ import { duration, ease, spring, stagger } from "@/lib/motion";
 
 /** Shared field styling, so every input in the wizard reacts identically. */
 const fieldBase =
-  "w-full px-4 py-3 bg-canvas border rounded-xl text-sm text-ink-950 placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-gold-500/30 focus:border-gold-500/50 transition-[border-color,box-shadow] duration-200";
+  "w-full px-4 py-3 bg-canvas border rounded-xl text-sm text-ink-950 placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500/50 transition-[border-color,box-shadow] duration-200";
 
 /**
  * Steps slide in the direction of travel — forward enters from the right, Back
@@ -172,7 +172,7 @@ export function BookingForm() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: prefersReduced ? 0 : 0.35, duration: duration.base, ease: ease.entrance }}
         >
-          Thank you for booking with Apex Academic Consultancy. Our team will review your
+          Thank you for booking with Altivance Academic Consultancy. Our team will review your
           request and confirm your appointment within 2 hours.
         </motion.p>
 
@@ -217,7 +217,7 @@ export function BookingForm() {
                   },
                 }}
               >
-                <span className="w-5 h-5 rounded-full bg-gold-100 text-gold-500 text-[10px] font-black flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="w-5 h-5 rounded-full bg-brand-100 text-brand-500 text-[10px] font-black flex items-center justify-center flex-shrink-0 mt-0.5">
                   {i + 1}
                 </span>
                 <span className="text-sm text-ink-700">{item}</span>
@@ -271,7 +271,7 @@ export function BookingForm() {
                 className={cn(
                   "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-300",
                   step >= s.n
-                    ? "bg-gradient-to-br from-gold-400 to-gold-500 text-white"
+                    ? "bg-gradient-to-br from-brand-400 to-brand-500 text-white"
                     : "bg-ink-100 text-ink-400"
                 )}
                 // A small pop as each step is reached marks progress without
@@ -310,7 +310,7 @@ export function BookingForm() {
               {i < 2 && (
                 <div className="hidden sm:block w-16 h-px mx-2 bg-ink-200 overflow-hidden">
                   <motion.div
-                    className="h-full w-full origin-left bg-gold-500"
+                    className="h-full w-full origin-left bg-brand-500"
                     initial={false}
                     animate={{ scaleX: step > s.n ? 1 : 0 }}
                     transition={{
@@ -327,7 +327,7 @@ export function BookingForm() {
             never triggers layout on the header. */}
         <div className="h-1 bg-ink-200 rounded-full overflow-hidden">
           <motion.div
-            className="h-full w-full origin-left rounded-full bg-gradient-to-r from-gold-400 to-gold-500"
+            className="h-full w-full origin-left rounded-full bg-gradient-to-r from-brand-400 to-brand-500"
             initial={false}
             animate={{ scaleX: step / 3 }}
             transition={prefersReduced ? { duration: 0 } : spring.smooth}
@@ -415,7 +415,7 @@ export function BookingForm() {
               </label>
               <select
                 {...register("level")}
-                className="w-full px-4 py-3 bg-canvas border border-ink-200 rounded-xl text-sm text-ink-950 focus:outline-none focus:ring-2 focus:ring-gold-500/30 focus:border-gold-500/50 transition-all"
+                className="w-full px-4 py-3 bg-canvas border border-ink-200 rounded-xl text-sm text-ink-950 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500/50 transition-all"
               >
                 <option value="">Select your level</option>
                 {levels.map((l) => (
@@ -427,7 +427,7 @@ export function BookingForm() {
             <button
               type="button"
               onClick={() => goToStep(2)}
-              className="w-full flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-gold-400 to-gold-500 text-white font-semibold text-sm rounded-xl hover:shadow-lg hover:scale-[1.01] transition-all duration-200"
+              className="w-full flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-brand-400 to-brand-500 text-on-brand font-semibold text-sm rounded-xl hover:shadow-lg hover:scale-[1.01] transition-all duration-200"
             >
               Continue <ArrowRight className="w-4 h-4" />
             </button>
@@ -483,14 +483,14 @@ export function BookingForm() {
                       className={cn(
                         "relative flex-shrink-0 flex flex-col items-center px-3.5 py-3 rounded-xl border transition-colors duration-200 min-w-[64px]",
                         isSelected
-                          ? "border-gold-500 text-gold-700"
-                          : "border-ink-200 bg-canvas text-ink-600 hover:border-gold-500/30"
+                          ? "border-brand-500 text-brand-700"
+                          : "border-ink-200 bg-canvas text-ink-600 hover:border-brand-500/30"
                       )}
                     >
                       {isSelected && (
                         <motion.span
                           layoutId="booking-date-pill"
-                          className="absolute inset-0 rounded-xl bg-gradient-to-b from-gold-100 to-gold-200"
+                          className="absolute inset-0 rounded-xl bg-gradient-to-b from-brand-100 to-brand-200"
                           transition={spring.snappy}
                         />
                       )}
@@ -562,8 +562,8 @@ export function BookingForm() {
                           className={cn(
                             "py-2.5 px-3 rounded-xl border text-xs font-medium transition-colors duration-200",
                             isSelected
-                              ? "border-gold-500 bg-gradient-to-br from-gold-400 to-gold-500 text-white"
-                              : "border-ink-200 bg-canvas text-ink-600 hover:border-gold-500/30"
+                              ? "border-brand-500 bg-gradient-to-br from-brand-400 to-brand-500 text-white"
+                              : "border-ink-200 bg-canvas text-ink-600 hover:border-brand-500/30"
                           )}
                         >
                           {time}
@@ -591,7 +591,7 @@ export function BookingForm() {
                 className={cn(
                   "flex-1 flex items-center justify-center gap-2 py-3.5 font-semibold text-sm rounded-xl transition-all duration-200",
                   selectedDate && selectedTime
-                    ? "bg-gradient-to-r from-gold-400 to-gold-500 text-white hover:shadow-lg hover:scale-[1.01]"
+                    ? "bg-gradient-to-r from-brand-400 to-brand-500 text-white hover:shadow-lg hover:scale-[1.01]"
                     : "bg-ink-100 text-ink-400 cursor-not-allowed"
                 )}
               >
@@ -624,8 +624,8 @@ export function BookingForm() {
 
             {/* Summary */}
             {selectedDate && selectedTime && (
-              <div className="bg-gold-100/50 border border-gold-200/60 rounded-xl p-4 flex items-center gap-3">
-                <Calendar className="w-5 h-5 text-gold-500" />
+              <div className="bg-brand-100/50 border border-brand-200/60 rounded-xl p-4 flex items-center gap-3">
+                <Calendar className="w-5 h-5 text-brand-500" />
                 <div className="text-sm">
                   <span className="font-semibold text-ink-950">
                     {new Date(selectedDate).toLocaleDateString("en-US", {
@@ -665,7 +665,7 @@ export function BookingForm() {
               <textarea
                 {...register("notes")}
                 rows={4}
-                className="w-full px-4 py-3 bg-canvas border border-ink-200 rounded-xl text-sm text-ink-950 placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-gold-500/30 focus:border-gold-500/50 transition-all resize-none"
+                className="w-full px-4 py-3 bg-canvas border border-ink-200 rounded-xl text-sm text-ink-950 placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500/50 transition-all resize-none"
                 placeholder="e.g. I need help with my 5,000-word MSc thesis on public health in Nigeria. Chapter 3 data analysis section needs SPSS support..."
               />
             </div>
@@ -690,7 +690,7 @@ export function BookingForm() {
               <motion.button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex-1 py-3.5 bg-gradient-to-r from-gold-400 to-gold-500 text-white font-semibold text-sm rounded-xl transition-shadow duration-200 hover:shadow-layered-gold disabled:opacity-60 disabled:cursor-not-allowed"
+                className="flex-1 py-3.5 bg-gradient-to-r from-brand-400 to-brand-500 text-on-brand font-semibold text-sm rounded-xl transition-shadow duration-200 hover:shadow-layered-brand disabled:opacity-60 disabled:cursor-not-allowed"
                 whileHover={prefersReduced || isSubmitting ? undefined : { scale: 1.01, y: -1 }}
                 whileTap={prefersReduced || isSubmitting ? undefined : { scale: 0.985 }}
                 transition={spring.snappy}
@@ -715,11 +715,11 @@ export function BookingForm() {
 
             <p className="text-center text-xs text-ink-400">
               By booking, you agree to our{" "}
-              <Link href="/terms" className="text-gold-500 hover:underline">
+              <Link href="/terms" className="text-brand-500 hover:underline">
                 Terms of Service
               </Link>
               {" "}and{" "}
-              <Link href="/privacy" className="text-gold-500 hover:underline">
+              <Link href="/privacy" className="text-brand-500 hover:underline">
                 Privacy Policy
               </Link>
             </p>

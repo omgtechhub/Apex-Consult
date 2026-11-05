@@ -23,6 +23,23 @@ const SCHOLARSHIP_API_URL =
 const REQUEST_TIMEOUT_MS = 8_000;
 
 /**
+ * How long a scholarship response is cached, in seconds.
+ *
+ * Was 1800 (30 minutes) - the same cadence as the pipeline crawl, which meant
+ * the two windows stacked: a scholarship published just after a site fetch
+ * could wait a further 30 minutes to appear, so new cards took up to an hour to
+ * show. Observed directly: the API was serving 28 scholarships while the page
+ * still rendered "Showing 3 of 3".
+ *
+ * Five minutes keeps the cache doing its job - the page is still served from
+ * cache for the overwhelming majority of requests - while making the lag
+ * between a crawl publishing something and the site showing it a rounding
+ * error rather than a second full cycle.
+ */
+const SCHOLARSHIP_REVALIDATE_SEC = 300;
+
+
+/**
  * `AbortSignal.timeout` is the whole reason the fallback can ever fire on a
  * hang — see REQUEST_TIMEOUT_MS. Guarded because it is a relatively recent
  * addition; on a runtime without it we simply fetch untimed rather than crash.
@@ -305,7 +322,7 @@ export async function getScholarships(
 
   try {
     const res = await fetch(url.toString(), {
-      next: { revalidate: 1800 },
+      next: { revalidate: SCHOLARSHIP_REVALIDATE_SEC },
       headers: { Accept: "application/json" },
       signal: timeoutSignal(),
     });
@@ -368,50 +385,135 @@ export async function getScholarships(
 }
 
 /**
+ * How many listing pages the detail-page fallback will walk.
+ *
+ * Bounded so a missing slug costs a predictable number of cache lookups rather
+ * than paging the whole catalogue. Five pages at the API's default page size
+ * covers the published set comfortably.
+ */
+const LISTING_LOOKUP_MAX_PAGES = 5;
+
+/**
+ * Widen a listing entry into the detail shape.
+ *
+ * The listing endpoint omits exactly four fields that the detail endpoint
+ * returns — `eligibility`, `requirements`, `documents` and
+ * `applicationInstructions`. Every one of them is rendered conditionally on the
+ * detail page, so a listing entry produces a complete, honest page with those
+ * sections simply absent.
+ *
+ * Existing values are preserved rather than overwritten: the curated fallback
+ * entries are already full `Scholarship` objects, and blindly defaulting these
+ * four would strip real content from them.
+ */
+function asScholarship(entry: ScholarshipSummary | Scholarship): Scholarship {
+  const partial = entry as Partial<Scholarship>;
+
+  return {
+    ...entry,
+    eligibility: partial.eligibility ?? null,
+    requirements: partial.requirements ?? [],
+    documents: partial.documents ?? [],
+    applicationInstructions: partial.applicationInstructions ?? null,
+  };
+}
+
+/**
+ * Look a slug up in the listing data instead of the detail endpoint.
+ *
+ * THIS IS THE FIX FOR THE 404s. The index page and the detail page used to
+ * resolve scholarships through completely independent paths with inconsistent
+ * fallbacks, so they could disagree about what exists — and they did:
+ *
+ *   - the index renders whatever `getScholarships` returns, and Next's fetch
+ *     cache persists that response across dev-server restarts;
+ *   - the detail page asked the API directly and, on any failure, fell back to
+ *     six hard-coded curated entries.
+ *
+ * With the Pipeline API down, the index therefore listed 28 live scholarships
+ * from cache — `european-union-erasmus-mobility-programme…` and friends — while
+ * every single one of those links 404'd, because the detail fallback only knew
+ * `chevening-scholarship-guide` and five others that appeared nowhere in the
+ * list. Every visible link was broken, and nothing in the logs said why.
+ *
+ * Going through `getScholarships` makes the two consistent BY CONSTRUCTION:
+ * the detail page now resolves from the same source the list rendered from, so
+ * anything a visitor can see, they can open. If the cache expires and the list
+ * drops to the six curated entries, the detail page drops with it — still
+ * consistent, in the other direction.
+ *
+ * The `page` parameter is passed exactly as the index page passes it, so these
+ * lookups hit the same cache keys the index already populated rather than
+ * issuing fresh requests.
+ */
+async function findInListing(slug: string): Promise<Scholarship | null> {
+  for (let page = 1; page <= LISTING_LOOKUP_MAX_PAGES; page += 1) {
+    const listing = await getScholarships({ page });
+
+    const match = listing.scholarships.find(
+      (entry) => entry.slug === slug || entry.id === slug,
+    );
+
+    if (match) return asScholarship(match);
+
+    // Stop at the end of the catalogue rather than requesting empty pages.
+    if (page >= listing.totalPages) break;
+  }
+
+  return null;
+}
+
+/**
  * Fetch a single scholarship by its article slug (or scholarship UUID).
  *
  * The Scholarship Pipeline backend accepts the article slug as the `[id]`
  * parameter — it searches by `{ scholarship.id } OR { article.slug } OR { article.id }`.
  * Passing the article slug from the URL is therefore the correct and intended usage.
  *
- * Returns `null` if the scholarship is not found or has no published article.
+ * Resolution order:
+ *   1. the detail endpoint, which carries the richest data;
+ *   2. the listing data, so anything shown in the list can be opened even while
+ *      the API is unreachable (see `findInListing`);
+ *   3. `null`, which the page turns into a 404.
+ *
+ * Reaching `null` now means the slug is genuinely unknown to both the live API
+ * and the listing — not merely that the upstream had a bad minute.
  */
 export async function getScholarshipBySlug(slug: string): Promise<Scholarship | null> {
   const url = `${SCHOLARSHIP_API_URL}/api/public/scholarships/${encodeURIComponent(slug)}`;
 
   try {
     const res = await fetch(url, {
-      next: { revalidate: 1800 },
+      next: { revalidate: SCHOLARSHIP_REVALIDATE_SEC },
       headers: { Accept: "application/json" },
       signal: timeoutSignal(),
     });
 
-    if (!res.ok) {
-      if (res.status === 404) {
-        // Not found in live API — check fallback dataset
-        return FALLBACK_SCHOLARSHIPS.find((s) => s.slug === slug) ?? null;
+    if (res.ok) {
+      const envelope: ApiEnvelope<Scholarship> = await res.json();
+
+      if (envelope.success && envelope.data) {
+        return asScholarship(envelope.data);
       }
+
       console.warn(
-        `[scholarships] API returned HTTP ${res.status} for slug "${slug}" — checking fallback`,
+        `[scholarships] API returned success:false for slug "${slug}" — ${envelope.error ?? "unknown"} — falling back to listing`,
       );
-      return FALLBACK_SCHOLARSHIPS.find((s) => s.slug === slug) ?? null;
-    }
-
-    const envelope: ApiEnvelope<Scholarship> = await res.json();
-
-    if (!envelope.success) {
+    } else if (res.status !== 404) {
       console.warn(
-        `[scholarships] API returned success:false for slug "${slug}" — ${envelope.error ?? "unknown"} — checking fallback`,
+        `[scholarships] API returned HTTP ${res.status} for slug "${slug}" — falling back to listing`,
       );
-      return FALLBACK_SCHOLARSHIPS.find((s) => s.slug === slug) ?? null;
     }
-
-    return envelope.data ?? null;
   } catch (error) {
     console.warn(
-      `[scholarships] API unreachable for slug "${slug}" — checking fallback:`,
+      `[scholarships] API unreachable for slug "${slug}" — falling back to listing:`,
       error,
     );
-    return FALLBACK_SCHOLARSHIPS.find((s) => s.slug === slug) ?? null;
   }
+
+  // A genuine 404 falls through to here too, deliberately: the listing is the
+  // authority on what the site is currently advertising, and a slug the index
+  // is still linking to should open rather than dead-end, whatever the detail
+  // endpoint currently thinks.
+  return findInListing(slug);
 }

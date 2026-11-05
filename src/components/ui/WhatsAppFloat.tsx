@@ -56,7 +56,7 @@ export function WhatsAppFloat() {
                 <span className="text-white text-sm font-bold">A</span>
               </div>
               <div>
-                <div className="text-white font-bold text-sm">Apex Academic</div>
+                <div className="text-white font-bold text-sm">Altivance Academic</div>
                 <div className="flex items-center gap-1">
                   <motion.div
                     className="w-1.5 h-1.5 rounded-full bg-surface"
@@ -89,7 +89,7 @@ export function WhatsAppFloat() {
                 }}
               >
                 <p className="text-sm text-ink-950 leading-relaxed">
-                  👋 Hello! Welcome to Apex Academic Consultancy.
+                  👋 Hello! Welcome to Altivance Academic Consultancy.
                 </p>
                 <p className="text-sm text-ink-950 leading-relaxed mt-1">
                   How can we help you today?
@@ -134,7 +134,7 @@ export function WhatsAppFloat() {
             {/* Input */}
             <div className="px-4 pb-4">
               <motion.a
-                href="https://wa.me/2347084321204?text=Hello%20Apex%20Academic%20Consultancy!%20I%20need%20academic%20help."
+                href="https://wa.me/2347084321204?text=Hello%20Altivance%20Academic%20Consultancy!%20I%20need%20academic%20help."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full py-3 bg-[#25D366] text-white text-sm font-semibold rounded-xl hover:bg-[#20ba5a] transition-colors"

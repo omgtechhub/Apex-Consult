@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LegalShell, LegalSection } from "@/components/layout/LegalShell";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Apex Academic Consultancy",
+  title: "Privacy Policy | Altivance Academic Consultancy",
 };
 
 export default function PrivacyPage() {
@@ -45,10 +45,10 @@ export default function PrivacyPage() {
           You have the right to access, correct, or delete your personal information at
           any time. You can opt out of marketing communications. Contact us at{" "}
           <a
-            href="mailto:info@apexacademic.com"
-            className="text-gold-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded"
+            href="mailto:info@altivance.com"
+            className="text-brand-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
           >
-            info@apexacademic.com
+            info@altivance.com
           </a>{" "}
           to exercise these rights.
         </p>
@@ -60,10 +60,10 @@ export default function PrivacyPage() {
           <br />
           Email:{" "}
           <a
-            href="mailto:info@apexacademic.com"
-            className="text-gold-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded"
+            href="mailto:info@altivance.com"
+            className="text-brand-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
           >
-            info@apexacademic.com
+            info@altivance.com
           </a>
           <br />
           WhatsApp:{" "}
@@ -71,7 +71,7 @@ export default function PrivacyPage() {
             href="https://wa.me/2347084321204"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-gold-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded"
+            className="text-brand-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
           >
             +234 708 432 1204
           </a>

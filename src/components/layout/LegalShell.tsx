@@ -32,7 +32,7 @@ export function LegalShell({
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <Reveal choreography="fade" duration={0.4}>
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-ink-500 mb-8">
-            <Link href="/" className="hover:text-gold-500 transition-colors duration-200 ease-standard">
+            <Link href="/" className="hover:text-brand-500 transition-colors duration-200 ease-standard">
               Home
             </Link>
             <span>/</span>

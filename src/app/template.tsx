@@ -20,10 +20,17 @@
  * owns that entrance. So: first paint renders plain, and the transition applies
  * only to client-side navigations.
  *
- * Two things are torn down once the entrance settles:
- *  - `filter`. Any filter — including `blur(0px)` — makes the element the
- *    containing block for `position: fixed` descendants.
- *  - `will-change`. A permanent hint here pins a document-sized layer.
+ * `will-change` is torn down once the entrance settles: a permanent hint here
+ * pins a document-sized compositor layer for the life of the page.
+ *
+ * It no longer hints `filter`, because `pageVariants` no longer animates one.
+ * A filter on this wrapper was both the most expensive thing on the page to
+ * animate (a Gaussian over a document-sized texture, every frame, while the
+ * new route is still hydrating) and the thing that made navigation *read* as
+ * slow — an out-of-focus page is the universal idiom for "not ready yet". It
+ * also made the element the containing block for any `position: fixed`
+ * descendant, a hazard that is now gone by construction rather than by
+ * teardown. See the note on `pageVariants` in src/lib/motion.ts.
  */
 
 import { useEffect, useState } from "react";
@@ -56,7 +63,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
       animate="visible"
       variants={prefersReduced ? pageVariantsReduced : pageVariants}
       onAnimationComplete={() => setSettled(true)}
-      style={{ willChange: "opacity, transform, filter" }}
+      style={{ willChange: "opacity, transform" }}
     >
       {children}
     </motion.div>

@@ -28,8 +28,14 @@ const items = [
  */
 export function MarqueeStrip() {
   return (
+    /*
+      `ruby-*` rather than `brand-*`: this strip is red in BOTH themes.
+      `brand-*` turns gold after dark, which put a gold band directly beneath
+      the (also gold) hero and lost the separation the strip exists to provide.
+      See the `ruby` family in globals.css.
+    */
     <div
-      className="py-4 bg-gradient-to-r from-gold-500 to-gold-700 overflow-hidden"
+      className="py-4 bg-gradient-to-r from-ruby-500 to-ruby-600 overflow-hidden"
       aria-hidden="true"
     >
       <Marquee baseVelocity={-2.5} scrollInfluence={4} pauseOnHover={false}>

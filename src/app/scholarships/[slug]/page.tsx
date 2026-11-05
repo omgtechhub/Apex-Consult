@@ -1,5 +1,6 @@
 ﻿import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { MarkdownContent } from "@/lib/markdown";
 import Link from "next/link";
 import { ArrowRight, ExternalLink, CheckCircle, FileText, Clock, Globe, BookOpen } from "lucide-react";
 import { getScholarshipBySlug } from "@/lib/scholarships/client";
@@ -21,24 +22,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const s = await getScholarshipBySlug(slug);
 
   if (!s) {
-    return { title: "Scholarship Not Found | Apex Academic Consultancy" };
+    return { title: "Scholarship Not Found | Altivance Academic Consultancy" };
   }
 
   const seo = s.article?.seo;
   const fallbackDescription = s.description?.substring(0, 160) ?? "";
 
   return {
-    title: seo?.seoTitle ?? `${s.title} | Apex Academic Consultancy`,
+    title: seo?.seoTitle ?? `${s.title} | Altivance Academic Consultancy`,
     description: seo?.metaDescription ?? fallbackDescription,
     keywords: seo?.keywords,
     alternates: {
-      canonical: seo?.canonicalUrl ?? `https://apexacademicconsultancy.com/scholarships/${s.slug}`,
+      canonical: seo?.canonicalUrl ?? `https://altivance.com/scholarships/${s.slug}`,
     },
     openGraph: {
       type: "article",
       title: seo?.ogTitle ?? s.title,
       description: seo?.ogDescription ?? fallbackDescription,
-      url: `https://apexacademicconsultancy.com/scholarships/${s.slug}`,
+      url: `https://altivance.com/scholarships/${s.slug}`,
       publishedTime: s.article?.publishedAt ?? undefined,
       images: seo?.ogImage ? [{ url: seo.ogImage }] : [],
     },
@@ -85,11 +86,11 @@ export default async function ScholarshipDetailPage({ params }: PageProps) {
       )}
 
       {/* ── Breadcrumb ──────────────────────────────────────────────── */}
-      <nav aria-label="Breadcrumb" className="max-w-4xl mx-auto px-4 pt-4 pb-0">
+      <nav aria-label="Breadcrumb" className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-0">
         <ol className="flex items-center gap-2 text-xs text-ink-500">
-          <li><Link href="/" className="hover:text-gold-600 transition-colors">Home</Link></li>
+          <li><Link href="/" className="hover:text-brand-600 transition-colors">Home</Link></li>
           <li aria-hidden="true">/</li>
-          <li><Link href="/scholarships" className="hover:text-gold-600 transition-colors">Scholarships</Link></li>
+          <li><Link href="/scholarships" className="hover:text-brand-600 transition-colors">Scholarships</Link></li>
           <li aria-hidden="true">/</li>
           <li className="text-ink-800 font-medium truncate max-w-[200px]">{s.title}</li>
         </ol>
@@ -97,10 +98,10 @@ export default async function ScholarshipDetailPage({ params }: PageProps) {
 
       {/* ── Header ──────────────────────────────────────────────────── */}
       <section className="py-12 bg-surface border-b border-ink-200/60 mb-12 mt-4">
-        <div className="max-w-4xl mx-auto px-4">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center gap-3 mb-4">
             {s.country && (
-              <span className="px-3 py-1 rounded-full bg-gold-500/10 text-gold-600 font-semibold text-xs">
+              <span className="px-3 py-1 rounded-full bg-brand-500/10 text-brand-600 font-semibold text-xs">
                 {s.country}
               </span>
             )}
@@ -109,7 +110,7 @@ export default async function ScholarshipDetailPage({ params }: PageProps) {
                 {formatDegreeLevel(s.degreeLevel)}
               </span>
             )}
-            <span className="px-3 py-1 rounded-full bg-gold-500/20 text-gold-700 font-bold text-xs">
+            <span className="px-3 py-1 rounded-full bg-brand-500/20 text-brand-700 font-bold text-xs">
               {formatFundingType(s.fundingType, s.fundingAmount, s.currency)}
             </span>
             {deadlinePassed && (
@@ -130,7 +131,7 @@ export default async function ScholarshipDetailPage({ params }: PageProps) {
                     href={s.organization.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-semibold text-ink-950 hover:text-gold-600 transition-colors"
+                    className="font-semibold text-ink-950 hover:text-brand-600 transition-colors"
                   >
                     {provider}
                   </a>
@@ -158,11 +159,11 @@ export default async function ScholarshipDetailPage({ params }: PageProps) {
       </section>
 
       {/* ── Body ────────────────────────────────────────────────────── */}
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
           {/* ── Main column ─────────────────────────────────────────── */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-8 space-y-6 min-w-0">
 
             {/* Overview */}
             <div className="bg-surface border border-ink-200/60 rounded-3xl p-8">
@@ -186,7 +187,7 @@ export default async function ScholarshipDetailPage({ params }: PageProps) {
                   <ul className="space-y-2">
                     {s.benefits.map((b, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-ink-700">
-                        <CheckCircle className="w-4 h-4 text-gold-500 mt-0.5 shrink-0" aria-hidden="true" />
+                        <CheckCircle className="w-4 h-4 text-brand-500 mt-0.5 shrink-0" aria-hidden="true" />
                         {b}
                       </li>
                     ))}
@@ -213,12 +214,12 @@ export default async function ScholarshipDetailPage({ params }: PageProps) {
               {s.documents.length > 0 && (
                 <div className="mb-6">
                   <h3 className="font-bold mb-3 flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-gold-500" aria-hidden="true" />
+                    <FileText className="w-4 h-4 text-brand-500" aria-hidden="true" />
                     Required Documents
                   </h3>
                   <ul className="space-y-1.5">
                     {s.documents.map((d, i) => (
-                      <li key={i} className="text-sm text-ink-700 pl-2 border-l-2 border-gold-500/30">
+                      <li key={i} className="text-sm text-ink-700 pl-2 border-l-2 border-brand-500/30">
                         {d}
                       </li>
                     ))}
@@ -242,7 +243,7 @@ export default async function ScholarshipDetailPage({ params }: PageProps) {
                 {s.fieldsOfStudy.length > 0 && (
                   <div className="mb-4">
                     <h3 className="font-bold mb-2 flex items-center gap-2 text-sm">
-                      <BookOpen className="w-4 h-4 text-gold-500" aria-hidden="true" />
+                      <BookOpen className="w-4 h-4 text-brand-500" aria-hidden="true" />
                       Fields of Study
                     </h3>
                     <p className="text-ink-700 text-sm">{formatFieldsOfStudy(s.fieldsOfStudy)}</p>
@@ -251,7 +252,7 @@ export default async function ScholarshipDetailPage({ params }: PageProps) {
                 {s.eligibleCountries.length > 0 && (
                   <div>
                     <h3 className="font-bold mb-2 flex items-center gap-2 text-sm">
-                      <Globe className="w-4 h-4 text-gold-500" aria-hidden="true" />
+                      <Globe className="w-4 h-4 text-brand-500" aria-hidden="true" />
                       Eligible Countries
                     </h3>
                     <div className="flex flex-wrap gap-2">
@@ -275,15 +276,18 @@ export default async function ScholarshipDetailPage({ params }: PageProps) {
                 <h2 className="text-xl font-bold mb-4">
                   {s.article.title ?? "Scholarship Guide"}
                 </h2>
-                <div className="prose prose-sm max-w-none text-ink-700 leading-relaxed whitespace-pre-line">
-                  {s.article.content}
-                </div>
+                {/* Rendered, not printed. `whitespace-pre-line` used to put
+                    the Markdown source on screen - literal "#" headings and
+                    "**" around every bold run - and the `prose` classes beside
+                    it did nothing, since @tailwindcss/typography is not
+                    installed. See lib/markdown. */}
+                <MarkdownContent content={s.article.content} skipLeadingHeading />
               </div>
             )}
           </div>
 
           {/* ── Sidebar ─────────────────────────────────────────────── */}
-          <div className="space-y-6">
+          <div className="lg:col-span-4 space-y-6 min-w-0">
             <div className="bg-surface border border-ink-200/80 rounded-3xl p-6 sticky top-28">
               <h3 className="font-bold text-lg mb-2">Apply Now</h3>
               <p className="text-xs text-ink-600 mb-6">
@@ -296,7 +300,7 @@ export default async function ScholarshipDetailPage({ params }: PageProps) {
                   href={s.officialUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gold-500 text-white font-semibold text-sm rounded-xl mb-3 hover:bg-gold-600 transition-colors"
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-brand-500 text-on-brand font-semibold text-sm rounded-xl mb-3 hover:bg-brand-600 transition-colors"
                 >
                   Official Portal <ExternalLink className="w-4 h-4" aria-hidden="true" />
                 </a>
@@ -308,7 +312,7 @@ export default async function ScholarshipDetailPage({ params }: PageProps) {
                   href={s.applicationUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full px-4 py-3 border border-gold-500 text-gold-700 font-semibold text-sm rounded-xl mb-3 hover:bg-gold-500/10 transition-colors"
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3 border border-brand-500 text-brand-700 font-semibold text-sm rounded-xl mb-3 hover:bg-brand-500/10 transition-colors"
                 >
                   Apply Online <ExternalLink className="w-4 h-4" aria-hidden="true" />
                 </a>

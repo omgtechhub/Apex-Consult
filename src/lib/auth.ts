@@ -29,7 +29,7 @@ import { users, sessions } from "@/db/schema";
 
 const scrypt = promisify(scryptCb);
 
-export const SESSION_COOKIE = "apex_staff_session";
+export const SESSION_COOKIE = "altivance_staff_session";
 const SESSION_DAYS = 7;
 const KEY_LEN = 64;
 

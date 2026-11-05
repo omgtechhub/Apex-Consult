@@ -67,7 +67,7 @@ export function SuccessCheck({ className }: { className?: string }) {
   return (
     <motion.div
       className={cn(
-        "w-16 h-16 rounded-full bg-gradient-to-br from-gold-400 to-gold-500 flex items-center justify-center mx-auto shadow-layered-gold",
+        "w-16 h-16 rounded-full bg-gradient-to-br from-brand-400 to-brand-500 flex items-center justify-center mx-auto shadow-layered-brand",
         className
       )}
       initial={{ scale: 0, rotate: -30 }}

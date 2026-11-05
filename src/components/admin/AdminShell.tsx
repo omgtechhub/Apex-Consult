@@ -57,8 +57,8 @@ export function AdminShell({
             <Link href="/" className="mb-8 flex items-center gap-2.5">
               <Image src="/logo.png" alt="" width={32} height={32} className="h-8 w-8 object-contain" />
               <div>
-                <div className="font-display text-sm font-bold text-ink-950">APEX ADMIN</div>
-                <div className="text-[10px] uppercase tracking-[0.15em] text-gold-500">
+                <div className="font-display text-sm font-bold text-ink-950">ALTIVANCE ADMIN</div>
+                <div className="text-[10px] uppercase tracking-[0.15em] text-brand-500">
                   {user.role}
                 </div>
               </div>

@@ -8,6 +8,7 @@ import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { duration, ease, spring, stagger } from "@/lib/motion";
 
+import { SoftBreak } from "@/components/ui/SoftBreak";
 const AUTOPLAY_MS = 6000;
 
 const testimonials = [
@@ -20,7 +21,7 @@ const testimonials = [
     rating: 5,
     service: "Project Writing",
     content:
-      "I was struggling with my dissertation for months. Apex Academic Consultancy completely transformed it. The quality of research and writing was exceptional — I scored 87% and my supervisor was impressed. This is the best academic investment I have ever made.",
+      "I was struggling with my dissertation for months. Altivance Academic Consultancy completely transformed it. The quality of research and writing was exceptional — I scored 87% and my supervisor was impressed. This is the best academic investment I have ever made.",
   },
   {
     id: 2,
@@ -64,7 +65,7 @@ const testimonials = [
     rating: 5,
     service: "Journal Formatting",
     content:
-      "My paper was rejected twice before I approached Apex. After their journal formatting and revision service, it was accepted on the first submission. Professional, knowledgeable, and worth every naira spent.",
+      "My paper was rejected twice before I approached Altivance. After their journal formatting and revision service, it was accepted on the first submission. Professional, knowledgeable, and worth every naira spent.",
   },
   {
     id: 6,
@@ -75,7 +76,7 @@ const testimonials = [
     rating: 5,
     service: "Business Proposals",
     content:
-      "Won a ₦50M contract with the proposal Apex wrote for us. The writing was persuasive, well-researched, and professional. They understood our business perfectly and articulated our value proposition better than we could have.",
+      "Won a ₦50M contract with the proposal Altivance wrote for us. The writing was persuasive, well-researched, and professional. They understood our business perfectly and articulated our value proposition better than we could have.",
   },
 ];
 
@@ -138,17 +139,17 @@ export function TestimonialsSection() {
         <div className="text-center max-w-2xl mx-auto mb-16">
           <Reveal choreography="fade" className="flex items-center justify-center gap-2 mb-4">
             <motion.div
-              className="h-px bg-gradient-to-r from-gold-500 to-transparent"
+              className="h-px bg-gradient-to-r from-brand-500 to-transparent"
               initial={{ width: 0 }}
               whileInView={{ width: 32 }}
               viewport={{ once: true }}
               transition={{ duration: duration.slow, ease: ease.silk }}
             />
-            <span className="text-gold-500 text-xs font-bold tracking-[0.2em] uppercase">
+            <span className="text-brand-500 text-xs font-bold tracking-[0.2em] uppercase">
               Testimonials
             </span>
             <motion.div
-              className="h-px bg-gradient-to-l from-gold-500 to-transparent"
+              className="h-px bg-gradient-to-l from-brand-500 to-transparent"
               initial={{ width: 0 }}
               whileInView={{ width: 32 }}
               viewport={{ once: true }}
@@ -161,11 +162,11 @@ export function TestimonialsSection() {
             className="text-[clamp(2rem,4vw,3rem)] font-black font-display text-ink-950 leading-tight mb-4"
           >
             <TextReveal text="5,000+ students trust" />
-            <br />
+            <SoftBreak />
             <TextReveal
-              text="Apex Academic."
+              text="Altivance Academic."
               delay={0.12}
-              className="bg-gradient-to-br from-gold-400 via-gold-500 to-gold-700 bg-clip-text text-transparent"
+              className="bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 bg-clip-text text-transparent"
               mode="line"
             />
           </h2>
@@ -180,7 +181,7 @@ export function TestimonialsSection() {
         {/* Main testimonial */}
         <Reveal choreography="scale" className="max-w-4xl mx-auto mb-12">
           <div
-            className="relative bg-canvas border border-ink-200/60 rounded-3xl p-8 lg:p-12 overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-4"
+            className="relative bg-canvas border border-ink-200/60 rounded-3xl p-8 lg:p-12 overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-4"
             tabIndex={0}
             role="group"
             aria-roledescription="carousel"
@@ -190,7 +191,7 @@ export function TestimonialsSection() {
             onFocus={() => setAutoplay(false)}
           >
             {/* Quote icon */}
-            <div className="absolute top-6 right-8 text-gold-200 pointer-events-none">
+            <div className="absolute top-6 right-8 text-brand-200 pointer-events-none">
               <Quote className="w-16 h-16 opacity-40" />
             </div>
 
@@ -211,9 +212,9 @@ export function TestimonialsSection() {
                 {/* Stars */}
                 <div className="flex items-center gap-1 mb-6">
                   {[1, 2, 3, 4, 5].map((i) => (
-                    <Star key={i} className="w-5 h-5 fill-gold-500 text-gold-500" />
+                    <Star key={i} className="w-5 h-5 fill-accent-400 text-accent-600" />
                   ))}
-                  <span className="ml-2 text-xs font-medium text-ink-600 bg-gold-100 px-2 py-0.5 rounded-full">
+                  <span className="ml-2 text-xs font-medium text-ink-600 bg-brand-100 px-2 py-0.5 rounded-full">
                     {current.service}
                   </span>
                 </div>
@@ -225,7 +226,7 @@ export function TestimonialsSection() {
 
                 {/* Author */}
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold-400 to-gold-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-brand-400 to-brand-500 flex items-center justify-center text-on-brand font-bold text-sm flex-shrink-0">
                     {current.initials}
                   </div>
                   <div>
@@ -245,7 +246,7 @@ export function TestimonialsSection() {
             <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-ink-200">
               <motion.div
                 key={`${active}-${autoplay}`}
-                className="h-full origin-left bg-gradient-to-r from-gold-400 to-gold-500"
+                className="h-full origin-left bg-gradient-to-r from-brand-400 to-brand-500"
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{
@@ -268,7 +269,7 @@ export function TestimonialsSection() {
                   onClick={() => goTo(i)}
                   className={cn(
                     "h-2 rounded-full transition-colors duration-300",
-                    i === active ? "bg-gold-500" : "bg-ink-200 hover:bg-gold-500/40"
+                    i === active ? "bg-brand-500" : "bg-ink-200 hover:bg-brand-500/40"
                   )}
                   animate={{ width: i === active ? 32 : 8 }}
                   transition={spring.snappy}
@@ -286,7 +287,7 @@ export function TestimonialsSection() {
                 whileHover={prefersReduced ? undefined : { scale: 1.06, x: -2 }}
                 whileTap={prefersReduced ? undefined : { scale: 0.94 }}
                 transition={spring.snappy}
-                className="w-10 h-10 rounded-xl border border-ink-200 flex items-center justify-center transition-colors hover:border-gold-500/40 hover:bg-gold-100/30"
+                className="w-10 h-10 rounded-xl border border-ink-200 flex items-center justify-center transition-colors hover:border-brand-500/40 hover:bg-brand-100/30"
                 aria-label="Previous testimonial"
               >
                 <ChevronLeft className="w-4 h-4 text-ink-600" />
@@ -299,7 +300,7 @@ export function TestimonialsSection() {
                 whileHover={prefersReduced ? undefined : { scale: 1.06, x: 2 }}
                 whileTap={prefersReduced ? undefined : { scale: 0.94 }}
                 transition={spring.snappy}
-                className="w-10 h-10 rounded-xl border border-ink-200 flex items-center justify-center transition-colors hover:border-gold-500/40 hover:bg-gold-100/30"
+                className="w-10 h-10 rounded-xl border border-ink-200 flex items-center justify-center transition-colors hover:border-brand-500/40 hover:bg-brand-100/30"
                 aria-label="Next testimonial"
               >
                 <ChevronRight className="w-4 h-4 text-ink-600" />
@@ -322,18 +323,18 @@ export function TestimonialsSection() {
                   onClick={() => goTo(testimonials.indexOf(t))}
                   whileHover={prefersReduced ? undefined : { y: -4 }}
                   transition={spring.smooth}
-                  className="w-full h-full text-left bg-canvas border border-ink-200/60 rounded-2xl p-5 transition-colors duration-200 hover:border-gold-500/30 hover:shadow-layered group"
+                  className="w-full h-full text-left bg-canvas border border-ink-200/60 rounded-2xl p-5 transition-colors duration-200 hover:border-brand-500/30 hover:shadow-layered group"
                 >
                   <div className="flex items-center gap-1 mb-3">
                     {[1, 2, 3, 4, 5].map((i) => (
-                      <Star key={i} className="w-3 h-3 fill-gold-500 text-gold-500" />
+                      <Star key={i} className="w-3 h-3 fill-accent-400 text-accent-600" />
                     ))}
                   </div>
                   <p className="text-sm text-ink-700 leading-relaxed line-clamp-2 mb-3 transition-colors group-hover:text-ink-950">
                     &ldquo;{t.content}&rdquo;
                   </p>
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gold-400 to-gold-500 flex items-center justify-center text-white text-[10px] font-bold">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-brand-400 to-brand-500 flex items-center justify-center text-on-brand text-[10px] font-bold">
                       {t.initials}
                     </div>
                     <div>

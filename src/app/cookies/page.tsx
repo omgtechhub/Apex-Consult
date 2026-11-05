@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LegalShell, LegalSection } from "@/components/layout/LegalShell";
 
 export const metadata: Metadata = {
-  title: "Cookie Policy | Apex Academic Consultancy",
+  title: "Cookie Policy | Altivance Academic Consultancy",
 };
 
 export default function CookiesPage() {

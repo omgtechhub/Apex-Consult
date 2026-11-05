@@ -80,10 +80,10 @@ export function BlogExplorer({
               role="tab"
               aria-selected={isActive}
               onClick={() => setActive(cat)}
-              className={`relative px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ease-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas active:scale-95 ${
+              className={`relative px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ease-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas active:scale-95 ${
                 isActive
                   ? "text-white"
-                  : "bg-surface border border-ink-200 text-ink-600 hover:border-gold-500/30 hover:text-ink-950"
+                  : "bg-surface border border-ink-200 text-ink-600 hover:border-brand-500/30 hover:text-ink-950"
               }`}
             >
               {/* The moving pill. Rendered behind the label and shared across
@@ -91,7 +91,7 @@ export function BlogExplorer({
               {isActive && (
                 <motion.span
                   layoutId="blog-category-pill"
-                  className="absolute inset-0 rounded-full bg-gradient-to-r from-gold-400 to-gold-500 shadow-md"
+                  className="absolute inset-0 rounded-full bg-gradient-to-r from-brand-400 to-brand-500 shadow-md"
                   transition={prefersReduced ? { duration: 0 } : spring.snappy}
                 />
               )}
@@ -118,7 +118,7 @@ export function BlogExplorer({
               >
                 <Link
                   href={`/blog/${post.slug}`}
-                  className="group flex h-full flex-col bg-surface border border-ink-200/60 rounded-3xl hover:shadow-xl hover:-translate-y-1 hover:border-gold-500/30 transition-all duration-300 ease-standard overflow-hidden"
+                  className="group flex h-full flex-col bg-surface border border-ink-200/60 rounded-3xl hover:shadow-xl hover:-translate-y-1 hover:border-brand-500/30 transition-all duration-300 ease-standard overflow-hidden"
                 >
                   {/* Thumbnail. `aspect-[16/9]` reserves the box before the
                       image decodes, so the card never jumps as covers load. */}
@@ -130,14 +130,14 @@ export function BlogExplorer({
                       sizes="(max-width: 1024px) 100vw, 50vw"
                       className="object-cover transition-transform duration-500 ease-silk group-hover:scale-105"
                     />
-                    <span className="absolute top-4 left-4 px-2.5 py-1 bg-surface/95 text-gold-600 text-xs font-bold rounded-full shadow-sm">
+                    <span className="absolute top-4 left-4 px-2.5 py-1 bg-surface/95 text-brand-600 text-xs font-bold rounded-full shadow-sm">
                       {post.category}
                     </span>
                   </div>
 
                   <div className="flex flex-1 flex-col p-8 lg:p-10">
                     <span className="text-ink-500 text-xs mb-3">Featured</span>
-                    <h2 className="text-xl font-black font-display text-ink-950 mb-3 group-hover:text-gold-600 transition-colors duration-300 ease-standard leading-tight">
+                    <h2 className="text-xl font-black font-display text-ink-950 mb-3 group-hover:text-brand-600 transition-colors duration-300 ease-standard leading-tight">
                       {post.title}
                     </h2>
                     <p className="text-ink-600 text-sm leading-relaxed mb-6 line-clamp-2">
@@ -150,7 +150,7 @@ export function BlogExplorer({
                         <span>·</span>
                         <span>{post.date}</span>
                       </div>
-                      <ArrowRight className="w-4 h-4 text-gold-500 group-hover:translate-x-1 transition-transform duration-300 ease-standard" />
+                      <ArrowRight className="w-4 h-4 text-brand-500 group-hover:translate-x-1 transition-transform duration-300 ease-standard" />
                     </div>
                   </div>
                 </Link>
@@ -179,7 +179,7 @@ export function BlogExplorer({
             >
               <Link
                 href={`/blog/${post.slug}`}
-                className="group flex h-full flex-col overflow-hidden bg-surface border border-ink-200/60 rounded-2xl hover:border-gold-500/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-standard"
+                className="group flex h-full flex-col overflow-hidden bg-surface border border-ink-200/60 rounded-2xl hover:border-brand-500/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-standard"
               >
                 <div className="relative aspect-[16/10] overflow-hidden bg-ink-100">
                   <Image
@@ -193,11 +193,11 @@ export function BlogExplorer({
 
                 <div className="flex flex-1 flex-col p-6">
                   <div className="flex items-center gap-2 mb-4">
-                    <span className="px-2.5 py-1 bg-gold-100 text-gold-700 text-[10px] font-bold rounded-full uppercase tracking-wide">
+                    <span className="px-2.5 py-1 bg-brand-100 text-brand-700 text-[10px] font-bold rounded-full uppercase tracking-wide">
                       {post.category}
                     </span>
                   </div>
-                  <h2 className="font-bold text-ink-950 text-base font-display mb-3 group-hover:text-gold-600 transition-colors duration-300 ease-standard leading-tight line-clamp-2">
+                  <h2 className="font-bold text-ink-950 text-base font-display mb-3 group-hover:text-brand-600 transition-colors duration-300 ease-standard leading-tight line-clamp-2">
                     {post.title}
                   </h2>
                   <p className="text-sm text-ink-600 leading-relaxed mb-5 line-clamp-2">

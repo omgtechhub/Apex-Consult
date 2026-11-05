@@ -11,6 +11,15 @@
  *    their native momentum: OS-level scrolling is frame-perfect and
  *    interruptible in ways a JS rAF loop can't match, and hijacking it is the
  *    single most common way "premium" sites feel broken on a phone.
+ *  - Because of that, a touch device never constructs Lenis and never
+ *    downloads it. It previously did both: with `syncTouch: false` the library
+ *    had no input left to interpolate on a phone, yet it still shipped ~15KB of
+ *    JS, ran a `requestAnimationFrame` loop for the lifetime of the page, and
+ *    fired its own scroll event on every native scroll frame — which drove a
+ *    spring in the marquee and one per photographic backdrop. All of that for a
+ *    wheel the device does not have. Phones now get a passive `scroll`
+ *    listener that publishes the same two MotionValues, so every consumer is
+ *    unchanged while the loop, the listeners and the download are gone.
  *  - The rAF loop is owned here (`autoRaf: false`) so it can be torn down
  *    cleanly and so velocity is published on the same frame as the scroll.
  *  - When the user prefers reduced motion, Lenis is never constructed at all.
@@ -18,9 +27,22 @@
  */
 
 import { createContext, useContext, useEffect, useMemo, useRef } from "react";
-import Lenis from "lenis";
+import type Lenis from "lenis";
 import { motionValue, useReducedMotion, type MotionValue } from "framer-motion";
 import { usePathname } from "next/navigation";
+import { useFinePointer } from "@/hooks/useFinePointer";
+
+/**
+ * Milliseconds in one frame at 60Hz.
+ *
+ * Lenis publishes velocity as signed px *per frame*, and consumers (the
+ * marquee's scroll coupling) are calibrated against that unit. The native path
+ * below has to produce the same unit from wall-clock deltas, because a native
+ * `scroll` event is not guaranteed one-per-frame — iOS fires them in bursts
+ * during a fling, and dividing a burst's delta by a frame would read as a
+ * velocity several times the real one and make the marquee lurch.
+ */
+const FRAME_MS = 1000 / 60;
 
 type ScrollToOptions = {
   offset?: number;
@@ -95,6 +117,7 @@ export function useSmoothScrollOptional(): SmoothScrollContextValue | null {
 
 export function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
   const prefersReduced = useReducedMotion();
+  const finePointer = useFinePointer();
   const lenisRef = useRef<Lenis | null>(null);
   const pathname = usePathname();
 
@@ -117,41 +140,6 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     if (prefersReduced) return;
 
-    const instance = new Lenis({
-      // `lerp` reads more naturally than a fixed duration for wheel input:
-      // it's frame-rate independent and preserves the feel of a flick.
-      lerp: 0.1,
-      wheelMultiplier: 1,
-      smoothWheel: true,
-      // Native momentum on touch. See file header.
-      syncTouch: false,
-      touchMultiplier: 1.6,
-      autoRaf: false,
-      overscroll: false,
-    });
-
-    lenisRef.current = instance;
-
-    const handleScroll = (e: Lenis) => {
-      velocity.set(e.velocity);
-      progress.set(e.progress);
-      // Non-negotiable for GSAP: Lenis interpolates scroll on its own rAF loop,
-      // so ScrollTrigger's cached scroll position goes stale the moment smooth
-      // scrolling is enabled. Without a sync every pin and scrub drifts out of
-      // sync with the actual viewport. `useScrollTriggerSync` subscribes here
-      // and calls `ScrollTrigger.update()` itself, which keeps GSAP out of this
-      // always-loaded module. With no GSAP on the page this is an empty loop.
-      for (const cb of scrollSubs.current) cb();
-    };
-    instance.on("scroll", handleScroll);
-
-    let frame = 0;
-    const raf = (time: number) => {
-      instance.raf(time);
-      frame = requestAnimationFrame(raf);
-    };
-    frame = requestAnimationFrame(raf);
-
     // Pins are measured from the document, so they must be recalculated once
     // fonts have swapped and images have settled — otherwise every trigger is
     // anchored to a pre-layout position.
@@ -161,15 +149,120 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     document.fonts?.ready.then(refresh);
     window.addEventListener("load", refresh);
 
+    /*
+      Touch path. No Lenis at all — see the file header.
+
+      This publishes the same `velocity` and `progress` values from a single
+      passive listener, so `ScrollProgress`, `Marquee` and `useScrollTriggerSync`
+      behave identically; they cannot tell which path produced the numbers.
+    */
+    if (!finePointer) {
+      let lastY = window.scrollY;
+      let lastT = performance.now();
+
+      const onScroll = () => {
+        const y = window.scrollY;
+        const now = performance.now();
+        // Guard the first event of a gesture and any coalesced burst: see
+        // FRAME_MS. `max(1, …)` keeps a same-millisecond pair from dividing by 0.
+        const dt = Math.max(1, now - lastT);
+        velocity.set(((y - lastY) / dt) * FRAME_MS);
+
+        // Lenis's `progress` is 0→1 across the *scrollable* distance, not the
+        // document height, so the denominator has to subtract the viewport.
+        const scrollable = Math.max(
+          1,
+          document.documentElement.scrollHeight - window.innerHeight
+        );
+        progress.set(Math.min(1, Math.max(0, y / scrollable)));
+
+        lastY = y;
+        lastT = now;
+        for (const cb of scrollSubs.current) cb();
+      };
+
+      // Seed the values before the first gesture, or the progress bar sits at 0
+      // after a reload that restored a mid-page scroll position.
+      onScroll();
+
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll, { passive: true });
+
+      return () => {
+        window.removeEventListener("scroll", onScroll);
+        window.removeEventListener("resize", onScroll);
+        window.removeEventListener("load", refresh);
+        velocity.set(0);
+      };
+    }
+
+    /*
+      Pointer path. Lenis is imported dynamically so it lands in its own chunk
+      and is fetched only on devices that will actually construct it.
+    */
+    let instance: Lenis | null = null;
+    let handleScroll: ((e: Lenis) => void) | null = null;
+    let frame = 0;
+    let cancelled = false;
+
+    import("lenis").then(({ default: LenisCtor }) => {
+      // The effect can be torn down (unmount, or a pointer/route change) while
+      // this import is still in flight.
+      if (cancelled) return;
+
+      instance = new LenisCtor({
+        // `lerp` reads more naturally than a fixed duration for wheel input:
+        // it's frame-rate independent and preserves the feel of a flick.
+        lerp: 0.1,
+        wheelMultiplier: 1,
+        smoothWheel: true,
+        // Native momentum on touch. See file header.
+        syncTouch: false,
+        touchMultiplier: 1.6,
+        autoRaf: false,
+        overscroll: false,
+      });
+
+      lenisRef.current = instance;
+
+      handleScroll = (e: Lenis) => {
+        velocity.set(e.velocity);
+        progress.set(e.progress);
+        // Non-negotiable for GSAP: Lenis interpolates scroll on its own rAF
+        // loop, so ScrollTrigger's cached scroll position goes stale the moment
+        // smooth scrolling is enabled. Without a sync every pin and scrub
+        // drifts out of sync with the actual viewport. `useScrollTriggerSync`
+        // subscribes here and calls `ScrollTrigger.update()` itself, which keeps
+        // GSAP out of this always-loaded module. With no GSAP on the page this
+        // is an empty loop.
+        for (const cb of scrollSubs.current) cb();
+      };
+      instance.on("scroll", handleScroll);
+
+      const raf = (time: number) => {
+        instance?.raf(time);
+        frame = requestAnimationFrame(raf);
+      };
+      frame = requestAnimationFrame(raf);
+
+      // The document may already have finished loading by the time the chunk
+      // arrives, in which case the `load` listener above has nothing left to
+      // fire — measure once now.
+      refresh();
+    });
+
     return () => {
+      cancelled = true;
       cancelAnimationFrame(frame);
       window.removeEventListener("load", refresh);
-      instance.off("scroll", handleScroll);
-      instance.destroy();
+      if (instance) {
+        if (handleScroll) instance.off("scroll", handleScroll);
+        instance.destroy();
+      }
       lenisRef.current = null;
       velocity.set(0);
     };
-  }, [prefersReduced, velocity, progress]);
+  }, [prefersReduced, finePointer, velocity, progress]);
 
   // Lenis caches its own scroll position, which desyncs whenever the App Router
   // navigates. Resync to whatever the browser settled on rather than forcing 0:
@@ -179,15 +272,22 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
   // Deferred two frames: one for Next to commit the new tree, one for its scroll
   // restoration to land. `resize()` re-measures the new page's height first, or
   // Lenis would clamp against the *previous* document.
+  //
+  // The re-measure half runs whether or not Lenis exists. Only the resync is
+  // Lenis-specific — a touch device reads `window.scrollY` directly and has
+  // nothing to resync — but every route change still invalidates the trigger
+  // positions subscribers measured, so bailing out early when there is no
+  // instance left phones navigating with stale pins.
   useEffect(() => {
     const instance = lenisRef.current;
-    if (!instance) return;
 
     let inner = 0;
     const outer = requestAnimationFrame(() => {
       inner = requestAnimationFrame(() => {
-        instance.resize();
-        instance.scrollTo(window.scrollY, { immediate: true, force: true });
+        if (instance) {
+          instance.resize();
+          instance.scrollTo(window.scrollY, { immediate: true, force: true });
+        }
         velocity.set(0);
         // The new route has a different document height and different trigger
         // positions; without this, pins from the previous page's measurements

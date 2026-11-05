@@ -7,10 +7,11 @@ import { TextReveal } from "@/components/motion/TextReveal";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { Tactile } from "@/components/motion/Tactile";
 
+import { SoftBreak } from "@/components/ui/SoftBreak";
 export const metadata: Metadata = {
-  title: "Resources | Apex Academic Consultancy",
+  title: "Resources | Altivance Academic Consultancy",
   description:
-    "Free academic resources — guides, templates, checklists, and tools from Apex Academic Consultancy.",
+    "Free academic resources — guides, templates, checklists, and tools from Altivance Academic Consultancy.",
 };
 
 const resources = [
@@ -105,7 +106,7 @@ export default function ResourcesPage() {
         {/* Breadcrumb */}
         <Reveal choreography="fade" duration={0.4}>
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-ink-400 mb-10">
-            <Link href="/" className="hover:text-gold-500 transition-colors duration-200 ease-standard">Home</Link>
+            <Link href="/" className="hover:text-brand-500 transition-colors duration-200 ease-standard">Home</Link>
             <span>/</span>
             <span className="text-white">Resources</span>
           </nav>
@@ -115,20 +116,20 @@ export default function ResourcesPage() {
         <Stagger className="max-w-2xl mb-14" each={0.09}>
           <StaggerItem choreography="blurRise">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-px bg-gradient-to-r from-gold-500 to-transparent" />
-              <span className="text-gold-500 text-xs font-bold tracking-[0.2em] uppercase">Resources</span>
+              <div className="w-8 h-px bg-gradient-to-r from-brand-500 to-transparent" />
+              <span className="text-brand-500 text-xs font-bold tracking-[0.2em] uppercase">Resources</span>
             </div>
           </StaggerItem>
 
           <StaggerItem choreography="fade">
             <h1 className="text-[clamp(2rem,4vw,3.5rem)] font-black font-display text-white leading-tight mb-4 text-balance">
               Free academic resources
-              <br />
+              <SoftBreak />
               <TextReveal
                 text="to fuel your success."
                 mode="line"
                 delay={0.12}
-                className="bg-gradient-to-br from-gold-400 via-gold-500 to-gold-700 bg-clip-text text-transparent"
+                className="bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 bg-clip-text text-transparent"
               />
             </h1>
           </StaggerItem>
@@ -153,12 +154,12 @@ export default function ResourcesPage() {
               <div
                 className={`relative h-full bg-surface border rounded-2xl p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-standard group overflow-hidden ${
                   resource.free
-                    ? "border-ink-200/60 hover:border-gold-500/30"
-                    : "border-gold-500/30 bg-gradient-to-br from-white to-gold-100/20"
+                    ? "border-ink-200/60 hover:border-brand-500/30"
+                    : "border-brand-500/30 bg-gradient-to-br from-white to-brand-100/20"
                 }`}
               >
                 {!resource.free && (
-                  <div className="absolute top-4 right-4 px-2 py-0.5 bg-gradient-to-r from-gold-400 to-gold-500 text-white text-[10px] font-bold rounded-full">
+                  <div className="absolute top-4 right-4 px-2 py-0.5 bg-gradient-to-r from-brand-400 to-brand-500 text-on-brand text-[10px] font-bold rounded-full">
                     Premium
                   </div>
                 )}
@@ -168,8 +169,8 @@ export default function ResourcesPage() {
                   </div>
                 )}
 
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-gold-100 to-gold-200 flex items-center justify-center mb-4 group-hover:from-gold-400 group-hover:to-gold-500 transition-all duration-300 ease-standard group-hover:scale-110">
-                  <resource.icon className="w-5 h-5 text-gold-500 group-hover:text-white transition-colors duration-300" />
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-100 to-brand-200 flex items-center justify-center mb-4 group-hover:from-brand-400 group-hover:to-brand-500 transition-all duration-300 ease-standard group-hover:scale-110">
+                  <resource.icon className="w-5 h-5 text-brand-500 group-hover:text-white transition-colors duration-300" />
                 </div>
 
                 <div className="flex items-center gap-2 mb-2">
@@ -190,8 +191,8 @@ export default function ResourcesPage() {
                   href={resource.href}
                   className={`flex items-center justify-center gap-1.5 w-full py-2.5 text-xs font-semibold rounded-xl transition-all duration-300 ease-standard active:scale-[0.98] ${
                     resource.free
-                      ? "bg-canvas border border-ink-200 text-ink-700 hover:bg-gradient-to-r hover:from-gold-400 hover:to-gold-500 hover:text-white hover:border-transparent"
-                      : "bg-gradient-to-r from-gold-400 to-gold-500 text-white hover:shadow-md"
+                      ? "bg-canvas border border-ink-200 text-ink-700 hover:bg-gradient-to-r hover:from-brand-400 hover:to-brand-500 hover:text-white hover:border-transparent"
+                      : "bg-gradient-to-r from-brand-400 to-brand-500 text-white hover:shadow-md"
                   }`}
                 >
                   {/* The arrow nudging down on hover is the affordance: it says
@@ -216,11 +217,11 @@ export default function ResourcesPage() {
               <StaggerItem key={tool.name} choreography="slideRight">
                 <a
                   href={tool.href}
-                  className="block h-full bg-surface border border-ink-200/60 rounded-2xl p-5 hover:border-gold-500/30 hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-standard group"
+                  className="block h-full bg-surface border border-ink-200/60 rounded-2xl p-5 hover:border-brand-500/30 hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-standard group"
                   target={tool.external ? "_blank" : undefined}
                   rel={tool.external ? "noopener noreferrer" : undefined}
                 >
-                  <div className="font-semibold text-sm text-ink-950 mb-1 group-hover:text-gold-500 transition-colors duration-200 ease-standard">
+                  <div className="font-semibold text-sm text-ink-950 mb-1 group-hover:text-brand-500 transition-colors duration-200 ease-standard">
                     {tool.name}
                   </div>
                   <div className="text-xs text-ink-500">{tool.desc}</div>
@@ -233,7 +234,7 @@ export default function ResourcesPage() {
         {/* CTA */}
         <Reveal choreography="scale">
           <div className="bg-surface rounded-3xl p-8 lg:p-12 relative overflow-hidden text-center">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-gold-100 rounded-full blur-2xl" />
+            <div className="absolute top-0 right-0 w-48 h-48 bg-brand-100 rounded-full blur-2xl" />
             <div className="relative">
               <h2 className="text-2xl font-black font-display text-ink-950 mb-3 text-balance">
                 Need personalized help?
@@ -245,7 +246,7 @@ export default function ResourcesPage() {
               <Magnetic strength={0.25} contentStrength={0.4} className="inline-block">
                 <Tactile
                   href="/book"
-                  className="group inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gold-400 to-gold-500 text-ink-950 font-semibold text-sm rounded-xl shadow-layered-gold"
+                  className="group inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-400 to-brand-500 text-on-brand font-semibold text-sm rounded-xl shadow-layered-brand"
                 >
                   Book Free Consultation
                   <ArrowRight className="w-4 h-4 transition-transform duration-300 ease-standard group-hover:translate-x-1" />

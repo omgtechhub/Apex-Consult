@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display, DM_Sans } from "next/font/google";
+import { Lora, Roboto } from "next/font/google";
 import "./globals.css";
 import { Navigation } from "@/components/layout/Navigation";
 import { Footer } from "@/components/layout/Footer";
@@ -8,36 +8,56 @@ import { SmoothScrollProvider } from "@/components/motion/SmoothScrollProvider";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
 
 /**
- * Only the weights the design actually uses are requested — each one is a
- * separate woff2 download, which is felt most on a phone.
+ * Lora + Roboto — the pairing used by the reference design this brand follows.
+ * Lora carries the display type, Roboto the body copy.
  *
- * Playfair drops 800: `font-extrabold` appears nowhere in the codebase, and
- * `font-black` (900) is what the headings actually use (64 occurrences).
- * DM Sans drops 300: `font-light` appears nowhere either.
+ * ROBOTO IS REQUESTED AS A VARIABLE FONT ON PURPOSE — do not add `weight`.
  *
- * `Inter` used to be loaded here as `--font-sans` and was never referenced
- * again — not by globals.css, not by a `font-sans` utility, nowhere. It cost a
- * whole extra family on every page load for nothing, so it is gone.
+ * Roboto v51 carries a `wdth` axis alongside `wght`, and Google serves a
+ * *pinned* weight of a multi-axis variable font from its instancing endpoint
+ * rather than as a plain file:
+ *
+ *   weight: ["400","500","700"]  ->  gstatic.com/l/font?kit=…&skey=…&v=v51
+ *   no weight (100..900)         ->  gstatic.com/s/roboto/v51/….woff2
+ *
+ * Turbopack cannot resolve the first form: the font URL carries its own query
+ * string, and the resolver rejects it with "next/font/google queries have
+ * exactly one entry" — 27 of them, one per @font-face, which failed every
+ * production build. `next dev` kept working off a warm font cache, so the only
+ * visible symptom was that the site could no longer be built or shared.
+ *
+ * It is also the better request: one variable file covering 100–900 replaces
+ * three separate static downloads.
+ *
+ * Lora keeps its explicit weights — Google still serves those from `/s/` as
+ * static instances, which Turbopack resolves. `font-light` and `font-extrabold`
+ * appear nowhere in the codebase, so 300 and 800 are omitted. Lora tops out at
+ * 700, while `font-black` (900) is used on 64 headings; a 900 request would ask
+ * for a static instance that does not exist, so the clamp to 700 is deliberate
+ * rather than a smeared faux-bold.
+ *
+ * `Inter` used to be loaded as `--font-sans` and was never referenced again —
+ * not by globals.css, not by a `font-sans` utility, nowhere. It cost a whole
+ * extra family on every page load for nothing, so it is gone.
  */
-const playfair = Playfair_Display({
+const lora = Lora({
   subsets: ["latin"],
   variable: "--font-display",
-  display: "swap",
-  weight: ["400", "500", "600", "700", "900"],
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-body",
   display: "swap",
   weight: ["400", "500", "600", "700"],
 });
 
+const roboto = Roboto({
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://apexacademicconsultancy.com"),
+  metadataBase: new URL("https://altivance.com"),
   title: {
-    default: "Apex Academic Consultancy | Where Academic Excellence Meets Results",
-    template: "%s | Apex Academic Consultancy",
+    default: "Altivance Academic Consultancy | Where Academic Excellence Meets Results",
+    template: "%s | Altivance Academic Consultancy",
   },
   description:
     "Nigeria's premier academic consultancy. Expert project writing, editing, proofreading, research assistance, study abroad guidance, and more. Transform your academic journey today.",
@@ -54,15 +74,15 @@ export const metadata: Metadata = {
     "admission guidance",
     "Nigeria academic consultant",
   ],
-  authors: [{ name: "Apex Academic Consultancy" }],
-  creator: "Apex Academic Consultancy",
-  publisher: "Apex Academic Consultancy",
+  authors: [{ name: "Altivance Academic Consultancy" }],
+  creator: "Altivance Academic Consultancy",
+  publisher: "Altivance Academic Consultancy",
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://apexacademicconsultancy.com",
-    siteName: "Apex Academic Consultancy",
-    title: "Apex Academic Consultancy | Where Academic Excellence Meets Results",
+    url: "https://altivance.com",
+    siteName: "Altivance Academic Consultancy",
+    title: "Altivance Academic Consultancy | Where Academic Excellence Meets Results",
     description:
       "Transform your academic journey with Nigeria's most trusted consultancy. Expert project writing, research assistance, study abroad guidance, and more.",
     images: [
@@ -70,17 +90,17 @@ export const metadata: Metadata = {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Apex Academic Consultancy",
+        alt: "Altivance Academic Consultancy",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Apex Academic Consultancy",
+    title: "Altivance Academic Consultancy",
     description:
       "Where Academic Excellence Meets Results. Nigeria's premier academic consultancy.",
     images: ["/og-image.jpg"],
-    creator: "@apexacademic",
+    creator: "@altivanceacademic",
   },
   robots: {
     index: true,
@@ -103,7 +123,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#faf9f7" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
     { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
   ],
 };
@@ -116,7 +136,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${playfair.variable} ${dmSans.variable}`}
+      className={`${lora.variable} ${roboto.variable}`}
       /*
         The bootstrap script below adds `.dark` to this element while the
         browser is still parsing <head> — before React hydrates. That is the
@@ -159,10 +179,10 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "EducationalOrganization",
-              name: "Apex Academic Consultancy",
-              alternateName: "Apex Academic",
-              url: "https://apexacademicconsultancy.com",
-              logo: "https://apexacademicconsultancy.com/logo.png",
+              name: "Altivance Academic Consultancy",
+              alternateName: "Altivance Academic",
+              url: "https://altivance.com",
+              logo: "https://altivance.com/logo.png",
               description:
                 "Nigeria's premier academic consultancy offering project writing, research assistance, study abroad guidance, and more.",
               address: {
@@ -216,7 +236,7 @@ export default function RootLayout({
             swallow several tab stops before any page content. */}
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-xl focus:bg-surface focus:px-5 focus:py-3 focus:text-sm focus:font-semibold focus:text-ink-950 focus:shadow-layered focus:outline-none focus:ring-2 focus:ring-gold-500"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-xl focus:bg-surface focus:px-5 focus:py-3 focus:text-sm focus:font-semibold focus:text-ink-950 focus:shadow-layered focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           Skip to content
         </a>

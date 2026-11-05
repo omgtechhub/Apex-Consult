@@ -40,6 +40,7 @@ const company = [
   { label: "FAQs", href: "/faq" },
   { label: "Resources", href: "/resources" },
   { label: "Contact", href: "/contact" },
+  { label: "Make a Payment", href: "/pay" },
 ];
 
 const legal = [
@@ -56,8 +57,36 @@ export function Footer() {
       role="contentinfo"
       aria-label="Site footer"
     >
+      {/*
+        ACCENT PINNING IN THIS COMPONENT — read before adding a band.
+        ------------------------------------------------------------------------
+        `accent-gold-fixed` is applied to the three DARK children below (this
+        hairline, the column grid, the bottom bar) and deliberately NOT to
+        `<footer>` itself.
+
+        The footer is `bg-surface-dark` — dark in both themes — so its accent has
+        the same problem the photographic heroes have: in light mode the brand
+        ramp resolves to red, and #630303 measures 1.27:1 on this panel. The
+        existing `.bg-surface-dark` rule already lifts it to #ef4444 to keep it
+        visible, but that is a rescue, not a colour decision; gold is the half of
+        the palette built for dark grounds and is what this footer already
+        rendered after dark. Pinning it makes light mode agree.
+
+        The reason it cannot go on `<footer>` is the newsletter strip, which is
+        `bg-canvas` — a genuinely light island inside a dark component. The
+        `.accent-gold-fixed` block in globals.css deliberately reaches *into*
+        `:is(.bg-canvas, .bg-surface)` descendants (the hero's `bg-surface`
+        button needs that), so a class on the parent would force gold onto the
+        white newsletter band: its "Newsletter" eyebrow would land at about
+        1.7:1 on white. Red is correct there and clears AAA.
+
+        So the split is by ground colour, not by component. Any new band added
+        here gets the class if it sits on the dark panel, and does not if it
+        brings its own light surface.
+      */}
+
       {/* Decorative gradient */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-500/40 to-transparent" />
+      <div className="accent-gold-fixed absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-500/40 to-transparent" />
 
       {/* Newsletter strip.
 
@@ -73,8 +102,8 @@ export function Footer() {
           >
             <div className="max-w-xl">
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-1.5 h-1.5 rounded-full bg-gold-500" />
-                <span className="text-gold-500 text-xs font-semibold tracking-[0.15em] uppercase">
+                <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+                <span className="text-brand-500 text-xs font-semibold tracking-[0.15em] uppercase">
                   Newsletter
                 </span>
               </div>
@@ -92,11 +121,11 @@ export function Footer() {
                 name="email"
                 placeholder="Enter your email address"
                 required
-                className="flex-1 px-4 py-3 bg-surface border border-ink-200 rounded-xl text-ink-950 placeholder-ink-400 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500/50 transition-all"
+                className="flex-1 px-4 py-3 bg-surface border border-ink-200 rounded-xl text-ink-950 placeholder-ink-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500/50 transition-all"
               />
               <button
                 type="submit"
-                className="px-5 py-3 bg-gradient-to-r from-gold-400 to-gold-500 text-white text-sm font-semibold rounded-xl hover:shadow-[0_4px_16px_rgba(201,152,26,0.35)] transition-all whitespace-nowrap flex items-center gap-2 justify-center"
+                className="px-5 py-3 bg-gradient-to-r from-brand-400 to-brand-500 text-on-brand text-sm font-semibold rounded-xl hover:shadow-[0_4px_16px_rgba(99,3,3,0.35)] transition-all whitespace-nowrap flex items-center gap-2 justify-center"
               >
                 Subscribe <ArrowRight className="w-4 h-4" />
               </button>
@@ -107,7 +136,7 @@ export function Footer() {
 
       {/* Main footer. Columns arrive left-to-right so the eye lands on the
           brand first, then walks the link lists in reading order. */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
+      <div className="accent-gold-fixed max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
         <Stagger
           each={stagger.loose}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8"
@@ -129,9 +158,9 @@ export function Footer() {
               </div>
               <div>
                 <div className="font-bold text-sm text-white font-display tracking-tight">
-                  APEX ACADEMIC
+                  ALTIVANCE ACADEMIC
                 </div>
-                <div className="text-gold-500 text-[10px] font-semibold tracking-[0.15em] uppercase">
+                <div className="text-brand-500 text-[10px] font-semibold tracking-[0.15em] uppercase">
                   Consultancy
                 </div>
               </div>
@@ -150,7 +179,7 @@ export function Footer() {
                 { value: "24/7", label: "Support" },
               ].map((stat) => (
                 <div key={stat.label} className="bg-white/5 rounded-xl p-3">
-                  <div className="text-gold-500 font-bold text-lg font-display">
+                  <div className="text-brand-500 font-bold text-lg font-display">
                     {stat.value}
                   </div>
                   <div className="text-ink-600 text-xs mt-0.5">{stat.label}</div>
@@ -162,23 +191,23 @@ export function Footer() {
             <div className="space-y-3">
               <a
                 href="https://wa.me/2347084321204"
-                className="flex items-center gap-3 text-sm text-ink-400 hover:text-gold-500 transition-colors group"
+                className="flex items-center gap-3 text-sm text-ink-400 hover:text-brand-500 transition-colors group"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-gold-500/20 transition-colors">
+                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-brand-500/20 transition-colors">
                   <Phone className="w-3.5 h-3.5" />
                 </div>
                 +234 708 432 1204
               </a>
               <a
-                href="mailto:info@apexacademicconsultancy.com"
-                className="flex items-center gap-3 text-sm text-ink-400 hover:text-gold-500 transition-colors group"
+                href="mailto:info@altivance.com"
+                className="flex items-center gap-3 text-sm text-ink-400 hover:text-brand-500 transition-colors group"
               >
-                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-gold-500/20 transition-colors">
+                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-brand-500/20 transition-colors">
                   <Mail className="w-3.5 h-3.5" />
                 </div>
-                info@apexacademic.com
+                info@altivance.com
               </a>
               <div className="flex items-center gap-3 text-sm text-ink-400">
                 <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
@@ -192,15 +221,24 @@ export function Footer() {
           {/* Services */}
           <StaggerItem choreography="rise" className="lg:col-span-3">
             <h3 className="text-white font-semibold text-sm mb-5 flex items-center gap-2">
-              <div className="w-1 h-4 bg-gradient-to-b from-gold-400 to-gold-500 rounded-full" />
+              <div className="w-1 h-4 bg-gradient-to-b from-brand-400 to-brand-500 rounded-full" />
               Services
             </h3>
             <ul className="space-y-2.5">
               {services.map((service) => (
                 <li key={service.label}>
+                    {/* Not prefetched. Next prefetches every Link as it
+                        enters the viewport, and this footer carries 23 of them
+                        — scrolling to the bottom of any page fired 37 RSC
+                        prefetch requests totalling 338KB, measured on /about.
+                        On a phone those round-trips compete with the page the
+                        visitor is actually reading, for destinations almost
+                        nobody navigates to from a footer. The nav links and the
+                        CTA below still prefetch: few, and high intent. */}
                   <Link
                     href={service.href}
-                    className="text-sm text-ink-400 hover:text-gold-500 transition-colors flex items-center gap-1.5 group"
+                    prefetch={false}
+                    className="text-sm text-ink-400 hover:text-brand-500 transition-colors flex items-center gap-1.5 group"
                   >
                     <ArrowRight className="w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" />
                     {service.label}
@@ -213,7 +251,7 @@ export function Footer() {
           {/* Company */}
           <StaggerItem choreography="rise" className="lg:col-span-2">
             <h3 className="text-white font-semibold text-sm mb-5 flex items-center gap-2">
-              <div className="w-1 h-4 bg-gradient-to-b from-gold-400 to-gold-500 rounded-full" />
+              <div className="w-1 h-4 bg-gradient-to-b from-brand-400 to-brand-500 rounded-full" />
               Company
             </h3>
             <ul className="space-y-2.5">
@@ -221,7 +259,8 @@ export function Footer() {
                 <li key={item.label}>
                   <Link
                     href={item.href}
-                    className="text-sm text-ink-400 hover:text-gold-500 transition-colors flex items-center gap-1.5 group"
+                    prefetch={false}
+                    className="text-sm text-ink-400 hover:text-brand-500 transition-colors flex items-center gap-1.5 group"
                   >
                     <ArrowRight className="w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" />
                     {item.label}
@@ -233,9 +272,13 @@ export function Footer() {
 
           {/* CTA card */}
           <StaggerItem choreography="scale" className="lg:col-span-3">
-            <div className="bg-gradient-to-br from-gold-500/20 to-gold-700/10 border border-gold-500/20 rounded-2xl p-6">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gold-400 to-gold-500 flex items-center justify-center mb-4">
-                <GraduationCap className="w-5 h-5 text-white" />
+            <div className="bg-gradient-to-br from-brand-500/20 to-brand-700/10 border border-brand-500/20 rounded-2xl p-6">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-brand-500 flex items-center justify-center mb-4">
+                {/* `text-on-brand`, not `text-white`: this tile is a brand
+                    fill, and on this panel the brand fill is gold. White on
+                    #fcc623 is 1.6:1 — the icon would all but vanish. The token
+                    tracks the fill (white on red, near-black on gold). */}
+                <GraduationCap className="w-5 h-5 text-on-brand" />
               </div>
               <h3 className="text-white font-bold text-base font-display mb-2">
                 Ready to achieve academic excellence?
@@ -245,7 +288,7 @@ export function Footer() {
               </p>
               <Link
                 href="/book"
-                className="flex items-center justify-center gap-2 w-full py-2.5 bg-gradient-to-r from-gold-400 to-gold-500 text-white text-sm font-semibold rounded-xl hover:shadow-[0_4px_16px_rgba(201,152,26,0.3)] transition-all"
+                className="flex items-center justify-center gap-2 w-full py-2.5 bg-gradient-to-r from-brand-400 to-brand-500 text-on-brand text-sm font-semibold rounded-xl hover:shadow-[0_4px_16px_rgba(99,3,3,0.3)] transition-all"
               >
                 Book Free Consultation
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -264,7 +307,7 @@ export function Footer() {
                   key={badge.label}
                   className="flex items-center gap-2 bg-white/5 rounded-lg px-2.5 py-2"
                 >
-                  <badge.icon className="w-3.5 h-3.5 text-gold-500" />
+                  <badge.icon className="w-3.5 h-3.5 text-brand-500" />
                   <span className="text-[10px] text-ink-600 font-medium">{badge.label}</span>
                 </div>
               ))}
@@ -274,19 +317,20 @@ export function Footer() {
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-white/8">
+      <div className="accent-gold-fixed border-t border-white/8">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-ink-600 text-xs text-center sm:text-left">
-              © {new Date().getFullYear()} Apex Academic Consultancy. All rights reserved.
+              © {new Date().getFullYear()} Altivance Academic Consultancy. All rights reserved.
               <span className="mx-2">·</span>
-              <span className="text-gold-500">Where Academic Excellence Meets Results</span>
+              <span className="text-brand-500">Where Academic Excellence Meets Results</span>
             </p>
             <div className="flex items-center gap-4">
               {legal.map((item) => (
                 <Link
                   key={item.label}
                   href={item.href}
+                  prefetch={false}
                   className="text-ink-600 hover:text-ink-400 text-xs transition-colors"
                 >
                   {item.label}

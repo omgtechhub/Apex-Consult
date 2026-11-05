@@ -7,6 +7,7 @@ import { TextReveal } from "@/components/motion/TextReveal";
 import { Counter } from "@/components/motion/Counter";
 import { duration, ease, spring, stagger } from "@/lib/motion";
 
+import { SoftBreak } from "@/components/ui/SoftBreak";
 const trustPillars = [
   {
     icon: Shield,
@@ -28,9 +29,9 @@ const trustPillars = [
     icon: Award,
     title: "Expert Team",
     desc: "Our consultants hold advanced degrees from top universities across Nigeria, UK, USA, and Canada.",
-    color: "from-gold-100 to-gold-200",
-    iconColor: "text-gold-500",
-    iconBg: "bg-gold-100",
+    color: "from-brand-100 to-brand-200",
+    iconColor: "text-brand-500",
+    iconBg: "bg-brand-100",
   },
   {
     icon: CheckCircle2,
@@ -61,7 +62,7 @@ export function TrustSection() {
       aria-labelledby="trust-heading"
     >
       {/* Decorative */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-500/40 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-500/40 to-transparent" />
       {/* Drifts against the scroll so the dark band reads as having depth
           behind it rather than being a flat panel. */}
       <div className="absolute inset-0 bg-dot-pattern opacity-30" />
@@ -72,18 +73,42 @@ export function TrustSection() {
         <Stagger each={stagger.loose} className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-24">
           {metrics.map((metric) => (
             <StaggerItem key={metric.label} choreography="scale" className="text-center">
-              <div
-                className="text-5xl lg:text-6xl font-black font-display text-transparent bg-clip-text mb-2 tabular-nums"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(135deg, #e8b84b 0%, #c9981a 50%, #a07812 100%)",
-                }}
-              >
-                <Counter
-                  value={metric.value}
-                  suffix={metric.suffix}
-                  duration={metric.duration}
-                />
+              {/* The number sits in an `inline-grid` on top of an invisible
+                  sizer holding the final value, so the cell is already as wide
+                  as "5,000+" will ever be and the count-up cannot change the
+                  element's width mid-run.
+
+                  Reserving the width structurally is what lets the figures stay
+                  proportional. The previous fix was `tabular-nums`, which holds
+                  a stable width by forcing every glyph — the comma included —
+                  into the same 39.6px box; that padded "5,000+" ~11% wider than
+                  its natural width with conspicuous air around the comma, and no
+                  amount of negative tracking could reclaim the comma's box.
+                  Proportional figures give the font's own letter-fit, so the
+                  digits read as a single number rather than four spaced glyphs. */}
+              <div className="text-5xl lg:text-6xl font-black font-display mb-2 tracking-tight">
+                <span className="inline-grid justify-items-center">
+                  <span aria-hidden="true" className="invisible [grid-area:1/1]">
+                    {`${metric.value.toLocaleString("en-US")}${metric.suffix}`}
+                  </span>
+                  {/* Accent tokens, not literal hex: `--color-accent-*` is red in
+                      light mode and yellow in dark (see globals.css), so the
+                      gradient follows the theme the way the surrounding copy does
+                      instead of staying red on the dark ground. */}
+                  <span
+                    className="[grid-area:1/1] text-transparent bg-clip-text"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(135deg, var(--color-accent-400) 0%, var(--color-accent-500) 50%, var(--color-accent-700) 100%)",
+                    }}
+                  >
+                    <Counter
+                      value={metric.value}
+                      suffix={metric.suffix}
+                      duration={metric.duration}
+                    />
+                  </span>
+                </span>
               </div>
               <div className="text-ink-600 text-sm font-medium tracking-wide">
                 {metric.label}
@@ -96,17 +121,17 @@ export function TrustSection() {
         <div className="text-center max-w-2xl mx-auto mb-16">
           <Reveal choreography="fade" className="flex items-center justify-center gap-2 mb-4">
             <motion.div
-              className="h-px bg-gradient-to-r from-gold-500 to-transparent"
+              className="h-px bg-gradient-to-r from-brand-500 to-transparent"
               initial={{ width: 0 }}
               whileInView={{ width: 32 }}
               viewport={{ once: true }}
               transition={{ duration: duration.slow, ease: ease.silk }}
             />
-            <span className="text-gold-500 text-xs font-bold tracking-[0.2em] uppercase">
+            <span className="text-brand-500 text-xs font-bold tracking-[0.2em] uppercase">
               Why Choose Us
             </span>
             <motion.div
-              className="h-px bg-gradient-to-l from-gold-500 to-transparent"
+              className="h-px bg-gradient-to-l from-brand-500 to-transparent"
               initial={{ width: 0 }}
               whileInView={{ width: 32 }}
               viewport={{ once: true }}
@@ -119,11 +144,11 @@ export function TrustSection() {
             className="text-[clamp(1.75rem,3.5vw,3rem)] font-black font-display text-ink-950 leading-tight mb-4"
           >
             <TextReveal text="Built on trust," />
-            <br />
+            <SoftBreak />
             <TextReveal
               text="delivered with excellence."
               delay={0.1}
-              className="text-gold-500"
+              className="text-brand-500"
             />
           </h2>
 
@@ -141,7 +166,7 @@ export function TrustSection() {
           {trustPillars.map((pillar) => (
             <StaggerItem key={pillar.title} choreography="fold">
               <motion.div
-                className="group relative h-full bg-surface border border-ink-200/60 rounded-2xl p-8 transition-colors duration-300 hover:bg-ink-50 hover:border-gold-500/30 overflow-hidden"
+                className="group relative h-full bg-surface border border-ink-200/60 rounded-2xl p-8 transition-colors duration-300 hover:bg-ink-50 hover:border-brand-500/30 overflow-hidden"
                 whileHover={prefersReduced ? undefined : { y: -4 }}
                 transition={spring.smooth}
               >
@@ -162,7 +187,7 @@ export function TrustSection() {
                 {/* Hover glow */}
                 <div
                   className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                  style={{ boxShadow: "inset 0 0 40px rgba(201,152,26,0.05)" }}
+                  style={{ boxShadow: "inset 0 0 40px rgba(99,3,3,0.05)" }}
                 />
               </motion.div>
             </StaggerItem>
@@ -174,27 +199,27 @@ export function TrustSection() {
             separately from the card itself reads as assembled, not delivered. */}
         <Reveal
           choreography="scale"
-          className="mt-12 relative bg-gradient-to-br from-gold-500/10 to-gold-700/5 border border-gold-500/30 rounded-3xl p-8 lg:p-12 overflow-hidden grain"
+          className="mt-12 relative bg-gradient-to-br from-brand-500/10 to-brand-700/5 border border-brand-500/30 rounded-3xl p-8 lg:p-12 overflow-hidden grain"
         >
           <div className="relative flex flex-col lg:flex-row items-start lg:items-center gap-8">
             <div className="flex-1">
               <Stagger each={0.07} className="flex items-center gap-1 mb-4">
                 {[1, 2, 3, 4, 5].map((i) => (
                   <StaggerItem key={i} choreography="scale" as="span">
-                    <Star className="w-5 h-5 fill-gold-500 text-gold-500" />
+                    <Star className="w-5 h-5 fill-accent-400 text-accent-600" />
                   </StaggerItem>
                 ))}
               </Stagger>
 
               <blockquote className="text-ink-950 text-xl lg:text-2xl font-medium font-display leading-relaxed mb-6 text-pretty">
-                &ldquo;Apex Academic Consultancy transformed my research project from a
+                &ldquo;Altivance Academic Consultancy transformed my research project from a
                 confused draft to a distinction-worthy dissertation. The expertise and
                 attention to detail is unmatched in Nigeria.&rdquo;
               </blockquote>
 
               <Reveal choreography="slideRight" delay={0.1}>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold-400 to-gold-500 flex items-center justify-center text-white font-bold">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-400 to-brand-500 flex items-center justify-center text-on-brand font-bold">
                     A
                   </div>
                   <div>
@@ -220,7 +245,7 @@ export function TrustSection() {
                     whileHover={prefersReduced ? undefined : { scale: 1.04, y: -2 }}
                     transition={spring.snappy}
                   >
-                    <div className="text-gold-500 font-black text-xl font-display">
+                    <div className="text-brand-500 font-black text-xl font-display">
                       {stat.value}
                     </div>
                     <div className="text-ink-600 text-xs mt-1">{stat.label}</div>

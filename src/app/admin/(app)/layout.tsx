@@ -4,7 +4,7 @@ import { getStaffUser } from "@/lib/auth";
 import { AdminShell } from "@/components/admin/AdminShell";
 
 export const metadata: Metadata = {
-  title: { default: "Admin", template: "%s · Apex Admin" },
+  title: { default: "Admin", template: "%s · Altivance Admin" },
   robots: { index: false, follow: false },
 };
 

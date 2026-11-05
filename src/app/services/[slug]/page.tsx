@@ -25,7 +25,7 @@ const serviceData: Record<string, { title: string; shortDesc: string; fullDesc: 
       "Unlimited revisions until satisfied",
       "Delivery in Word and PDF format",
     ],
-    price: "From ₦15,000",
+    price: "From ₦65,000",
     process: ["Initial consultation & briefing", "Research & outline creation", "Chapter-by-chapter writing", "Review & feedback", "Final polish & delivery"],
   },
   "proofreading": {
@@ -41,7 +41,7 @@ const serviceData: Record<string, { title: string; shortDesc: string; fullDesc: 
       "Plagiarism reduction suggestions",
       "Track changes version for your review",
     ],
-    price: "From ₦8,000",
+    price: "₦1,800 / 1,000 words",
     process: ["Submit your document", "Expert editor assigned", "Editing completed", "Review track changes", "Final clean version delivered"],
   },
   "research-assistance": {
@@ -57,7 +57,7 @@ const serviceData: Record<string, { title: string; shortDesc: string; fullDesc: 
       "Research proposal writing",
       "Results interpretation and discussion",
     ],
-    price: "From ₦20,000",
+    price: "From ₦35,000",
     process: ["Briefing & scope definition", "Literature review", "Methodology design", "Data guidance", "Results & analysis"],
   },
   "data-analysis": {
@@ -73,7 +73,7 @@ const serviceData: Record<string, { title: string; shortDesc: string; fullDesc: 
       "Data visualization (charts, graphs, tables)",
       "Results interpretation and discussion writing",
     ],
-    price: "From ₦12,000",
+    price: "From ₦22,000",
     process: ["Data review & cleaning", "Analysis plan", "Statistical tests run", "Visualization created", "Interpretation written"],
   },
   "cv-sop": {
@@ -89,7 +89,7 @@ const serviceData: Record<string, { title: string; shortDesc: string; fullDesc: 
       "Recommendation letter templates and guidance",
       "LinkedIn profile optimization",
     ],
-    price: "From ₦10,000",
+    price: "From ₦20,000",
     process: ["Detailed intake form", "Draft creation", "Review & feedback", "Revisions", "Final document delivery"],
   },
   "admission": {
@@ -105,7 +105,7 @@ const serviceData: Record<string, { title: string; shortDesc: string; fullDesc: 
       "Offer evaluation and comparison",
       "Enrollment and next steps guidance",
     ],
-    price: "From ₦25,000",
+    price: "From ₦18,000",
     process: ["Profile assessment", "University shortlisting", "Application preparation", "Review & submission", "Offer support"],
   },
   "scholarship": {
@@ -121,7 +121,7 @@ const serviceData: Record<string, { title: string; shortDesc: string; fullDesc: 
       "Interview preparation",
       "Portfolio development",
     ],
-    price: "From ₦30,000",
+    price: "From ₦35,000",
     process: ["Profile analysis", "Scholarship matching", "Essay development", "Application review", "Submission & follow-up"],
   },
   "business-proposals": {
@@ -137,7 +137,7 @@ const serviceData: Record<string, { title: string; shortDesc: string; fullDesc: 
       "Team qualifications and expertise",
       "Visual design and presentation",
     ],
-    price: "From ₦20,000",
+    price: "From ₦75,000",
     process: ["Business briefing", "Proposal outline", "Content writing", "Review & refinement", "Final delivery"],
   },
   "journal-formatting": {
@@ -153,7 +153,7 @@ const serviceData: Record<string, { title: string; shortDesc: string; fullDesc: 
       "Response to reviewer comments",
       "Resubmission support",
     ],
-    price: "From ₦15,000",
+    price: "From ₦27,000",
     process: ["Paper review", "Journal selection", "Formatting & editing", "Submission preparation", "Peer review support"],
   },
   "assignments": {
@@ -169,7 +169,7 @@ const serviceData: Record<string, { title: string; shortDesc: string; fullDesc: 
       "MCQ, essay, case study formats",
       "Revisions until satisfied",
     ],
-    price: "From ₦5,000",
+    price: "From ₦9,000",
     process: ["Assignment briefing", "Expert assignment", "Research & writing", "Quality check", "Delivery"],
   },
 };
@@ -178,8 +178,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const service = serviceData[slug];
   return {
-    title: service ? `${service.title} | Apex Academic Consultancy` : "Service | Apex Academic Consultancy",
-    description: service?.shortDesc || "Expert academic service from Apex Academic Consultancy.",
+    title: service ? `${service.title} | Altivance Academic Consultancy` : "Service | Altivance Academic Consultancy",
+    description: service?.shortDesc || "Expert academic service from Altivance Academic Consultancy.",
   };
 }
 
@@ -198,9 +198,9 @@ export default async function ServicePage({ params }: Props) {
       <PageHero image="study-group" className="pb-8 lg:pb-10">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-ink-400">
-            <Link href="/" className="hover:text-gold-500 transition-colors">Home</Link>
+            <Link href="/" className="hover:text-brand-500 transition-colors">Home</Link>
             <span>/</span>
-            <Link href="/services" className="hover:text-gold-500 transition-colors">Services</Link>
+            <Link href="/services" className="hover:text-brand-500 transition-colors">Services</Link>
             <span>/</span>
             <span className="text-white">{service.title}</span>
           </nav>
@@ -214,8 +214,8 @@ export default async function ServicePage({ params }: Props) {
           <div className="lg:col-span-2 space-y-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-px bg-gradient-to-r from-gold-500 to-transparent" />
-                <span className="text-gold-500 text-xs font-bold tracking-[0.2em] uppercase">Service</span>
+                <div className="w-8 h-px bg-gradient-to-r from-brand-500 to-transparent" />
+                <span className="text-brand-500 text-xs font-bold tracking-[0.2em] uppercase">Service</span>
               </div>
               <h1 className="text-[clamp(2rem,4vw,3.5rem)] font-black font-display text-ink-950 leading-tight mb-4">
                 <TextReveal text={service.title} mode="line" />
@@ -239,7 +239,7 @@ export default async function ServicePage({ params }: Props) {
               <Stagger as="ul" each={stagger.tight} className="space-y-3">
                 {service.features.map((f) => (
                   <StaggerItem key={f} as="li" choreography="slideRight" className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-gold-500 mt-0.5 flex-shrink-0" />
+                    <CheckCircle2 className="w-5 h-5 text-brand-500 mt-0.5 flex-shrink-0" />
                     <span className="text-sm text-ink-700">{f}</span>
                   </StaggerItem>
                 ))}
@@ -253,7 +253,7 @@ export default async function ServicePage({ params }: Props) {
               <Stagger each={stagger.base} className="space-y-4">
                 {service.process.map((step, i) => (
                   <StaggerItem key={step} choreography="slideRight" className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gold-400 to-gold-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-brand-500 flex items-center justify-center text-on-brand text-xs font-bold flex-shrink-0">
                       {i + 1}
                     </div>
                     <span className="text-sm text-ink-700 font-medium">{step}</span>
@@ -267,7 +267,7 @@ export default async function ServicePage({ params }: Props) {
 
             <Link
               href="/services"
-              className="flex items-center gap-2 text-sm text-ink-600 hover:text-gold-500 transition-colors"
+              className="flex items-center gap-2 text-sm text-ink-600 hover:text-brand-500 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" /> View All Services
             </Link>
@@ -281,7 +281,7 @@ export default async function ServicePage({ params }: Props) {
               choreography="scale"
               className="bg-surface rounded-2xl p-6 sticky top-28 grain"
             >
-              <div className="text-gold-500 text-xs font-bold tracking-wider mb-2">STARTING FROM</div>
+              <div className="text-brand-500 text-xs font-bold tracking-wider mb-2">STARTING FROM</div>
               <div className="text-3xl font-black text-ink-950 font-display mb-4">
                 {service.price}
               </div>
@@ -291,7 +291,7 @@ export default async function ServicePage({ params }: Props) {
               <div className="space-y-3">
                 <Tactile
                   href="/book"
-                  className="flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r from-gold-400 to-gold-500 text-white text-sm font-semibold rounded-xl overflow-hidden transition-shadow hover:shadow-layered-gold"
+                  className="flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r from-brand-400 to-brand-500 text-on-brand text-sm font-semibold rounded-xl overflow-hidden transition-shadow hover:shadow-layered-brand"
                 >
                   Book Now <ArrowRight className="w-4 h-4" />
                 </Tactile>
@@ -307,7 +307,7 @@ export default async function ServicePage({ params }: Props) {
               <Stagger each={stagger.tight} className="mt-5 pt-5 border-t border-white/10 space-y-2">
                 {["100% Original Work", "Unlimited Revisions", "On-Time Delivery", "Full Confidentiality"].map((g) => (
                   <StaggerItem key={g} choreography="slideRight" className="flex items-center gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-gold-500" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-brand-500" />
                     <span className="text-xs text-ink-600">{g}</span>
                   </StaggerItem>
                 ))}

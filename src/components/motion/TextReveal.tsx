@@ -112,8 +112,33 @@ export function TextReveal({
   }
 
   return (
+    /*
+      `inline`, not `inline-block`.
+      -------------------------------------------------------------------------
+      An `inline-block` is an atomic inline-level box: its shrink-to-fit width
+      is resolved against the *containing block*, not against the space left on
+      the current line, so if the resulting box is wider than that remainder the
+      whole box is pushed to the next line. Its words never get the chance to
+      flow.
+
+      That made every heading built from two TextReveals break as though a <br>
+      sat between them, even where none did. Measured in a 455px column: the
+      trust heading rendered "Built on trust," (191px) then dropped the entire
+      "delivered with excellence." (350px) onto line two, leaving 264px of empty
+      space on line one — enough for two more words. Deleting the real <br>
+      changed nothing, because the inline-block was acting as a second one.
+
+      `inline` lets the per-word spans join the parent's inline formatting
+      context and wrap between themselves: the same heading becomes 393px / 148px.
+
+      Safe here because this wrapper carries no transform of its own — it only
+      orchestrates `staggerChildren`, and the words inside are each their own
+      `inline-block` mask. `mode="line"` above must keep `inline-block`, since
+      its mask needs `overflow: hidden`; that mode is therefore atomic by design
+      and is reserved for short accent phrases.
+    */
     <Wrapper
-      className={cn("inline-block", className)}
+      className={cn("inline", className)}
       aria-label={text}
       initial="hidden"
       whileInView="visible"

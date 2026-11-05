@@ -1,5 +1,5 @@
 /**
- * Apex Motion System
+ * Altivance Motion System
  * ------------------
  * A single source of truth for every animation in the product.
  *
@@ -281,23 +281,44 @@ export const chipTap = {
 /* -------------------------------------------------------------------------- */
 
 /**
- * Route-level transition. The outgoing page recedes into `depth.behind` while
- * the incoming page rises from slightly below — reading as a forward push
- * rather than a crossfade.
+ * Route-level transition. The incoming page rises from slightly below as it
+ * fades up — reading as a forward push rather than a flat crossfade.
+ *
+ * NO `filter: blur()` HERE. It is not a stylistic preference.
+ * --------------------------------------------------------------------------
+ * `template.tsx` applies these variants to a wrapper around the *entire* page,
+ * so an animated `blur()` is a blur of the whole document. Two separate costs,
+ * and both of them land on every single navigation:
+ *
+ *  1. Compositor. A filter on a document-sized element forces the whole page
+ *     into its own backing texture and re-runs a separable Gaussian over it
+ *     every frame for the duration — the single most expensive thing that can
+ *     be animated, at the largest possible size, while the browser is already
+ *     busy parsing and hydrating the route that just arrived.
+ *
+ *  2. Perception, and this is the one that was actually being reported. An
+ *     out-of-focus page is the universal idiom for "not ready yet", so 550ms
+ *     of blur does not read as polish, it reads as latency the user is waiting
+ *     on. It also reads very differently per theme: blurring a white page is
+ *     conspicuous, blurring a near-black one is nearly invisible — which is
+ *     why the same transition felt slow in light mode and smooth in dark.
+ *
+ * Opacity and a 10px rise give the same sense of continuity, run entirely on
+ * the compositor, and cannot be mistaken for the page still loading. Shortened
+ * to `duration.base` for the same reason: this animation sits between the user
+ * and content they have already asked for, so it should get out of the way.
  */
 export const pageVariants: Variants = {
-  hidden: { opacity: 0, y: 12, filter: "blur(6px)" },
+  hidden: { opacity: 0, y: 10 },
   visible: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
-    transition: { duration: duration.slow, ease: ease.entrance },
+    transition: { duration: duration.base, ease: ease.entrance },
   },
   exit: {
     opacity: 0,
-    y: -8,
-    filter: "blur(4px)",
-    transition: { duration: duration.fast, ease: ease.exit },
+    y: -6,
+    transition: { duration: duration.instant, ease: ease.exit },
   },
 };
 

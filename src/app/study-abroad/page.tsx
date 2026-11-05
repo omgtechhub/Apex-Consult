@@ -9,8 +9,9 @@ import { Counter } from "@/components/motion/Counter";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { Tactile } from "@/components/motion/Tactile";
 
+import { SoftBreak } from "@/components/ui/SoftBreak";
 export const metadata: Metadata = {
-  title: "Study Abroad Consultancy | Apex Academic Consultancy",
+  title: "Study Abroad Consultancy | Altivance Academic Consultancy",
   description:
     "Complete study abroad guidance — university selection, applications, visa documentation, scholarship, SOP writing. Get admitted to your dream university.",
 };
@@ -58,8 +59,14 @@ export default function StudyAbroadPage() {
   return (
     <div>
       {/* Hero */}
-      <section className="pt-28 lg:pt-40 pb-20 lg:pb-28 bg-surface-dark relative overflow-hidden">
-        <BackdropImage src="/images/graduates-joy.jpg" blurDataURL={blur["graduates-joy"]} tone="gold" parallax={0.08} position="object-[center_25%]" priority />
+      {/* `accent-gold-fixed`: this band is a darkened photograph, so the accent
+          is pinned to gold in BOTH themes — matching the home hero and
+          `PageHero`. Red on a photographic ground does not blend (and #630303
+          measures 1.27:1 on `surface-dark` outright); gold is the half of the
+          palette built for dark grounds. Red on the white page body below is
+          untouched. See globals.css. */}
+      <section className="accent-gold-fixed pt-28 lg:pt-40 pb-20 lg:pb-28 bg-surface-dark relative overflow-hidden">
+        <BackdropImage src="/images/graduates-joy.jpg" blurDataURL={blur["graduates-joy"]} tone="brand" parallax={0.08} position="object-[center_25%]" priority />
         <div className="absolute inset-0 bg-grid-pattern opacity-20" />
         {/* The atmospheric orb drifts slower than the page, which is what sells
             the sense of depth behind the headline. */}
@@ -67,7 +74,7 @@ export default function StudyAbroadPage() {
         <div className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal choreography="fade" duration={0.4}>
             <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-ink-600 mb-10">
-              <Link href="/" className="hover:text-gold-500 transition-colors duration-200 ease-standard">Home</Link>
+              <Link href="/" className="hover:text-brand-500 transition-colors duration-200 ease-standard">Home</Link>
               <span>/</span>
               <span className="text-ink-400">Study Abroad</span>
             </nav>
@@ -76,22 +83,22 @@ export default function StudyAbroadPage() {
           <Stagger className="max-w-3xl" each={0.1}>
             <StaggerItem choreography="blurRise">
               <div className="flex items-center gap-2 mb-4">
-                <Globe className="w-4 h-4 text-gold-500" />
-                <span className="text-gold-500 text-xs font-bold tracking-[0.2em] uppercase">Study Abroad</span>
+                <Globe className="w-4 h-4 text-brand-500" />
+                <span className="text-brand-500 text-xs font-bold tracking-[0.2em] uppercase">Study Abroad</span>
               </div>
             </StaggerItem>
 
             <StaggerItem choreography="fade">
               <h1 className="text-[clamp(2.5rem,6vw,5.5rem)] font-black font-display text-white leading-tight mb-6 text-balance">
                 Your dream
-                <br />
+                <SoftBreak />
                 {/* `mode="line"` — see the note on the testimonials headline:
                     per-word masks break `background-clip: text`. */}
                 <TextReveal
                   text="university awaits."
                   mode="line"
                   delay={0.15}
-                  className="bg-gradient-to-br from-gold-400 via-gold-500 to-gold-700 bg-clip-text text-transparent"
+                  className="bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 bg-clip-text text-transparent"
                 />
               </h1>
             </StaggerItem>
@@ -107,7 +114,7 @@ export default function StudyAbroadPage() {
                 <Magnetic strength={0.2} contentStrength={0.35}>
                   <Tactile
                     href="/book"
-                    className="group flex items-center gap-2 px-6 py-3.5 bg-gradient-to-r from-gold-400 to-gold-500 text-white font-semibold rounded-xl shadow-layered-gold"
+                    className="group flex items-center gap-2 px-6 py-3.5 bg-gradient-to-r from-brand-400 to-brand-500 text-on-brand font-semibold rounded-xl shadow-layered-brand"
                   >
                     Start Your Journey
                     <ArrowRight className="w-4 h-4 transition-transform duration-300 ease-standard group-hover:translate-x-1" />
@@ -129,8 +136,8 @@ export default function StudyAbroadPage() {
           <Stagger className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-16" each={0.08}>
             {stats.map((stat) => (
               <StaggerItem key={stat.label} choreography="scale">
-                <div className="bg-white/5 border border-white/8 rounded-2xl p-5 text-center transition-colors duration-300 ease-standard hover:border-gold-500/30 hover:bg-white/[0.07]">
-                  <div className="text-2xl font-black text-gold-500 font-display mb-1">
+                <div className="bg-white/5 border border-white/8 rounded-2xl p-5 text-center transition-colors duration-300 ease-standard hover:border-brand-500/30 hover:bg-white/[0.07]">
+                  <div className="text-2xl font-black text-brand-500 font-display mb-1">
                     <Counter
                       value={stat.value}
                       prefix={stat.prefix}
@@ -152,9 +159,9 @@ export default function StudyAbroadPage() {
           <Stagger className="text-center max-w-xl mx-auto mb-14" each={0.08}>
             <StaggerItem choreography="blurRise">
               <div className="flex items-center justify-center gap-2 mb-4">
-                <div className="w-8 h-px bg-gradient-to-r from-gold-500 to-transparent" />
-                <span className="text-gold-500 text-xs font-bold tracking-[0.2em] uppercase">Our Process</span>
-                <div className="w-8 h-px bg-gradient-to-l from-gold-500 to-transparent" />
+                <div className="w-8 h-px bg-gradient-to-r from-brand-500 to-transparent" />
+                <span className="text-brand-500 text-xs font-bold tracking-[0.2em] uppercase">Our Process</span>
+                <div className="w-8 h-px bg-gradient-to-l from-brand-500 to-transparent" />
               </div>
             </StaggerItem>
             <StaggerItem choreography="rise">
@@ -169,12 +176,12 @@ export default function StudyAbroadPage() {
           <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" each={0.07}>
             {steps.map((step, i) => (
               <StaggerItem key={step.title} choreography="fold">
-                <div className="bg-surface border border-ink-200/60 rounded-2xl p-7 hover:border-gold-500/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-standard group h-full">
+                <div className="bg-surface border border-ink-200/60 rounded-2xl p-7 hover:border-brand-500/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-standard group h-full">
                   <div className="flex items-start justify-between mb-5">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gold-100 to-gold-200 flex items-center justify-center group-hover:from-gold-400 group-hover:to-gold-500 transition-all duration-300 ease-standard group-hover:scale-110">
-                      <step.icon className="w-5.5 h-5.5 text-gold-500 group-hover:text-white transition-colors duration-300" />
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-100 to-brand-200 flex items-center justify-center group-hover:from-brand-400 group-hover:to-brand-500 transition-all duration-300 ease-standard group-hover:scale-110">
+                      <step.icon className="w-5.5 h-5.5 text-brand-500 group-hover:text-white transition-colors duration-300" />
                     </div>
-                    <span className="text-4xl font-black text-ink-100 font-display transition-colors duration-300 ease-standard group-hover:text-gold-100">
+                    <span className="text-4xl font-black text-ink-100 font-display transition-colors duration-300 ease-standard group-hover:text-brand-100">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                   </div>
@@ -201,21 +208,21 @@ export default function StudyAbroadPage() {
           <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" each={0.06}>
             {countries.map((country) => (
               <StaggerItem key={country.name} choreography="scale">
-                <div className="bg-canvas border border-ink-200/60 rounded-2xl p-6 hover:border-gold-500/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-standard group h-full">
+                <div className="bg-canvas border border-ink-200/60 rounded-2xl p-6 hover:border-brand-500/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-standard group h-full">
                   <div className="flex items-center gap-3 mb-4">
                     <span className="text-3xl inline-block transition-transform duration-300 ease-overshoot group-hover:scale-110 group-hover:-rotate-6">
                       {country.flag}
                     </span>
                     <div>
                       <div className="font-bold text-ink-950 font-display">{country.name}</div>
-                      <div className="text-xs text-gold-500 font-semibold">{country.universities}</div>
+                      <div className="text-xs text-brand-500 font-semibold">{country.universities}</div>
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {country.popular.map((uni) => (
                       <span
                         key={uni}
-                        className="px-2 py-1 bg-surface border border-ink-200 rounded-full text-xs text-ink-600 transition-colors duration-200 ease-standard group-hover:border-gold-500/30"
+                        className="px-2 py-1 bg-surface border border-ink-200 rounded-full text-xs text-ink-600 transition-colors duration-200 ease-standard group-hover:border-brand-500/30"
                       >
                         {uni}
                       </span>
@@ -234,19 +241,19 @@ export default function StudyAbroadPage() {
           <Stagger className="text-center max-w-xl mx-auto mb-14" each={0.08}>
             <StaggerItem choreography="blurRise">
               <div className="flex items-center justify-center gap-2 mb-4">
-                <Award className="w-4 h-4 text-gold-500" />
-                <span className="text-gold-500 text-xs font-bold tracking-[0.2em] uppercase">Scholarships</span>
+                <Award className="w-4 h-4 text-brand-500" />
+                <span className="text-brand-500 text-xs font-bold tracking-[0.2em] uppercase">Scholarships</span>
               </div>
             </StaggerItem>
             <StaggerItem choreography="fade">
               <h2 className="text-[clamp(1.75rem,3.5vw,3rem)] font-black font-display text-ink-950 leading-tight text-balance">
                 Win the scholarship
-                <br />
+                <SoftBreak />
                 <TextReveal
                   text="you deserve."
                   mode="line"
                   delay={0.1}
-                  className="bg-gradient-to-br from-gold-400 via-gold-500 to-gold-700 bg-clip-text text-transparent"
+                  className="bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 bg-clip-text text-transparent"
                 />
               </h2>
             </StaggerItem>
@@ -256,13 +263,13 @@ export default function StudyAbroadPage() {
           <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" each={0.06}>
             {scholarships.map((s) => (
               <StaggerItem key={s.name} choreography="slideRight">
-                <div className="bg-surface border border-ink-200/60 rounded-2xl p-6 hover:border-gold-500/30 hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-standard h-full">
+                <div className="bg-surface border border-ink-200/60 rounded-2xl p-6 hover:border-brand-500/30 hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-standard h-full">
                   <div className="flex items-start justify-between mb-3">
                     <div>
                       <div className="font-bold text-ink-950 text-sm font-display">{s.name}</div>
                       <div className="text-xs text-ink-500">{s.country}</div>
                     </div>
-                    <div className="text-gold-500 font-bold text-sm text-right">{s.value}</div>
+                    <div className="text-brand-500 font-bold text-sm text-right">{s.value}</div>
                   </div>
                   <div className="text-xs text-ink-400">Deadline: {s.deadline}</div>
                 </div>
@@ -274,7 +281,7 @@ export default function StudyAbroadPage() {
             <Magnetic strength={0.25} contentStrength={0.4} className="inline-block">
               <Tactile
                 href="/book"
-                className="group inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gold-400 to-gold-500 text-white font-semibold text-sm rounded-xl shadow-layered-gold"
+                className="group inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-400 to-brand-500 text-on-brand font-semibold text-sm rounded-xl shadow-layered-brand"
               >
                 Apply for Scholarship Guidance
                 <ArrowRight className="w-4 h-4 transition-transform duration-300 ease-standard group-hover:translate-x-1" />
@@ -301,7 +308,7 @@ export default function StudyAbroadPage() {
             <Magnetic strength={0.3} contentStrength={0.45} className="inline-block">
               <Tactile
                 href="/book"
-                className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-gold-400 to-gold-500 text-ink-950 font-bold text-base rounded-2xl shadow-layered-gold"
+                className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-brand-400 to-brand-500 text-on-brand font-bold text-base rounded-2xl shadow-layered-brand"
               >
                 Book Free Consultation
                 <ArrowRight className="w-5 h-5 transition-transform duration-300 ease-standard group-hover:translate-x-1" />

@@ -20,6 +20,24 @@ type ImageName = keyof typeof blur;
  * The section starts at the very top of the document and clears the fixed
  * header with its own top padding, so the photograph runs edge-to-edge from
  * under the navbar with no gap above it.
+ *
+ * ACCENT IS PINNED TO GOLD, in both themes — `accent-gold-fixed`.
+ * ----------------------------------------------------------------------------
+ * This band is a darkened photograph, so the light theme has no light ground
+ * to work against here. Letting the accent follow the theme meant red type on
+ * a photograph: #630303 measures 1.27:1 on `surface-dark` and vanishes, and
+ * even the lifted #ef4444 that `.bg-surface-dark` substitutes for it is a
+ * saturated red laid over whatever colours the photo happens to contain, which
+ * is where it stopped blending.
+ *
+ * Gold is the half of the palette built for dark grounds — it is what this
+ * band already resolved to after dark, and what the home hero uses in both
+ * themes. Pinning it here makes light mode agree with dark mode and with the
+ * home page, instead of flipping to a red the band was never designed around.
+ *
+ * The flip is scoped to photographic bands on purpose. Red on the white page
+ * body is the brand and clears AAA at 13.6:1; it is untouched. See the
+ * `.accent-gold-fixed` block in globals.css.
  */
 export function PageHero({
   image,
@@ -36,7 +54,7 @@ export function PageHero({
   return (
     <section
       className={cn(
-        "relative overflow-hidden bg-surface-dark pt-28 lg:pt-40 pb-16 lg:pb-20",
+        "accent-gold-fixed relative overflow-hidden bg-surface-dark pt-28 lg:pt-40 pb-16 lg:pb-20",
         className
       )}
     >

@@ -9,41 +9,141 @@
    Tailwind v4 theme
    --------------------------------------------------------------------------
    Exposes the brand palette to Tailwind's utility generator so components can
-   use `text-gold-500` / `bg-ink-900` instead of arbitrary `[#c9981a]` values.
+   use `text-brand-500` / `bg-ink-900` instead of arbitrary `[#630303]` values.
    Arbitrary values bypass the design system: they can't be re-themed, they
    don't appear in autocomplete, and a palette change means a find-and-replace
    across 7,000 lines.
    ========================================================================== */
 
 @theme {
-  --color-gold-50: #fffbeb;
-  --color-gold-100: #fef3c7;
-  --color-gold-200: #fde68a;
-  --color-gold-300: #fcd34d;
-  --color-gold-400: #e8b84b;
-  --color-gold-500: #c9981a;
-  --color-gold-600: #b7860f;
-  --color-gold-700: #a07812;
-  --color-gold-800: #78520d;
-  --color-gold-900: #633f0f;
+  /* The brand red is #630303 — a deep oxblood, not a bright signal red.
+     --------------------------------------------------------------------------
+     `brand-500` IS that colour exactly; every other step is a tint or shade of
+     the same hue (0deg) so the ramp reads as one pigment at different depths
+     rather than as several different reds.
 
-  --color-ink-50: #f8f7f5;
-  --color-ink-100: #f0ede8;
-  --color-ink-200: #e2ddd6;
-  --color-ink-300: #c8c1b6;
-  --color-ink-400: #a89e90;
-  --color-ink-500: #8a7e6e;
-  --color-ink-600: #6b5f50;
-  --color-ink-700: #4a4238;
-  --color-ink-800: #2e2820;
-  --color-ink-900: #1a1510;
-  --color-ink-950: #0a0a0a;
+     It is dark by design, which makes it unusually strong on white (13.6:1 at
+     500) and unusable as text on near-black — see the `.bg-surface-dark` block
+     further down, which lifts it for the one band where that happens. */
+  --color-brand-50: #fdf2f2;
+  --color-brand-100: #fae0e0;
+  --color-brand-200: #f5bcbc;
+  --color-brand-300: #e87373;
+  --color-brand-400: #b30f0f;
+  --color-brand-500: #630303;
+  --color-brand-600: #4f0202;
+  --color-brand-700: #3d0202;
+  --color-brand-800: #2c0101;
+  --color-brand-900: #1d0101;
+  /* 950 was referenced by a component but never defined here, so `brand-950`
+     silently resolved to nothing. Defined now. */
+  --color-brand-950: #120000;
 
-  --color-canvas: #faf9f7;
+  /* Secondary accent — red in light mode, yellow in dark mode.
+     --------------------------------------------------------------------------
+     This is a theme-dependent accent, not a fixed hue. In light mode it
+     resolves to the same red as `brand-*`, so the whole site reads red on
+     white. In dark mode (see `.dark`) it becomes yellow, which has the
+     headroom to glow against a dark ground where red goes muddy.
 
-  /* Raised card/panel surface. Separate from `canvas` so cards can sit a step
-     above the page in both themes. */
-  --color-surface: #ffffff;
+     The values below therefore mirror the brand ramp exactly. Anything that
+     should stay red in BOTH themes must use `brand-*`; `accent-*` is
+     specifically the one that turns yellow after dark. */
+  --color-accent-50: #fdf2f2;
+  --color-accent-100: #fae0e0;
+  --color-accent-200: #f5bcbc;
+  --color-accent-300: #e87373;
+  --color-accent-400: #b30f0f;
+  --color-accent-500: #630303;
+  --color-accent-600: #4f0202;
+  --color-accent-700: #3d0202;
+  --color-accent-800: #2c0101;
+  --color-accent-900: #1d0101;
+
+  /* ------------------------------------------------------------------------
+     Theme-fixed families: `ruby` is ALWAYS red, `gold` is ALWAYS yellow.
+     ------------------------------------------------------------------------
+     `brand-*` and `accent-*` are deliberately theme-dependent — red in light
+     mode, yellow in dark. That is right for most of the site, but two places
+     must not flip:
+
+       - bands that are red in both themes (the marquee strip under the hero),
+       - bands that are yellow in both themes (the home hero).
+
+     Expressing those with `brand-*` plus a `dark:` override would mean every
+     such rule exists twice and can drift. A fixed family states the intent
+     once: `ruby` never becomes yellow, `gold` never becomes red, in any theme
+     or inside any panel override.
+
+     `ruby-500` is the same #630303 as `brand-500`; `gold-500` is the same
+     #fcc623 the dark theme gives `brand-500`. They are not a second palette,
+     they are the two halves of this one pinned against theme switching.
+
+     Note `ruby` rather than Tailwind's built-in `red-*`, which is left alone:
+     form validation uses `red-500`/`red-700` as an error colour, and error red
+     must stay visibly distinct from brand red. */
+  --color-ruby-50: #fdf2f2;
+  --color-ruby-100: #fae0e0;
+  --color-ruby-200: #f5bcbc;
+  --color-ruby-300: #e87373;
+  /* The step for red on a dark ground: #630303 sits at 1.27:1 on the dark
+     surface and simply disappears, so strokes and rules over the hero
+     photograph use this instead. */
+  --color-ruby-400: #b30f0f;
+  --color-ruby-500: #630303;
+  --color-ruby-600: #4f0202;
+  --color-ruby-700: #3d0202;
+
+  --color-gold-100: #3d3010;
+  --color-gold-200: #5c4716;
+  --color-gold-300: #8a6a1a;
+  --color-gold-400: #ffd54f;
+  --color-gold-500: #fcc623;
+  --color-gold-600: #e0a800;
+  --color-gold-700: #c08f00;
+  /* Text that sits ON a gold fill. Yellow is light, so this is near-black. */
+  --color-on-gold: #17212b;
+
+  /* Text that sits ON a filled brand surface (buttons, badges, pills).
+     --------------------------------------------------------------------------
+     This has to be a token rather than a literal `text-white`, because the
+     brand fill changes lightness between themes: red in light mode needs white
+     on top, yellow in dark mode needs near-black. Hard-coding white would leave
+     every primary button unreadable after dark. */
+  --color-on-brand: #ffffff;
+
+  --color-ink-50: #f7f9fa;
+  --color-ink-100: #eef1f4;
+  --color-ink-200: #e0e5ea;
+  --color-ink-300: #c6ccd3;
+  --color-ink-400: #a7aeb7;
+  /* Secondary body copy sits on this. At #8a9199 it measured 3.19:1 on white
+     and failed AA for 14px text; this clears it at 4.95:1. The old warm value
+     was no better (~3.9:1), so this fixes a pre-existing shortfall rather than
+     one the repalette introduced. */
+  --color-ink-500: #697179;
+  --color-ink-600: #666666;
+  --color-ink-700: #424242;
+  --color-ink-800: #2b3542;
+  --color-ink-900: #1f2933;
+  /* Strongest text colour. #17212b is the heading colour on the reference
+     design; body copy there is #1f2933, which is ink-900 above. Both clear
+     15:1 on white. */
+  --color-ink-950: #17212b;
+
+  /* The page itself: pure white, matching the reference design's body
+     background. This used to be a warm off-white (#faf9f7). */
+  --color-canvas: #ffffff;
+
+  /* Panel/section surface, one cool step off the white page.
+     --------------------------------------------------------------------------
+     Note this inverts the old relationship: `canvas` used to be the darker of
+     the two (warm #faf9f7) with `surface` pure white on top. Now the page is
+     pure white, so a panel has to go *down* in brightness to separate from it.
+     #f2f5f7 is the reference design's own panel tint. Cards additionally carry
+     a border and `shadow-layered`, so they still read as lifted rather than
+     recessed. */
+  --color-surface: #f2f5f7;
 
   /* Permanently dark surface: heroes, the footer, the mobile-menu scrim.
 
@@ -52,10 +152,14 @@
      dark mode; a token doing double duty as ink and as a surface would make one
      of those two jobs impossible. Splitting them is what makes the dark theme
      a token change rather than a rewrite. */
-  --color-surface-dark: #0a0a0a;
+  --color-surface-dark: #141b23;
 
-  --font-display: var(--font-display), Georgia, serif;
-  --font-body: var(--font-body), system-ui, sans-serif;
+  /* Lora (serif) for display, Roboto for body — the pairing used by the
+     reference design. The fallbacks mirror its stack so a font-swap does not
+     shift metrics noticeably. */
+  --font-display: var(--font-display), Lora, Georgia, "Times New Roman", serif;
+  --font-body: var(--font-body), Roboto, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Helvetica, Arial, sans-serif;
 
   /* Motion tokens — the CSS mirror of src/lib/motion.ts. Keep them in sync:
      CSS transitions and Framer animations must feel like one system. */
@@ -88,32 +192,250 @@
 
 .dark {
   /* Page and card surfaces */
-  --color-canvas: #0f0f11;
-  --color-surface: #17171a;
+  --color-canvas: #0f1419;
+  --color-surface: #171f26;
 
   /* Ink ramp, inverted. 950 = primary text, 50 = faintest hairline. */
-  --color-ink-50: #16161a;
-  --color-ink-100: #1e1e23;
-  --color-ink-200: #2b2b31;
-  --color-ink-300: #6f6a63;
-  --color-ink-400: #8b857c;
-  --color-ink-500: #a49d93;
-  --color-ink-600: #c2bbb0;
-  --color-ink-700: #d9d3c9;
-  --color-ink-800: #e9e5dd;
-  --color-ink-900: #f3f0ea;
-  --color-ink-950: #f8f6f2;
+  --color-ink-50: #151b21;
+  --color-ink-100: #1c242c;
+  --color-ink-200: #2a343d;
+  --color-ink-300: #6b757f;
+  --color-ink-400: #879099;
+  --color-ink-500: #a3abb3;
+  --color-ink-600: #bfc6cd;
+  --color-ink-700: #d6dce1;
+  --color-ink-800: #e7ebee;
+  --color-ink-900: #f2f5f7;
+  --color-ink-950: #f8fafb;
 
-  /* Gold shifts slightly warmer and lighter: the light-mode 500 is too dim
-     against a dark ground to carry links and eyebrow text. */
-  --color-gold-100: #3a2f12;
-  --color-gold-200: #4d3d17;
-  --color-gold-400: #f0c65e;
-  --color-gold-500: #e0ab2e;
-  --color-gold-600: #c9981a;
-  --color-gold-700: #a97f14;
+  /* The accent turns yellow after dark.
+     --------------------------------------------------------------------------
+     The brand is red in light mode and yellow in dark mode, so this is not a
+     tonal adjustment of the red — it is the other half of the palette. Red on
+     #0f1419 is muddy and under-lit; yellow sits at 11.5:1 on it and carries
+     links, eyebrows and fills without strain.
+
+     The low steps invert into deep ambers usable as tinted fills, the way
+     brand-100/200 do in light mode. */
+  --color-brand-50: #2b2209;
+  --color-brand-100: #3d3010;
+  --color-brand-200: #5c4716;
+  --color-brand-300: #8a6a1a;
+  --color-brand-400: #ffd54f;
+  --color-brand-500: #fcc623;
+  --color-brand-600: #e0a800;
+  --color-brand-700: #ffd54f;
+  --color-brand-800: #c08f00;
+  --color-brand-900: #9c7300;
+  --color-brand-950: #7a5a00;
+
+  /* Yellow is light, so filled brand surfaces now need dark text on top —
+     the exact inverse of light mode. */
+  --color-on-brand: #17212b;
+
+  /* Here the accent turns yellow. In light mode it is red (see `@theme`); dark
+     mode is the only place the second hue appears, because a saturated red on
+     #0f1419 loses its lift while yellow keeps it.
+
+     The whole ramp is restated rather than just the steps currently in use, so
+     a future `accent-200` fill does not silently inherit the light-mode red. */
+  --color-accent-50: #332810;
+  --color-accent-100: #3d3010;
+  --color-accent-200: #5c4716;
+  --color-accent-300: #8a6a1a;
+  --color-accent-400: #ffd54f;
+  --color-accent-500: #fcc623;
+  --color-accent-600: #e0a800;
+  --color-accent-700: #c08f00;
+  --color-accent-800: #9c7300;
+  --color-accent-900: #7a5a00;
 
   color-scheme: dark;
+}
+
+/* ==========================================================================
+   Red on the permanently-dark surface
+   --------------------------------------------------------------------------
+   `brand-500` (#630303) is chosen for contrast against WHITE, where it clears
+   AAA at 13.6:1. On `surface-dark` (#141b23) the same red measures 1.27:1 — not
+   merely low contrast but effectively invisible, and the logo lock-up, eyebrows
+   and links in the footer are all small text.
+
+   This is the asymmetry a red accent has and the old gold one did not: gold was
+   light, so it sat comfortably on dark and struggled on white; red is the exact
+   reverse, and the deeper the red the more extreme the asymmetry.
+
+   Rather than hunt down every `text-brand-500` that happens to live inside a
+   dark band, the token is re-pointed for that subtree — the same mechanism the
+   dark theme itself uses. Because Tailwind v4 compiles utilities to
+   `var(--color-brand-*)`, this reaches every utility including opacity
+   modifiers and gradients.
+
+   The home hero is NOT covered by this: it is gold in both themes (see
+   `.accent-gold-fixed` below), so no red ever needs lifting there.
+
+   The muted ink steps get the same treatment: `ink-600` is a light-mode grey
+   (#666666) and measures 3.02:1 on this panel, which is what the footer's
+   secondary links were running at. (The previous warm palette was worse at
+   2.83:1, so this is a long-standing shortfall rather than a new one.)
+
+   Scoped to light mode only. In dark mode `.dark` has already inverted the ink
+   ramp and lifted the red globally, so a second override here would fight it.
+   ========================================================================== */
+
+/* The ink lift applies in both themes — the panel is dark either way. */
+:is(.bg-surface-dark, .glass-dark),
+:is(.bg-surface-dark, .glass-dark) * {
+  --color-ink-300: #d2d8de;
+  --color-ink-400: #8b949e;
+  --color-ink-500: #9aa3ac;
+  --color-ink-600: #a8b2bb;
+  --color-ink-700: #c3cad1;
+}
+
+/* The red lift is light-mode only. In dark mode the brand ramp is already
+   yellow, which needs no help against a dark panel — forcing red here would
+   undo the theme's accent entirely. */
+html:not(.dark) :is(.bg-surface-dark, .glass-dark),
+html:not(.dark) :is(.bg-surface-dark, .glass-dark) * {
+  /* #630303 measures 1.27:1 on `surface-dark` — not "low contrast", invisible.
+     These are the lightest steps of the same hue that still clear AA there:
+     #ef4444 at 4.59:1, with 600 going *lighter* for hover because on a dark
+     ground "brighter" is the affordance that reads as interactive. */
+  --color-brand-500: #ef4444;
+  --color-brand-600: #f25c5c;
+  --color-brand-700: #ef4444;
+}
+
+/* `.glass-dark` and `.bg-surface-dark` are dark in BOTH themes, but the ink
+   ramp inverts between them — so in dark mode `ink-100` becomes #1c242c and the
+   hero's eyebrow badge was rendering near-black text on a near-black panel at
+   1.26:1, effectively invisible. (Pre-existing: the old palette inverted the
+   same way.) Pinning the low steps light only inside these panels fixes it
+   without touching the global dark ramp. */
+.dark :is(.bg-surface-dark, .glass-dark),
+.dark :is(.bg-surface-dark, .glass-dark) * {
+  --color-ink-100: #eef1f4;
+  --color-ink-200: #e0e5ea;
+}
+
+/* …but a dark band can contain light islands — the white newsletter card and
+   the `bg-surface` buttons sit inside the hero and footer. Those are light
+   backgrounds again, so the lifted values above would put pale red and pale
+   grey on near-white. Restore the light-mode ramp inside them.
+
+   Without this, `text-brand-500` on the footer's white newsletter card renders
+   at 3.36:1 instead of 5.07:1. */
+html:not(.dark) :is(.bg-surface-dark, .glass-dark) :is(.bg-canvas, .bg-surface),
+html:not(.dark) :is(.bg-surface-dark, .glass-dark) :is(.bg-canvas, .bg-surface) * {
+  --color-brand-500: #630303;
+  --color-brand-600: #4f0202;
+  --color-ink-400: #a7aeb7;
+  --color-ink-500: #697179;
+  --color-ink-600: #666666;
+  --color-ink-700: #424242;
+}
+
+/* ==========================================================================
+   Bands that must not follow the theme
+   --------------------------------------------------------------------------
+   `.accent-gold-fixed` pins the accent to gold, `.accent-ruby-fixed` pins it to
+   red, in BOTH themes and inside any of the panel overrides above.
+
+   The home hero is gold either way: it is a permanently-dark photographic band,
+   and gold is the half of the palette built for dark grounds — it was already
+   gold after dark, and this makes light mode agree rather than flipping to a
+   red that the band was never designed around. The marquee immediately below it
+   is the reverse: red either way, so the two bands always read as the brand's
+   two colours stacked, instead of as gold-on-gold half the time.
+
+   SPECIFICITY — the class is doubled on purpose, do not "tidy" it
+   ---------------------------------------------------------------
+   These re-point the same custom properties as the `.bg-surface-dark` rules
+   above, on the same elements, and the hero carries `.bg-surface-dark` itself.
+   `.accent-gold-fixed *` alone is (0,1,0) and would lose to
+   `html:not(.dark) :is(.bg-surface-dark, .glass-dark) *` at (0,2,1).
+
+   Writing the selectors merely to *match* that weight is not enough, and this
+   is the bug that made the whole flip look like it had not been applied: at
+   equal specificity the winner is whichever rule comes later in the stylesheet,
+   so the gold pin only worked because it happened to sit below the red lift in
+   this file. That is a guarantee about source order, and source order is not
+   something a stylesheet gets to keep — the bundler is free to split, reorder
+   or hoist blocks between the dev server and a production build, and if the red
+   lift lands after the gold pin the band silently goes back to red with no
+   error anywhere. The one environment it has to work in is the production build
+   the site is actually shared from.
+
+   So `.accent-gold-fixed` is written twice in each selector. A repeated class
+   is valid CSS that matches exactly the same elements and adds a class to the
+   specificity count, which buys the +1 that makes these rules win outright:
+
+     html:not(.dark) .accent-gold-fixed.accent-gold-fixed *            -> (0,3,1)
+       beats  html:not(.dark) :is(.bg-surface-dark, .glass-dark) *     -> (0,2,1)
+
+     html:not(.dark) .accent-gold-fixed.accent-gold-fixed :is(...) *   -> (0,4,1)
+       beats  html:not(.dark) :is(...) :is(.bg-canvas, .bg-surface) *  -> (0,3,1)
+
+   Now the cascade decides this on weight alone and the block's position in the
+   file is irrelevant.
+
+   The second pair is for the light islands inside the band — the hero's
+   "Explore Services" button is `bg-surface`, which the island rule above would
+   otherwise hand back the red ramp.
+   ========================================================================== */
+
+html:not(.dark) .accent-gold-fixed.accent-gold-fixed,
+html:not(.dark) .accent-gold-fixed.accent-gold-fixed *,
+html.dark .accent-gold-fixed.accent-gold-fixed,
+html.dark .accent-gold-fixed.accent-gold-fixed *,
+html:not(.dark) .accent-gold-fixed.accent-gold-fixed :is(.bg-canvas, .bg-surface),
+html:not(.dark) .accent-gold-fixed.accent-gold-fixed :is(.bg-canvas, .bg-surface) * {
+  --color-brand-50: #2b2209;
+  --color-brand-100: #3d3010;
+  --color-brand-200: #5c4716;
+  --color-brand-300: #8a6a1a;
+  --color-brand-400: #ffd54f;
+  --color-brand-500: #fcc623;
+  --color-brand-600: #e0a800;
+  --color-brand-700: #ffd54f;
+  --color-brand-800: #c08f00;
+  --color-brand-900: #9c7300;
+  --color-brand-950: #7a5a00;
+
+  --color-accent-50: #332810;
+  --color-accent-100: #3d3010;
+  --color-accent-200: #5c4716;
+  --color-accent-300: #8a6a1a;
+  --color-accent-400: #ffd54f;
+  --color-accent-500: #fcc623;
+  --color-accent-600: #e0a800;
+  --color-accent-700: #c08f00;
+  --color-accent-800: #9c7300;
+  --color-accent-900: #7a5a00;
+
+  /* Gold is light, so anything filled with it needs near-black on top. */
+  --color-on-brand: #17212b;
+}
+
+html:not(.dark) .accent-ruby-fixed,
+html:not(.dark) .accent-ruby-fixed *,
+html.dark .accent-ruby-fixed,
+html.dark .accent-ruby-fixed * {
+  --color-brand-50: #fdf2f2;
+  --color-brand-100: #fae0e0;
+  --color-brand-200: #f5bcbc;
+  --color-brand-300: #e87373;
+  --color-brand-400: #b30f0f;
+  --color-brand-500: #630303;
+  --color-brand-600: #4f0202;
+  --color-brand-700: #3d0202;
+  --color-brand-800: #2c0101;
+  --color-brand-900: #1d0101;
+  --color-brand-950: #120000;
+
+  /* #630303 is dark enough that white sits on it at 13.6:1 in either theme. */
+  --color-on-brand: #ffffff;
 }
 
 /* Surfaces defined as literal rgba rather than tokens need their own overrides. */
@@ -199,43 +521,45 @@ html.lenis body {
 
 @layer base {
   :root {
-    /* Gold Palette */
-    --gold-50: #fffbeb;
-    --gold-100: #fef3c7;
-    --gold-200: #fde68a;
-    --gold-300: #fcd34d;
-    --gold-400: #fbbf24;
-    --gold-500: #c9981a;
-    --gold-600: #b7860f;
-    --gold-700: #92650a;
-    --gold-800: #78520d;
-    --gold-900: #633f0f;
-    --gold-950: #1c0f00;
+    /* Brand Palette */
+    --brand-50: #fdf2f2;
+    --brand-100: #fae0e0;
+    --brand-200: #f5bcbc;
+    --brand-300: #e87373;
+    --brand-400: #b30f0f;
+    --brand-500: #630303;
+    --brand-600: #4f0202;
+    --brand-700: #3d0202;
+    --brand-800: #2c0101;
+    --brand-900: #1d0101;
+    --brand-950: #120000;
 
     /* Core */
-    --apex-gold: #c9981a;
-    --apex-gold-light: #e8b84b;
-    --apex-gold-dark: #a07812;
-    --apex-black: #0a0a0a;
-    --apex-dark: #111111;
-    --apex-warm-white: #faf9f7;
-    --apex-white: #ffffff;
-    --apex-gray-50: #f8f7f5;
-    --apex-gray-100: #f0ede8;
-    --apex-gray-200: #e2ddd6;
-    --apex-gray-300: #c8c1b6;
-    --apex-gray-400: #a89e90;
-    --apex-gray-500: #8a7e6e;
-    --apex-gray-600: #6b5f50;
-    --apex-gray-700: #4a4238;
-    --apex-gray-800: #2e2820;
-    --apex-gray-900: #1a1510;
+    --altivance-brand: #630303;
+    --altivance-brand-light: #b30f0f;
+    --altivance-brand-dark: #3d0202;
+    --altivance-black: #0a0a0a;
+    --altivance-dark: #1f2933;
+    --altivance-warm-white: #ffffff;
+    --altivance-white: #ffffff;
+    --altivance-gray-50: #f7f9fa;
+    --altivance-gray-100: #eef1f4;
+    --altivance-gray-200: #e0e5ea;
+    --altivance-gray-300: #c6ccd3;
+    --altivance-gray-400: #a7aeb7;
+    --altivance-gray-500: #8a9199;
+    --altivance-gray-600: #666666;
+    --altivance-gray-700: #424242;
+    --altivance-gray-800: #2b3542;
+    --altivance-gray-900: #1f2933;
 
     /* Gradients */
-    --gradient-gold: linear-gradient(135deg, #e8b84b 0%, #c9981a 50%, #a07812 100%);
-    --gradient-gold-soft: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%);
-    --gradient-dark: linear-gradient(135deg, #111111 0%, #1a1510 100%);
-    --gradient-hero: linear-gradient(180deg, #faf9f7 0%, #f0ede8 100%);
+    --gradient-brand: linear-gradient(135deg, #b30f0f 0%, #630303 50%, #3d0202 100%);
+    --gradient-brand-soft: linear-gradient(135deg, #fae0e0 0%, #f5bcbc 50%, #e87373 100%);
+    --gradient-dark: linear-gradient(135deg, #1f2933 0%, #141b23 100%);
+    /* The red/yellow signature, for accent rules and highlight sweeps. */
+    --gradient-brand-accent: linear-gradient(135deg, #630303 0%, #b0530a 55%, #f5a800 100%);
+    --gradient-hero: linear-gradient(180deg, #ffffff 0%, #eef1f4 100%);
 
     /* Spacing 8pt system */
     --space-1: 8px;
@@ -257,8 +581,8 @@ html.lenis body {
     --shadow-md: 0 4px 24px 0 rgba(10,10,10,0.08), 0 2px 8px 0 rgba(10,10,10,0.04);
     --shadow-lg: 0 8px 40px 0 rgba(10,10,10,0.12), 0 4px 16px 0 rgba(10,10,10,0.06);
     --shadow-xl: 0 16px 64px 0 rgba(10,10,10,0.16), 0 8px 24px 0 rgba(10,10,10,0.08);
-    --shadow-gold: 0 8px 32px 0 rgba(201,152,26,0.25), 0 2px 8px 0 rgba(201,152,26,0.12);
-    --shadow-gold-lg: 0 16px 48px 0 rgba(201,152,26,0.3), 0 8px 24px 0 rgba(201,152,26,0.15);
+    --shadow-brand: 0 8px 32px 0 rgba(99,3,3,0.25), 0 2px 8px 0 rgba(99,3,3,0.12);
+    --shadow-brand-lg: 0 16px 48px 0 rgba(99,3,3,0.3), 0 8px 24px 0 rgba(99,3,3,0.15);
 
     /* Border radius */
     --radius-xs: 4px;
@@ -294,20 +618,64 @@ html.lenis body {
   }
 
   body {
-    background-color: var(--apex-warm-white);
-    color: var(--apex-dark);
+    background-color: var(--altivance-warm-white);
+    color: var(--altivance-dark);
     font-family: var(--font-body);
-    line-height: 1.6;
-    overflow-x: hidden;
+    /* 18px / 1.7, the reference design's reading rhythm (it runs 18px with a
+       1.6–1.8 line-height depending on block).
+
+       Deliberately set on `body`, not `html`. On `html` this would rescale
+       every rem-based Tailwind utility by 1.125 and reflow the entire site;
+       here it only affects text that has no explicit size class, which is the
+       copy that should inherit it. */
+    font-size: 1.125rem;
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+  }
+
+  /* ------------------------------------------------------------------------
+     Horizontal overflow containment.
+
+     THE BUG THIS FIXES: on a phone, /about and similar pages could be dragged
+     sideways for the first several seconds, then snapped back to the correct
+     width once the page came alive.
+
+     Framer Motion serialises each reveal's `initial` state into the SSR HTML
+     as an inline transform, so the `slideLeft` / `slideRight` choreographies
+     ship as `transform: translateX(48px)` (six of them on /about). Until
+     JavaScript hydrates and animates them to rest, those elements sit 48px
+     past the right edge and make the document horizontally scrollable. Over a
+     tunnel on a phone, hydration can take twenty seconds — which is exactly
+     how long the page stays draggable, and why it looks like a layout bug that
+     "fixes itself".
+
+     WHY `clip` AND NOT `hidden`. This rule was previously `overflow-x: hidden`
+     on `body` alone, and it did not hold. `overflow-x: hidden` with
+     `overflow-y: visible` is not a legal combination: CSS computes the visible
+     axis to `auto`, which turns `body` into a scroll container. That breaks
+     `position: sticky` descendants, fights the Lenis scroll loop that drives
+     the whole site, and on iOS Safari still leaves the page draggable.
+
+     `overflow-x: clip` clips without creating a scroll container, so
+     `overflow-y` stays `visible`: sticky still sticks, Lenis still owns
+     scrolling, the fixed header is untouched, and the clip actually holds.
+
+     Set on BOTH `html` and `body` deliberately. The root element's overflow is
+     what propagates to the viewport, so clipping `body` alone leaves the
+     viewport itself scrollable — the original reason the old rule failed.
+     ------------------------------------------------------------------------ */
+  html,
+  body {
+    overflow-x: clip;
   }
 
   ::selection {
-    background-color: rgba(201, 152, 26, 0.2);
-    color: var(--apex-dark);
+    background-color: rgba(99, 3, 3, 0.18);
+    color: var(--altivance-dark);
   }
 
   :focus-visible {
-    outline: 2px solid var(--apex-gold);
+    outline: 2px solid var(--altivance-brand);
     outline-offset: 3px;
     border-radius: 4px;
   }
@@ -322,12 +690,50 @@ html.lenis body {
     text-wrap: pretty;
   }
 
-  /* Gold gradient text */
-  .text-gold-gradient {
-    background: var(--gradient-gold);
+  /* Brand gradient text */
+  .text-brand-gradient {
+    background: var(--gradient-brand);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  /* Outlined display type — the brand's two colours in one word.
+     --------------------------------------------------------------------------
+     Red fill with a gold stroke in light mode, and the two swapped after dark,
+     so the accent always leads with the colour that carries on that ground.
+
+     This replaces a `background-clip: text` gradient that was failing badly in
+     this exact spot. The heading sits over a photograph and carries `.on-photo`
+     — a soft canvas-coloured halo in `text-shadow`. A text-shadow is painted
+     behind the glyph, so with the fill knocked out to `transparent` for the
+     gradient, the halo was all that remained visible: the line rendered as a
+     pale ghost of itself in both themes rather than as the gradient. Hence
+     `text-shadow: none` here; the stroke now does the separating, and it does
+     it better, because it is a hard edge rather than a glow.
+
+     `paint-order: stroke fill` is what makes a stroke this heavy usable on a
+     serif. By default the stroke is centred on the glyph outline and half of it
+     eats inward, which closes up Lora's counters and thins its hairlines.
+     Painting the stroke first and the fill over it keeps the letterform intact
+     and puts the whole stroke outside.
+
+     `-webkit-text-stroke` has no unprefixed spelling — this is one of the few
+     cases where the `-webkit-` property IS the standard one, supported in
+     Chrome, Safari and Firefox. It is not the pattern warned about on
+     `backdrop-filter` above, where a hand-written prefix shadowed a real
+     standard property. */
+  .text-outline-accent {
+    color: var(--color-ruby-500);
+    -webkit-text-stroke-width: 0.045em;
+    -webkit-text-stroke-color: var(--color-gold-500);
+    paint-order: stroke fill;
+    text-shadow: none;
+  }
+
+  .dark .text-outline-accent {
+    color: var(--color-gold-500);
+    -webkit-text-stroke-color: var(--color-ruby-500);
   }
 
   /* Noise texture overlay */
@@ -365,23 +771,23 @@ html.lenis body {
   }
 
   /* Glow effects */
-  .glow-gold {
-    box-shadow: var(--shadow-gold);
+  .glow-brand {
+    box-shadow: var(--shadow-brand);
   }
-  .glow-gold-lg {
-    box-shadow: var(--shadow-gold-lg);
+  .glow-brand-lg {
+    box-shadow: var(--shadow-brand-lg);
   }
 
   /* Subtle background patterns */
   .bg-dot-pattern {
-    background-image: radial-gradient(circle, rgba(201,152,26,0.12) 1px, transparent 1px);
+    background-image: radial-gradient(circle, rgba(99,3,3,0.12) 1px, transparent 1px);
     background-size: 24px 24px;
   }
 
   .bg-grid-pattern {
     background-image: 
-      linear-gradient(rgba(201,152,26,0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(201,152,26,0.05) 1px, transparent 1px);
+      linear-gradient(rgba(99,3,3,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,3,3,0.05) 1px, transparent 1px);
     background-size: 48px 48px;
   }
 
@@ -438,7 +844,7 @@ html.lenis body {
      `transform` + `opacity` on a pseudo-element produce the same expanding
      ring entirely on the GPU, with no repaint. The element is 6px and the old
      spread reached 12px on each side, so scale(5) lands on the same 30px. */
-  @keyframes pulse-gold {
+  @keyframes pulse-brand {
     0%, 100% { transform: scale(1); opacity: 0.4; }
     50% { transform: scale(5); opacity: 0; }
   }
@@ -464,17 +870,17 @@ html.lenis body {
 
   /* The halo is drawn by a child pseudo-element so the dot itself keeps its
      own size and colour — scaling the dot would scale the dot. */
-  .animate-pulse-gold {
+  .animate-pulse-brand {
     position: relative;
   }
 
-  .animate-pulse-gold::after {
+  .animate-pulse-brand::after {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: 9999px;
-    background: rgb(201, 152, 26);
-    animation: pulse-gold 2s ease-in-out infinite;
+    background: var(--color-brand-500);
+    animation: pulse-brand 2s ease-in-out infinite;
     /* Decorative only: it must never grow the element's hit area. */
     pointer-events: none;
   }
@@ -484,7 +890,7 @@ html.lenis body {
   }
 
   .animate-shimmer {
-    background: linear-gradient(90deg, #f0ede8 0%, #e8e2d9 50%, #f0ede8 100%);
+    background: linear-gradient(90deg, #eef1f4 0%, #e8e2d9 50%, #eef1f4 100%);
     background-size: 200% 100%;
     animation: shimmer 1.5s ease-in-out infinite;
   }
@@ -495,7 +901,7 @@ html.lenis body {
 
   /* Skeleton loading */
   .skeleton {
-    background: linear-gradient(90deg, #f0ede8 25%, #e8e2d9 50%, #f0ede8 75%);
+    background: linear-gradient(90deg, #eef1f4 25%, #e8e2d9 50%, #eef1f4 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s ease-in-out infinite;
     border-radius: 6px;
@@ -547,7 +953,7 @@ html.lenis body {
     background: conic-gradient(
       from 0deg,
       transparent 0deg,
-      rgba(201, 152, 26, 0.6) 60deg,
+      rgba(99, 3, 3, 0.6) 60deg,
       transparent 120deg
     );
     -webkit-mask:
@@ -595,6 +1001,54 @@ html.lenis body {
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
+  /* Canvas-coloured photo scrim.
+     --------------------------------------------------------------------------
+     For a section that keeps the page's own background colour but lays a
+     photograph behind it. The wash therefore has to follow the canvas: light in
+     light mode, dark in dark mode.
+
+     This was previously a fixed white gradient written as a Tailwind arbitrary
+     value inside BackdropImage, which meant it stayed white in dark mode while
+     the ink ramp inverted to near-white — white type on a white wash. The
+     closing CTA was literally unreadable after dark.
+
+     The outer stops are also lifted (0.10 -> 0.40). At 10% the photograph won
+     outright at the edges of the block, which is where the phone number and
+     opening-hours line sit. Paired with `.on-photo` on the copy, this keeps the
+     picture legible as a picture while the text stays readable over its busiest
+     parts. */
+  .scrim-canvas {
+    background:
+      radial-gradient(
+        ellipse 72% 55% at 50% 50%,
+        rgba(255, 255, 255, 0.78) 0%,
+        rgba(255, 255, 255, 0.64) 60%,
+        rgba(255, 255, 255, 0.4) 100%
+      ),
+      linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.6) 0%,
+        rgba(255, 255, 255, 0.42) 50%,
+        rgba(255, 255, 255, 0.64) 100%
+      );
+  }
+
+  .dark .scrim-canvas {
+    background:
+      radial-gradient(
+        ellipse 72% 55% at 50% 50%,
+        rgba(15, 20, 25, 0.8) 0%,
+        rgba(15, 20, 25, 0.66) 60%,
+        rgba(15, 20, 25, 0.42) 100%
+      ),
+      linear-gradient(
+        to bottom,
+        rgba(15, 20, 25, 0.62) 0%,
+        rgba(15, 20, 25, 0.44) 50%,
+        rgba(15, 20, 25, 0.66) 100%
+      );
+  }
+
   /* Phones get the same look without the live blur.
      --------------------------------------------------------------------------
      `backdrop-filter` is the single most expensive thing on this page for a
@@ -635,12 +1089,12 @@ html.lenis body {
       0 24px 48px rgba(10, 10, 10, 0.05);
   }
 
-  .shadow-layered-gold {
+  .shadow-layered-brand {
     box-shadow:
-      0 1px 2px rgba(201, 152, 26, 0.08),
-      0 4px 12px rgba(201, 152, 26, 0.12),
-      0 12px 32px rgba(201, 152, 26, 0.16),
-      0 24px 56px rgba(201, 152, 26, 0.12);
+      0 1px 2px rgba(99, 3, 3, 0.08),
+      0 4px 12px rgba(99, 3, 3, 0.12),
+      0 12px 32px rgba(99, 3, 3, 0.16),
+      0 24px 56px rgba(99, 3, 3, 0.12);
   }
 
   /* Film grain. Fixed-position so it doesn't resample while scrolling, which
@@ -656,6 +1110,30 @@ html.lenis body {
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.35'/%3E%3C/svg%3E");
   }
 
+  /* Phones skip the grain entirely.
+     --------------------------------------------------------------------------
+     `mix-blend-mode` takes an element out of simple compositing: the GPU has to
+     read back everything painted beneath it and blend per pixel, and it forces
+     the whole stacking context to repaint rather than just re-composite. The
+     two instances on the home page are a 566px card and the entire closing CTA
+     section — 487x1285 on a phone — and the section one sits directly over a
+     photograph.
+
+     Measured by scrolling the home page in 1000px bands: the only two bands
+     that dropped frames were the hero and this CTA, which are also the only two
+     with a photographic backdrop. The grain is a 0.4-opacity noise texture that
+     is effectively invisible at phone pixel density, so it is the cheapest of
+     the three things stacked there to give up.
+
+     Deliberately its own query rather than folded into the
+     `prefers-reduced-transparency` block above: that one is about see-through
+     surfaces, this is about blend cost. They happen to share a breakpoint. */
+  @media (max-width: 768px) {
+    .grain::after {
+      display: none;
+    }
+  }
+
   /* Promotes to its own compositor layer. Apply to elements that are about to
      animate — never leave it on permanently, it costs GPU memory per layer. */
   /* Type sitting over a photograph.
@@ -669,9 +1147,9 @@ html.lenis body {
      for white type over a dark one. */
   .on-photo {
     text-shadow:
-      0 1px 2px rgba(250, 249, 247, 0.95),
-      0 0 12px rgba(250, 249, 247, 0.85),
-      0 0 28px rgba(250, 249, 247, 0.6);
+      0 1px 2px rgba(255, 255, 255, 0.95),
+      0 0 12px rgba(255, 255, 255, 0.85),
+      0 0 28px rgba(255, 255, 255, 0.6);
   }
 
   .on-photo-dark {

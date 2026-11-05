@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LegalShell, LegalSection } from "@/components/layout/LegalShell";
 
 export const metadata: Metadata = {
-  title: "Refund Policy | Apex Academic Consultancy",
+  title: "Refund Policy | Altivance Academic Consultancy",
 };
 
 export default function RefundPage() {
@@ -37,17 +37,17 @@ export default function RefundPage() {
         <p>
           Contact us at{" "}
           <a
-            href="mailto:info@apexacademic.com"
-            className="text-gold-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded"
+            href="mailto:info@altivance.com"
+            className="text-brand-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
           >
-            info@apexacademic.com
+            info@altivance.com
           </a>{" "}
           or WhatsApp{" "}
           <a
             href="https://wa.me/2347084321204"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-gold-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 rounded"
+            className="text-brand-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
           >
             +234 708 432 1204
           </a>{" "}

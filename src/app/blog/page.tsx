@@ -6,10 +6,11 @@ import { TextReveal } from "@/components/motion/TextReveal";
 import { BlogExplorer, type Post } from "@/components/blog/BlogExplorer";
 import { NewsletterForm } from "@/components/blog/NewsletterForm";
 
+import { SoftBreak } from "@/components/ui/SoftBreak";
 export const metadata: Metadata = {
-  title: "Blog | Apex Academic Consultancy",
+  title: "Blog | Altivance Academic Consultancy",
   description:
-    "Expert tips on academic writing, research, study abroad, scholarships, and career development from Apex Academic Consultancy.",
+    "Expert tips on academic writing, research, study abroad, scholarships, and career development from Altivance Academic Consultancy.",
 };
 
 const posts: Post[] = [
@@ -105,7 +106,7 @@ export default function BlogPage() {
         {/* Breadcrumb */}
         <Reveal choreography="fade" duration={0.4}>
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-ink-400 mb-10">
-            <Link href="/" className="hover:text-gold-500 transition-colors duration-200 ease-standard">Home</Link>
+            <Link href="/" className="hover:text-brand-500 transition-colors duration-200 ease-standard">Home</Link>
             <span>/</span>
             <span className="text-white">Blog</span>
           </nav>
@@ -115,20 +116,20 @@ export default function BlogPage() {
         <Stagger className="max-w-2xl mb-14" each={0.09}>
           <StaggerItem choreography="blurRise">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-px bg-gradient-to-r from-gold-500 to-transparent" />
-              <span className="text-gold-500 text-xs font-bold tracking-[0.2em] uppercase">Insights</span>
+              <div className="w-8 h-px bg-gradient-to-r from-brand-500 to-transparent" />
+              <span className="text-brand-500 text-xs font-bold tracking-[0.2em] uppercase">Insights</span>
             </div>
           </StaggerItem>
 
           <StaggerItem choreography="fade">
             <h1 className="text-[clamp(2rem,4vw,3.5rem)] font-black font-display text-white leading-tight mb-4 text-balance">
               Academic insights
-              <br />
+              <SoftBreak />
               <TextReveal
                 text="worth reading."
                 mode="line"
                 delay={0.12}
-                className="bg-gradient-to-br from-gold-400 via-gold-500 to-gold-700 bg-clip-text text-transparent"
+                className="bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 bg-clip-text text-transparent"
               />
             </h1>
           </StaggerItem>
