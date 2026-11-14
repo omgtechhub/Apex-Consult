@@ -183,8 +183,9 @@ the `payments` table with `status = 'success'`, then refund it in Paystack.
 
 - Update the Paystack webhook URL to `https://<new-domain>/api/payments/webhook`
   (Paystack dashboard -> Settings -> API Keys & Webhooks)
-- Ask Claude to verify the domain, SSL, and that canonical/OG/sitemap URLs
-  flipped to the new domain. They flip with **no code change** — see §4.
+- ~~Verify the domain, SSL, and that canonical/OG/sitemap URLs flipped.~~ DONE
+  14 Nov 2026. They flipped with no code change (§4). The verification also
+  turned up the canonical bug now recorded in §8.
 
 ---
 
@@ -475,6 +476,27 @@ normal established business domain rather than a compromise.
 ---
 
 ## 8. Also fixed 14 Nov 2026 (do not re-investigate)
+
+- **Every page was declaring the HOMEPAGE as its canonical URL.** Found while
+  verifying the domain cutover; the bug predates it. `src/app/layout.tsx` set
+  `alternates: { canonical: "/" }` and `openGraph.url: SITE_URL`. Next resolves
+  a relative canonical **against the current pathname**, so `"/"` resolves to
+  the site root — and metadata is inherited by any page that does not set its
+  own `alternates`, which was all 25 public pages bar `scholarships/[slug]`.
+  Live output on `/pricing`, `/services`, `/about`, `/contact`, `/faq` was
+  `<link rel="canonical" href="https://altivance.com.ng"/>`. That tells Google
+  those pages are duplicates of the homepage, which is how real pages get
+  dropped from the index. `og:url` had the same fault, so a shared `/pricing`
+  link was attributed to `/`.
+  **Fix:** both are `"./"`, which resolves to each page's own URL. This is the
+  idiom in Next's own metadata e2e fixture for exactly this case. Verified in
+  real build output and then live on all 15 static pages, the SSG
+  `services/[slug]` routes, and `scholarships` (whose explicit override still
+  wins). `canonical` and `og:url` agree on every page. **Do not "simplify"
+  `"./"` back to `"/"` — that is the bug.**
+  Still open, deliberately not changed: `src/app/faq/page.tsx` is a
+  `"use client"` component, so it cannot export `metadata` and has no title or
+  description of its own. The clean fix is a small `src/app/faq/layout.tsx`.
 
 - **All references to the old European registrar/host were removed** at David's
   request — it is not his provider and never hosted anything in this project.
