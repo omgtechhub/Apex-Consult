@@ -14,7 +14,8 @@ The site is **live, public and working**.
 
 | | |
 |---|---|
-| **Primary URL (new)** | **https://altivance-ng.netlify.app** — Netlify, live and verified 14 Nov 2026 |
+| **Primary URL** | **https://altivance.com.ng** — own domain, live on HTTPS 14 Nov 2026. `www` 301s to it |
+| Netlify URL | https://altivance-ng.netlify.app — still serves; the deploy's own hostname |
 | Hosting | **Netlify free**, team `omg-tech-hub`, project `altivance-ng`. See §3 |
 | Old URL (still up) | https://apex-roan-eight.vercel.app — Vercel, kept ~1 week as rollback |
 | Database | Neon Postgres (16 tables), **pooled** endpoint on Netlify |
@@ -22,7 +23,7 @@ The site is **live, public and working**.
 | Admin login | /admin/login — account `davidomigie25@gmail.com` exists and works |
 | Payments | Paystack **LIVE** keys active on both hosts. **No real checkout has ever been completed** (§2d) |
 | Scholarships | Showing 6 built-in fallbacks, NOT live pipeline data |
-| Domain | Buying **altivance.com.ng** — see §2a and §7. `altivance.com` is NOT ours |
+| Domain | **altivance.com.ng** — bought at WhoGoHost/GO54, DNS there, live. See §2a. `altivance.com` is NOT ours |
 
 **Deploying is `git push` to `main` — this now deploys to BOTH hosts.** Netlify
 builds via the deploy-key + webhook setup in §3. Vercel's GitHub integration is
@@ -37,60 +38,89 @@ upload step on Node 26. See §3.
 
 ## 2. TO DO — David's actions
 
-### 2a. Point altivance.com.ng at Netlify  *(domain bought 14 Nov 2026)*
+### 2a. Point altivance.com.ng at Netlify  *(LIVE — 14 Nov 2026)*
 
-**Domain:** `altivance.com.ng`, bought from **WhoGoHost**.
-**Already done on Netlify** — both names are attached to project
-`altivance-ng` with **external DNS** (`dns_zone_id: null`, so the zone stays at
-WhoGoHost and **no nameserver change is needed**):
+**DONE. `https://altivance.com.ng` serves the site over HTTPS.** Nothing in this
+section needs action; it is kept as the record of how the domain is wired.
+
+**Domain:** `altivance.com.ng`, bought from **WhoGoHost** (their newer panel is
+branded **GO54**, at `panel.go54.com` — same account, same company).
+
+**Netlify side** — project `altivance-ng`, **external DNS** (`dns_zone_id: null`,
+so the zone stays at WhoGoHost and no nameserver change was ever needed):
 
 - `custom_domain` = `altivance.com.ng`  (primary)
 - `domain_aliases` = `["www.altivance.com.ng"]`
+- Certificate issued automatically by Let's Encrypt. `netlify status` now
+  reports `Project URL: https://altivance.com.ng`.
 
-Netlify redirects `www` -> apex automatically. `"ssl": false` until DNS resolves.
+**Verified 14 Nov 2026:**
 
-**BLOCKER as at 14 Nov 2026:** `altivance.com.ng` returns **NXDOMAIN** with no
-`NS` and no `SOA` at the registry. A freshly registered `.ng` normally appears
-within minutes to a few hours. Until the registry publishes nameservers for it,
-no DNS record change can take effect. Confirm in the WhoGoHost client area that
-the domain shows **Active** and has nameservers assigned.
+| Check | Result |
+|---|---|
+| Registry delegation (`NS` at `.ng`) | `nsa` / `nsb.whogohost.com` — published |
+| `altivance.com.ng` via `8.8.8.8` and `1.1.1.1` | `75.2.60.5` |
+| `https://altivance.com.ng` | `HTTP/1.1 200 OK`, `Server: Netlify` |
+| `https://www.altivance.com.ng` | `301` -> `https://altivance.com.ng/` |
+| TLS | valid, `Strict-Transport-Security: max-age=31536000` |
 
-**The two records to create at WhoGoHost** (verified 14 Nov 2026 — a `Host:`
-test against the IP returned `HTTP/1.1 200 OK`, `Server: Netlify`):
+**The DNS zone at WhoGoHost — final state (5 records):**
 
-| Type | Host / Name | Value | TTL |
+| Type | Host | Value | Note |
 |---|---|---|---|
-| `A` | `@` (or blank, or `altivance.com.ng`) | `75.2.60.5` | default |
-| `CNAME` | `www` | `altivance-ng.netlify.app` | default |
+| `SOA` | `@` | `nsa.whogohost.com …` | zone authority — never delete |
+| `NS` | `@` | `nsa.whogohost.com` | never delete |
+| `NS` | `@` | `nsb.whogohost.com` | never delete |
+| `A` | `@` | `75.2.60.5` | Netlify's load balancer |
+| `CNAME` | `www` | `altivance.com.ng` | follows the apex `A` — fine, and better |
 
-- `75.2.60.5` is Netlify's **published static anycast IP** for apex A records on
-  standard plans. Do **not** use whatever `apex-loadbalancer.netlify.com`
+- `75.2.60.5` is Netlify's **published static anycast IP** for apex `A` records
+  on standard plans. Do **not** use whatever `apex-loadbalancer.netlify.com`
   resolves to — that hostname returns rotating IPs (it gave `99.83.231.61`
   during setup) and is only for providers that support `ALIAS`/`ANAME`.
   This site is on the Free plan, so the standard load balancer is correct;
   High-Performance Edge (paid) would use a different IP.
-- If WhoGoHost's panel offers `ALIAS`, `ANAME` or **flattened CNAME** for the
-  apex, that is more resilient — point it at `apex-loadbalancer.netlify.com`
-  instead of the A record. cPanel/WHMCS panels usually do not offer these, so
-  expect to use the A record.
-- **Delete any existing parking `A` record for `@`** that WhoGoHost added, and
-  any parking `CNAME` for `www`. Leaving a second A record there will make the
-  site intermittently serve WhoGoHost's placeholder.
+- `www` as a `CNAME` to the apex (not to `altivance-ng.netlify.app`) is
+  deliberate: both names then follow the single `A` record, so a future Netlify
+  IP change is one edit, not two. Verified resolving.
+- **Four records created by the GO54 zone wizard were deleted**, and must not
+  come back: `MX @ -> altivance.com.ng`, `CNAME mail`, `CNAME ftp`, and the
+  WhoGoHost `TXT` SPF (`v=spf1 +a +mx +include:relay.mailchannels.net …`).
+  The `MX` pointed mail at Netlify's web server, which does not speak SMTP;
+  the SPF's `+a` authorised Netlify's load balancer to send mail as the domain,
+  which would make real Zoho mail fail authentication later. Zoho supplies the
+  correct `MX` and `TXT` when email is set up.
 - Do **not** buy an SSL certificate from WhoGoHost. Netlify issues Let's Encrypt
-  free, automatically, 10-60 minutes after DNS propagates.
-- Do not touch `MX` records yet — see §2c step 2 for email.
+  free and automatically.
 
-**After DNS resolves, in this order:**
+**Two traps hit here — do not rediscover these**
 
-1. Confirm `altivance.com.ng` and `www.altivance.com.ng` both resolve, and that
-   Netlify's dashboard shows the certificate issued (`"ssl": true`).
-2. Set `NEXT_PUBLIC_SITE_URL=https://altivance.com.ng` in Netlify env vars, then
-   redeploy. **Not before** — setting it while the domain does not resolve would
-   publish canonicals and `og:image` URLs pointing at a dead host.
+1. A freshly registered `.ng` returned `NXDOMAIN` with no `NS` and no `SOA` for
+   roughly two hours. That was the **registry delegation** lagging, not a
+   misconfiguration. WhoGoHost's own nameserver answered correctly the whole
+   time — `nslookup altivance.com.ng nsa.whogohost.com` is the way to tell the
+   two apart, and is worth reaching for before changing anything.
+2. The GO54 panel's **DNS Records** tab showed "create a DNS Zone", not an
+   editor: the zone did not exist yet. Creating it asks for one IP address,
+   which becomes the apex `A` record — entering `75.2.60.5` there did step one.
+   The adjacent **Propagation** tab is a diagnostic only; nothing can be added
+   from it, and its red crosses were correct, not a failure.
+
+**Remaining, in order:**
+
+1. ~~Confirm DNS resolves and the certificate is issued.~~ DONE.
+2. ~~Set `NEXT_PUBLIC_SITE_URL=https://altivance.com.ng` in Netlify env vars and
+   redeploy.~~ DONE 14 Nov 2026 (`all` context). Before this, every canonical,
+   `og:url`, `og:image` and `sitemap.xml` entry pointed at
+   `altivance-ng.netlify.app`. The variable is read by both
+   `src/lib/seo.ts` and `src/lib/site-url.ts` and wins over every fallback, so
+   no code change was needed. It is `NEXT_PUBLIC_`, therefore **build-time
+   inlined — a redeploy is mandatory for it to take effect**.
 3. Update the Paystack webhook to
-   `https://altivance.com.ng/api/payments/webhook`.
+   `https://altivance.com.ng/api/payments/webhook` — see §2e.
 4. Test a real payment (§2d).
-SSL certificate from the registrar; both hosts issue Let's Encrypt free.
+5. Email for `info@altivance.com.ng` (§2c step 2) — still bouncing until a
+   mailbox exists, and it is advertised across the site.
 
 ### 2b. Choosing the registrar  *(DONE — bought from WhoGoHost)*
 
