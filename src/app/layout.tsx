@@ -63,7 +63,15 @@ const roboto = Roboto({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  alternates: { canonical: "/" },
+  // `"./"`, NOT `"/"`. Next resolves a relative canonical against the CURRENT
+  // PATHNAME, so `"/"` resolves to the site root on every page and is then
+  // inherited by every page that does not set its own `alternates` — which was
+  // all of them bar `scholarships/[slug]`. The live site was telling Google
+  // that /pricing, /services, /about, /contact and the rest were all duplicates
+  // of the homepage, which is how real pages get dropped from the index.
+  // `"./"` resolves to each page's own URL, which is what a canonical is for.
+  // Confirmed against Next's own metadata e2e fixture for this exact case.
+  alternates: { canonical: "./" },
   title: {
     default: "Altivance Academic Consultancy | Where Academic Excellence Meets Results",
     template: "%s | Altivance Academic Consultancy",
@@ -89,7 +97,10 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: SITE_URL,
+    // Relative, for the same reason as `alternates.canonical` above: an
+    // absolute SITE_URL here made every subpage's og:url claim to be the
+    // homepage, so a shared /pricing link would be attributed to `/`.
+    url: "./",
     siteName: "Altivance Academic Consultancy",
     title: "Altivance Academic Consultancy | Where Academic Excellence Meets Results",
     description:
