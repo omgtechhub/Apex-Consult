@@ -37,37 +37,64 @@ upload step on Node 26. See §3.
 
 ## 2. TO DO — David's actions
 
-### 2a. Buy the .ng domain and point it at the site  *(in progress)*
+### 2a. Point altivance.com.ng at Netlify  *(domain bought 14 Nov 2026)*
 
-Budget is now available for this. Two decisions are coupled and should be made
-together, in this order:
+**Domain:** `altivance.com.ng`, bought from **WhoGoHost**.
+**Already done on Netlify** — both names are attached to project
+`altivance-ng` with **external DNS** (`dns_zone_id: null`, so the zone stays at
+WhoGoHost and **no nameserver change is needed**):
 
-1. **Pick the host** — see §3. Decided: **Netlify free**.
-2. **Buy the domain** — see §2b.
-3. **Point the domain at the host** — DNS, below.
+- `custom_domain` = `altivance.com.ng`  (primary)
+- `domain_aliases` = `["www.altivance.com.ng"]`
 
-Do not buy hosting from the domain registrar. Nigerian registrars bundle
-cPanel/shared hosting, which **cannot run this app** — Next.js needs a Node
-runtime. Buy the domain only; the app stays on Netlify/Vercel.
+Netlify redirects `www` -> apex automatically. `"ssl": false` until DNS resolves.
 
-**DNS records to create at the registrar** (values depend on the chosen host —
-read them off the host's dashboard, do not copy them from here):
+**BLOCKER as at 14 Nov 2026:** `altivance.com.ng` returns **NXDOMAIN** with no
+`NS` and no `SOA` at the registry. A freshly registered `.ng` normally appears
+within minutes to a few hours. Until the registry publishes nameservers for it,
+no DNS record change can take effect. Confirm in the WhoGoHost client area that
+the domain shows **Active** and has nameservers assigned.
 
-| Host | `A` record for `@` | `CNAME` for `www` |
-|---|---|---|
-| Netlify | the IP Netlify shows for the site | `<site-name>.netlify.app` |
-| Vercel | the IP Vercel shows for the domain | `cname.vercel-dns.com` |
+**The two records to create at WhoGoHost** (verified 14 Nov 2026 — a `Host:`
+test against the IP returned `HTTP/1.1 200 OK`, `Server: Netlify`):
 
-Netlify's preferred setup is to delegate the whole zone to Netlify DNS instead
-of setting an A record. That is fine here — nothing else uses this zone, since
-the new domain starts with no email on it. Decide this when the domain exists.
+| Type | Host / Name | Value | TTL |
+|---|---|---|---|
+| `A` | `@` (or blank, or `altivance.com.ng`) | `75.2.60.5` | default |
+| `CNAME` | `www` | `altivance-ng.netlify.app` | default |
 
-SSL issues automatically within 10-60 minutes of DNS propagating. Do not buy an
+- `75.2.60.5` is Netlify's **published static anycast IP** for apex A records on
+  standard plans. Do **not** use whatever `apex-loadbalancer.netlify.com`
+  resolves to — that hostname returns rotating IPs (it gave `99.83.231.61`
+  during setup) and is only for providers that support `ALIAS`/`ANAME`.
+  This site is on the Free plan, so the standard load balancer is correct;
+  High-Performance Edge (paid) would use a different IP.
+- If WhoGoHost's panel offers `ALIAS`, `ANAME` or **flattened CNAME** for the
+  apex, that is more resilient — point it at `apex-loadbalancer.netlify.com`
+  instead of the A record. cPanel/WHMCS panels usually do not offer these, so
+  expect to use the A record.
+- **Delete any existing parking `A` record for `@`** that WhoGoHost added, and
+  any parking `CNAME` for `www`. Leaving a second A record there will make the
+  site intermittently serve WhoGoHost's placeholder.
+- Do **not** buy an SSL certificate from WhoGoHost. Netlify issues Let's Encrypt
+  free, automatically, 10-60 minutes after DNS propagates.
+- Do not touch `MX` records yet — see §2c step 2 for email.
+
+**After DNS resolves, in this order:**
+
+1. Confirm `altivance.com.ng` and `www.altivance.com.ng` both resolve, and that
+   Netlify's dashboard shows the certificate issued (`"ssl": true`).
+2. Set `NEXT_PUBLIC_SITE_URL=https://altivance.com.ng` in Netlify env vars, then
+   redeploy. **Not before** — setting it while the domain does not resolve would
+   publish canonicals and `og:image` URLs pointing at a dead host.
+3. Update the Paystack webhook to
+   `https://altivance.com.ng/api/payments/webhook`.
+4. Test a real payment (§2d).
 SSL certificate from the registrar; both hosts issue Let's Encrypt free.
 
-### 2b. Choosing the registrar
+### 2b. Choosing the registrar  *(DONE — bought from WhoGoHost)*
 
-See the recommendation in §7. Rules that matter regardless of which is picked:
+Kept for the record; the comparison is in §7. Rules that applied:
 
 - Compare the **renewal** price, not the first-year promo. Direct `.ng` renewals
   cluster around NGN 15,000-18,000/yr.
