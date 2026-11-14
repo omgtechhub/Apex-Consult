@@ -14,17 +14,24 @@ The site is **live, public and working**.
 
 | | |
 |---|---|
-| Live URL | https://apex-roan-eight.vercel.app |
-| Second alias | https://apex-omg-tech-hub.vercel.app (same site) |
-| Hosting | Vercel, project `omg-tech-hub/apex`, Hobby plan — **migrating to Netlify free, see §3** |
-| Database | Neon Postgres (already provisioned, 16 tables) |
+| **Primary URL (new)** | **https://altivance-ng.netlify.app** — Netlify, live and verified 14 Nov 2026 |
+| Hosting | **Netlify free**, team `omg-tech-hub`, project `altivance-ng`. See §3 |
+| Old URL (still up) | https://apex-roan-eight.vercel.app — Vercel, kept ~1 week as rollback |
+| Database | Neon Postgres (16 tables), **pooled** endpoint on Netlify |
 | Repo | https://github.com/omgtechhub/Apex-Consult, branch `main` |
 | Admin login | /admin/login — account `davidomigie25@gmail.com` exists and works |
-| Payments | Paystack **LIVE** keys are active |
+| Payments | Paystack **LIVE** keys active on both hosts. **No real checkout has ever been completed** (§2d) |
 | Scholarships | Showing 6 built-in fallbacks, NOT live pipeline data |
 | Domain | Buying **altivance.com.ng** — see §2a and §7. `altivance.com` is NOT ours |
 
-Deploying is `git push` to `main`. Verified working.
+**Deploying is `git push` to `main` — this now deploys to BOTH hosts.** Netlify
+builds via the deploy-key + webhook setup in §3. Vercel's GitHub integration is
+also live: the pushes on 14 Nov 2026 each produced a Vercel production
+deployment. An earlier note in this file claimed git push did not deploy to
+Vercel; that was wrong, inferred from a stale deployment list.
+
+Do **not** run `netlify deploy --build` on this machine — it fails at the blob
+upload step on Node 26. See §3.
 
 ---
 
@@ -92,9 +99,18 @@ this was only ever about the domain and the email address.
    Routing** (forwards `info@` to Gmail, free, needs the domain's nameservers on
    Cloudflare) or **Zoho Mail** free tier (a real mailbox, keeps DNS where it
    is). This is the one item that is user-visible and currently broken.
-3. **Remove `altivance.com` from the Vercel project.** It is still attached as a
-   domain and will never verify. Vercel dashboard -> project -> Settings ->
-   Domains -> remove.
+3. **URGENT — remove `altivance.com` from the Vercel project.** It is not merely
+   attached and unverifiable; it is set as that project's **production domain**,
+   so `VERCEL_PROJECT_PRODUCTION_URL` resolves to it and the live Vercel site
+   emits, on every page:
+
+       <link rel="canonical" href="https://altivance.com">
+
+   Confirmed live on 14 Nov 2026. The site is telling Google that the canonical
+   address of all its content is a **third party's domain**. That hands search
+   equity to a stranger and can get the real pages dropped as duplicates.
+   Vercel dashboard -> project -> Settings -> Domains -> remove `altivance.com`.
+   The Netlify site is unaffected — its canonicals are correct.
 
 Two historical references to `altivance.com` remain **on purpose**, in the
 explanatory comments at the top of `src/lib/seo.ts`. They document the bug that
@@ -172,55 +188,105 @@ for every Next.js version from 13.5 up.
 **Nothing is broken.** Migrating is planning, not an emergency. The DNS A record
 simply points at Netlify instead. Buying the domain now locks nothing in.
 
-### Migration prep — DONE 14 Nov 2026 (nothing live was touched)
+### MIGRATION DONE — 14 Nov 2026. Netlify is live and verified.
 
-- **`netlify.toml` added.** Build command, `publish = ".next"`, `NODE_VERSION`
-  pinned to 22. The OpenNext adapter is deliberately *not* pinned with a
-  `[[plugins]]` block — Netlify auto-installs and auto-upgrades it, which is
-  their own recommendation.
-- **`src/lib/seo.ts` was a migration blocker and is now fixed.** Its fallback
-  chain only knew the `VERCEL_*` env vars. **Nothing on Netlify sets those**, so
-  on Netlify it fell straight through to `http://localhost:3000` and would have
-  shipped `<link rel="canonical" href="http://localhost:3000/">`, a localhost
-  `og:image` and a localhost sitemap to production. Netlify's `URL` and
-  `DEPLOY_PRIME_URL` are now in the chain, and a `toOrigin()` helper handles the
-  format difference (Vercel gives a bare host, Netlify gives a full URL with
-  scheme — prefixing `https://` blindly produced `https://https://…`).
-  Verified by building with the Vercel vars unset and `URL` set:
-  canonical, `og:url`, `og:image` and `sitemap.xml` all came out correct.
-- **`src/lib/site-url.ts` needs no change.** It derives the origin per request
-  from `x-forwarded-host`, which is host-agnostic.
-- **Build verified** on Next.js 16.2.6 with `npx next build`. Typecheck and
-  lint clean.
+**The Netlify site is up, built from `main`, and fully working.**
 
-### Remaining steps to actually migrate
+| | |
+|---|---|
+| URL | https://altivance-ng.netlify.app |
+| Admin | https://app.netlify.com/projects/altivance-ng |
+| Site ID | `b47e755c-347e-48cb-baa5-869eb5267cb4` |
+| Team | `omg-tech-hub` (Free) |
+| Account | omgtechhub@gmail.com |
 
-1. Create the Netlify site from the GitHub repo `omgtechhub/Apex-Consult`,
-   branch `main`. Netlify auto-detects Next.js.
-2. Set these environment variables in the Netlify UI. Copy the values from the
-   **Vercel** project settings, not from `.env.local` (see §4 on the pooled
-   `DATABASE_URL` and the Render `SCHOLARSHIP_API_URL`):
+**Continuous deployment is wired and proven.** A push to `main` triggers a
+Netlify build automatically. This was set up without the Netlify GitHub App:
 
-   | Variable | Note |
-   |---|---|
-   | `DATABASE_URL` | must be the Neon **pooled** endpoint (`...-pooler...`) |
-   | `PAYSTACK_SECRET_KEY` | live key |
-   | `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` | live key |
-   | `SCHOLARSHIP_API_URL` | the Render URL, not `localhost:3001` |
-   | ~~`STAFF_PASSWORD`~~ | **NOT needed.** Read only by `scripts/create-staff.mjs`, a local one-off. It is not set on Vercel production either; admin login authenticates against the `users` + `sessions` tables in Postgres (see `src/lib/auth.ts`) |
-   | `NEXT_PUBLIC_SITE_URL` | set to `https://altivance.com.ng` **once DNS is live**. Leave unset until then; the `URL` fallback covers the interim |
+- Netlify **deploy key** `6af82483a193d182a4d6ad37`, added to the GitHub repo as
+  a read-only deploy key (GitHub key id `169858381`). This is what lets Netlify
+  clone the repo.
+- Netlify **build hook** `6af824cac588bc470b26eb8d` (branch `main`).
+- **GitHub webhook** id `711694983`, `push` events, pointing at that build hook.
 
-   Do **not** set `NEXT_DIST_DIR` — see the comment in `netlify.toml`.
-3. Deploy and test on the `*.netlify.app` URL **before** moving DNS: admin
-   login, a booking, and a real Paystack checkout.
-4. Point `altivance.com.ng` DNS at Netlify (§2a).
-5. Set `NEXT_PUBLIC_SITE_URL=https://altivance.com.ng`, redeploy.
-6. Update the Paystack webhook to `https://altivance.com.ng/api/payments/webhook`.
-7. Only then remove the Vercel project — keep it as a rollback for a week.
+Verified by pushing `ae70b09` and watching the build fire and go green.
 
-**Watch the deploy budget.** 300 credits/month at 15 credits per production
-deploy is ~20 production deploys a month. Push to a branch, not `main`, while
-iterating.
+**Verified working on the deployed site** (every route 200):
+`/`, `/services`, `/services/[slug]`, `/pricing`, `/contact`, `/blog`,
+`/scholarships`, `/book`, `/pay`, `/faq`, `/testimonials`, `/admin/login`,
+`/api/health`, `/robots.txt`, `/sitemap.xml`, `/llms.txt`, `/opengraph-image`.
+
+- **Database:** `/api/health` runs `select 1` through Drizzle and returns
+  `{"ok":true}` — the **pooled** Neon endpoint works from Netlify's function.
+- **SSR:** blog renders real posts from Postgres; `Cache-Status: "Netlify
+  Durable"` headers confirm the SSR function is serving.
+- **Server Actions:** the admin login form renders.
+- **Paystack:** `/pay` renders the payment form with no test-mode banner, so
+  `isLiveMode()` is true — the **live** secret key is readable by the function.
+- **SEO:** canonical, `og:url`, `og:image` and every `sitemap.xml` entry resolve
+  to `https://altivance-ng.netlify.app`. This is the `seo.ts` fix working in
+  production; without it they would all have said `http://localhost:3000`.
+- **Scholarships:** still the 6 built-in fallbacks, same as Vercel. No regression.
+
+### Three traps hit during the migration — do not rediscover these
+
+1. **New Netlify sites are PRIVATE by default.** `sso_login` was `true`, and
+   every URL returned **401** with a redirect to `app.netlify.com/edge-access`.
+   This is the exact analogue of Vercel's `ssoProtection` (see §4). Fixed with:
+
+       netlify api updateSite --data '{"site_id":"<id>","body":{"sso_login":false}}'
+
+   **Any new Netlify project will have this on again.**
+
+2. **The Next.js runtime plugin did NOT auto-attach**, because the site was
+   created via the API rather than Netlify's "import from Git" UI. The first
+   cloud build published the raw `.next` directory as static output —
+   `/build-manifest.json`, `/build/chunks/*`, `/cache/*`, no HTML, no SSR
+   function — and every route 404'd while the deploy reported "ready".
+   Fixed by declaring it in `netlify.toml`:
+
+       [[plugins]]
+         package = "@netlify/plugin-nextjs"
+
+   No version, so Netlify still resolves the latest at build time. Do not add
+   it to `package.json`.
+
+3. **`netlify deploy --build` fails locally on this machine.** `next build` and
+   function bundling both succeed, then the "Uploading blobs to deploy store"
+   step dies with `fetch failed`, reproducibly. Plain HTTPS to
+   `api.netlify.com` works from both curl and node, so it is not the network —
+   almost certainly **Node v26.13.0**, which is newer than netlify-cli 27.19.0
+   supports. **Deploy by pushing to `main`, or with
+   `netlify api createSiteBuild`, and let Netlify build in the cloud.** That is
+   the recommended model anyway.
+
+### Still to do on the Netlify side
+
+1. **Buy `altivance.com.ng`** (§2a, §7), then add it in Netlify:
+   Project -> Domain management -> Add a domain.
+2. **Set `NEXT_PUBLIC_SITE_URL=https://altivance.com.ng`** once DNS resolves,
+   then redeploy. Until then the `URL` fallback correctly serves
+   `altivance-ng.netlify.app`.
+3. **Update the Paystack webhook** to
+   `https://altivance.com.ng/api/payments/webhook`.
+4. **Test a real payment on Netlify** (§2d) — still nobody has completed a
+   checkout anywhere.
+5. **Keep Vercel for about a week as rollback**, then delete the project. See
+   the warning in §2c about `altivance.com` still being attached to it.
+
+Environment variables set on Netlify (4 — all verified in use):
+`DATABASE_URL` (pooled), `PAYSTACK_SECRET_KEY` (live),
+`NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` (live), `SCHOLARSHIP_API_URL` (Render).
+
+`NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` is in fact **never read by the code** — it
+appears only in a doc comment in `src/lib/payments/paystack.ts`. Payment is
+entirely server-side: the secret key calls Paystack's API and the customer is
+redirected to Paystack's hosted checkout, so card details never touch this
+domain. Harmless to leave set.
+
+**Watch the deploy budget.** 300 credits/month, 15 credits per production
+deploy, so roughly 20 production deploys a month. Work on a branch and merge
+when ready rather than pushing straight to `main` repeatedly.
 
 ---
 
@@ -236,7 +302,7 @@ iterating.
   emitted localhost canonicals on Netlify. See §3.
 - **`src/lib/site-url.ts`** is a different job: per-request origin from
   `x-forwarded-host`, used for Paystack callback URLs. Leave it alone.
-- **`DATABASE_URL` on Vercel must be the Neon POOLED endpoint**
+- **`DATABASE_URL` must be the Neon POOLED endpoint on BOTH hosts**
   (`...-pooler...`), not the direct one in `.env.local`.
 - **`SCHOLARSHIP_API_URL` must be the Render URL** in production. Local
   `.env.local` says `localhost:3001`; a wrong value silently serves
@@ -363,3 +429,34 @@ normal established business domain rather than a compromise.
   domain) to `info@altivance.com.ng`. See §2c — the mailbox still needs creating.
 - **`src/lib/seo.ts` made host-agnostic** so canonicals/OG/sitemap survive the
   move to Netlify. See §3.
+
+---
+
+## 9. Credential hygiene — action recommended
+
+During the Netlify migration on 14 Nov 2026, `netlify env:import` **echoed the
+imported values to the terminal in plaintext**. The live Paystack secret key and
+the Neon database password therefore appear in that session's scrollback and in
+any saved transcript of it.
+
+Nothing was sent anywhere it should not have been — the values went only to
+Netlify, and they already existed in `.env.local` and in the
+`Project-Local-Secrets` backup. But a **live** payment key in a log is worth
+closing off:
+
+1. **Rotate the Paystack secret key.** Paystack dashboard -> Settings ->
+   API Keys & Webhooks -> roll the secret key. Then update it in
+   Netlify (Project -> Environment variables), in Vercel while that project
+   still exists, and in `.env.local`.
+2. **Rotate the Neon password** if the transcript was shared. Neon console ->
+   Roles -> reset password for `neondb_owner`, then update `DATABASE_URL` in
+   both hosts and `.env.local` — remembering the **pooled** host for the hosts
+   and the direct host locally.
+3. If the transcript was never shared or stored outside this machine, the
+   practical risk is low and this can wait. Do not skip it indefinitely while
+   live keys are in play.
+
+Also note `vercel env pull` **cannot** retrieve Vercel "Secret"-type values —
+it writes `[SENSITIVE]` placeholders. The four Netlify values were rebuilt from
+`.env.local`, the `Project-Local-Secrets` backup, and by deriving the pooled
+Neon host from the direct one. Expect to do the same on any future host move.
