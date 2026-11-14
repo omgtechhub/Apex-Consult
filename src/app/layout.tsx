@@ -102,15 +102,21 @@ export const metadata: Metadata = {
     // homepage, so a shared /pricing link would be attributed to `/`.
     url: "./",
     siteName: "Altivance Academic Consultancy",
-    title: "Altivance Academic Consultancy | Where Academic Excellence Meets Results",
-    description:
-      "Transform your academic journey with Nigeria's most trusted consultancy. Expert project writing, research assistance, study abroad guidance, and more.",
+    // NO `title` or `description` HERE — DELIBERATE. Next inherits every
+    // `openGraph` field into any page that does not declare its own
+    // `openGraph`, and that inheritance is verbatim: it does NOT re-derive the
+    // title from the page. Hardcoding them here therefore gave /about,
+    // /pricing, /contact, /faq and the rest the HOMEPAGE's og:title and
+    // og:description, so every link shared to WhatsApp, Facebook or LinkedIn
+    // previewed as the homepage whichever page was actually sent.
+    // Omitted, Next falls back to each page's own resolved `title` (template
+    // applied) and `description`. Verified in build output across every page.
+    // `siteName`, `type`, `locale`, `url` and the og:image stay — those are
+    // genuinely site-wide, so inheriting them verbatim is correct.
   },
   twitter: {
     card: "summary_large_image",
-    title: "Altivance Academic Consultancy",
-    description:
-      "Where Academic Excellence Meets Results. Nigeria's premier academic consultancy.",
+    // No `title`/`description` here either, for the reason given above.
     creator: "@altivanceacademic",
   },
   robots: {
