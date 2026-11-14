@@ -25,8 +25,8 @@ const contactInfo = [
   {
     icon: Mail,
     label: "Email",
-    value: "info@altivance.com",
-    href: "mailto:info@altivance.com",
+    value: "info@altivance.com.ng",
+    href: "mailto:info@altivance.com.ng",
     desc: "We reply within 4 hours",
   },
   {

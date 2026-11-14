@@ -45,10 +45,10 @@ export default function PrivacyPage() {
           You have the right to access, correct, or delete your personal information at
           any time. You can opt out of marketing communications. Contact us at{" "}
           <a
-            href="mailto:info@altivance.com"
+            href="mailto:info@altivance.com.ng"
             className="text-brand-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
           >
-            info@altivance.com
+            info@altivance.com.ng
           </a>{" "}
           to exercise these rights.
         </p>
@@ -60,10 +60,10 @@ export default function PrivacyPage() {
           <br />
           Email:{" "}
           <a
-            href="mailto:info@altivance.com"
+            href="mailto:info@altivance.com.ng"
             className="text-brand-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
           >
-            info@altivance.com
+            info@altivance.com.ng
           </a>
           <br />
           WhatsApp:{" "}

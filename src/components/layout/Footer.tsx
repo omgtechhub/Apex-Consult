@@ -201,13 +201,13 @@ export function Footer() {
                 +234 708 432 1204
               </a>
               <a
-                href="mailto:info@altivance.com"
+                href="mailto:info@altivance.com.ng"
                 className="flex items-center gap-3 text-sm text-ink-400 hover:text-brand-500 transition-colors group"
               >
                 <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-brand-500/20 transition-colors">
                   <Mail className="w-3.5 h-3.5" />
                 </div>
-                info@altivance.com
+                info@altivance.com.ng
               </a>
               <div className="flex items-center gap-3 text-sm text-ink-400">
                 <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">

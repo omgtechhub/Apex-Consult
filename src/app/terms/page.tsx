@@ -54,10 +54,10 @@ export default function TermsPage() {
         <p>
           For questions about these terms:{" "}
           <a
-            href="mailto:info@altivance.com"
+            href="mailto:info@altivance.com.ng"
             className="text-brand-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
           >
-            info@altivance.com
+            info@altivance.com.ng
           </a>{" "}
           |{" "}
           <a

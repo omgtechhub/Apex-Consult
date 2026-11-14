@@ -85,7 +85,7 @@ export function LoginForm({
             autoComplete="username"
             autoFocus
             className="mb-4 w-full rounded-xl border border-ink-200 bg-surface px-4 py-3 text-sm text-ink-950 placeholder:text-ink-400 focus:border-brand-500/50 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
-            placeholder="you@altivance.com"
+            placeholder="you@altivance.com.ng"
           />
 
           <label htmlFor="password" className="mb-1.5 block text-xs font-semibold text-ink-600">

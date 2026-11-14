@@ -7,7 +7,7 @@ import type { NextRequest } from "next/server";
  * `callback_url`, an email link — has to know the origin the user is browsing
  * on. That origin is not a constant:
  *
- *   production      https://altivance.com
+ *   production      https://altivance.com.ng
  *   this laptop     http://localhost:3000
  *   a phone on the  http://10.73.207.115:3000
  *   same Wi-Fi

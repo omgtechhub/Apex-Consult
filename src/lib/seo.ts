@@ -5,8 +5,9 @@
  *
  * `metadataBase`, the JSON-LD `url`/`logo`, the sitemap and robots.txt all need
  * to agree on one absolute origin. They previously hard-coded
- * `https://altivance.com` — a domain that resolves to a different host
- * (217.160.0.233, not this deployment). The practical effect was that every
+ * `https://altivance.com` — which is NOT this project's domain. It belongs
+ * to an unrelated third party (217.160.0.233). This project's domain is
+ * `altivance.com.ng`. The practical effect was that every
  * absolute URL Next generated pointed somewhere that does not serve this site:
  *
  *   https://altivance.com/og-image.jpg  ->  HTTP 404
@@ -22,8 +23,20 @@
  *   2. `VERCEL_PROJECT_PRODUCTION_URL` — the project's stable production
  *      domain, injected by Vercel at build time. Survives every redeploy, so
  *      previews and production both emit production-correct canonicals.
- *   3. `VERCEL_URL` — the per-deployment hostname. Last resort on Vercel.
- *   4. `http://localhost:3000` — development.
+ *   3. `URL` — Netlify's equivalent of the above: the site's main address,
+ *      custom domain included. Unlike the Vercel vars it already carries a
+ *      scheme, which `toOrigin()` below accounts for.
+ *   4. `VERCEL_URL` — the per-deployment hostname. Last resort on Vercel.
+ *   5. `DEPLOY_PRIME_URL` — the per-deploy URL on Netlify.
+ *   6. `http://localhost:3000` — development.
+ *
+ * Steps 3 and 5 exist because NOTHING on Netlify sets the `VERCEL_*` vars. On
+ * Netlify without them this function fell through to `http://localhost:3000`,
+ * which would have shipped `<link rel="canonical" href="http://localhost:3000/…">`
+ * and a localhost `og:image` to production — the same class of silent, only-
+ * visible-to-crawlers failure described above, reintroduced by the move off
+ * Vercel. Setting `NEXT_PUBLIC_SITE_URL` also covers it; this is the backstop
+ * for forgetting to.
  *
  * Note this is NOT the same job as `resolveOrigin()` in `site-url.ts`. That one
  * answers "where is the visitor right now?" per request, for Paystack callback
@@ -31,15 +44,39 @@
  * constant, because `metadataBase` and `sitemap.ts` have no request to read.
  */
 
+/**
+ * Normalise a host-provided value to an absolute origin.
+ *
+ * The two platforms disagree on format and it is easy to get wrong:
+ *   Vercel   `VERCEL_PROJECT_PRODUCTION_URL` = `apex.vercel.app`   (bare host)
+ *   Netlify  `URL`                           = `https://x.netlify.app` (scheme)
+ *
+ * Prefixing `https://` unconditionally would produce `https://https://…`, so
+ * a value that already carries a scheme is passed through untouched.
+ */
+function toOrigin(value: string | undefined): string | null {
+  const v = value?.trim();
+  if (!v) return null;
+  return /^https?:\/\//i.test(v) ? v : `https://${v}`;
+}
+
 function fromEnv(): string {
-  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  // 1. The deliberate override. Always wins, on any host.
+  const explicit = toOrigin(process.env.NEXT_PUBLIC_SITE_URL);
   if (explicit) return explicit;
 
-  const vercelProduction = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
-  if (vercelProduction) return `https://${vercelProduction}`;
+  // 2. Stable production domain. Vercel, then Netlify.
+  //    Both survive redeploys, so previews emit production-correct canonicals.
+  const stable =
+    toOrigin(process.env.VERCEL_PROJECT_PRODUCTION_URL) ??
+    toOrigin(process.env.URL);
+  if (stable) return stable;
 
-  const vercelDeployment = process.env.VERCEL_URL?.trim();
-  if (vercelDeployment) return `https://${vercelDeployment}`;
+  // 3. Per-deployment hostname. Last resort before localhost.
+  const perDeploy =
+    toOrigin(process.env.VERCEL_URL) ??
+    toOrigin(process.env.DEPLOY_PRIME_URL);
+  if (perDeploy) return perDeploy;
 
   return "http://localhost:3000";
 }
