@@ -151,11 +151,45 @@ this was only ever about the domain and the email address.
 1. **Buy `altivance.com.ng`.** As of 14 Nov 2026 it has no NS or SOA record,
    which strongly suggests it is unregistered — but DNS is not a registration
    check. Confirm at the registrar's search before counting on the name.
-2. **Set up email on it.** `info@altivance.com.ng` is now advertised site-wide
-   and will bounce until a mailbox exists. Free options: **Cloudflare Email
-   Routing** (forwards `info@` to Gmail, free, needs the domain's nameservers on
-   Cloudflare) or **Zoho Mail** free tier (a real mailbox, keeps DNS where it
-   is). This is the one item that is user-visible and currently broken.
+2. **Set up email on it.** `info@altivance.com.ng` is advertised site-wide and
+   bounces until a mailbox exists. This is the one item that is user-visible
+   and currently broken. **Decided: Zoho Mail free tier** — it keeps DNS at
+   WhoGoHost, where the live site's `A` record is. Cloudflare Email Routing was
+   rejected because it needs the domain's **nameservers** moved to Cloudflare,
+   which would mean re-creating the apex `A` record under a live site, and it
+   only forwards — you could not reply as `info@altivance.com.ng`.
+
+   **CORRECTION, verified 14 Nov 2026:** an earlier note in this file said the
+   Zoho free tier gives SMTP. **It does not.** The Forever Free plan is
+   webmail + mobile app only — **no IMAP, no POP, no SMTP**, so Gmail, Outlook,
+   Apple Mail and Thunderbird cannot connect to it. It is still a real mailbox
+   you can send and reply from, in Zoho's own web and phone apps. IMAP/SMTP
+   starts at Mail Lite, about $1/user/month billed annually.
+   This costs the app nothing: **the app sends no email at all** — there is no
+   nodemailer/Resend/SendGrid dependency and no `sendMail` anywhere in `src`.
+   Contact, booking and newsletter submissions go to Postgres only.
+
+   **Records to add at WhoGoHost/GO54** (from Zoho's own docs, 1 Oct 2026):
+
+   | Type | Host | Value | Priority |
+   |---|---|---|---|
+   | `MX` | `@` | `mx.zoho.com` | 10 |
+   | `MX` | `@` | `mx2.zoho.com` | 20 |
+   | `MX` | `@` | `mx3.zoho.com` | 50 |
+   | `TXT` | `@` | `v=spf1 include:zohomail.com ~all` | — |
+   | `TXT` | `@` | `zoho-verification=zb……….zmverify.zoho.com` | — |
+   | `TXT` | `zoho._domainkey` | the DKIM key from the Zoho console | — |
+
+   - **The MX TLD varies by Zoho data centre.** Zoho's doc says only the values
+     in **Admin Console -> Tools & Configurations** should be used, and gives
+     the hostname template as `mx.zoho.**`. The `.com` names above are the
+     generic/US set. Read the real ones off the console before typing them.
+   - The verification string and the DKIM key are **unique per domain** and come
+     from the console; the table shows only their shape.
+   - **Only one SPF record per domain.** The WhoGoHost SPF was deleted in §2a,
+     so there is none to conflict with. Do not add a second.
+   - DKIM is not labelled mandatory by Zoho but is worth doing: selector `zoho`,
+     2048-bit, then Verify and Enable in the console.
 3. **URGENT — remove `altivance.com` from the Vercel project.** It is not merely
    attached and unverifiable; it is set as that project's **production domain**,
    so `VERCEL_PROJECT_PRODUCTION_URL` resolves to it and the live Vercel site
@@ -476,6 +510,29 @@ normal established business domain rather than a compromise.
 ---
 
 ## 8. Also fixed 14 Nov 2026 (do not re-investigate)
+
+- **/faq had no metadata of its own, and every page shared the homepage's
+  social preview.** Two faults, found together.
+  (a) `src/app/faq/page.tsx` is `"use client"` (it owns the accordion and
+  search state) and a client component cannot export `metadata`, so /faq
+  inherited the root defaults — same `<title>` and description as the
+  homepage. Fixed with `src/app/faq/layout.tsx`: a server module that carries
+  the metadata and returns `children` unchanged, so the page's markup and both
+  layouts are untouched. **Do not try to put `metadata` in `faq/page.tsx` —
+  that is why this layout exists.**
+  (b) The root layout hardcoded `openGraph.title`/`description` and
+  `twitter.title`/`description`. Next inherits `openGraph` into any page that
+  does not declare its own, **verbatim — it does not re-derive the title from
+  the page**. So /about, /pricing, /services, /contact, /faq, /book, /terms and
+  the rest all advertised the HOMEPAGE's title and description: every link
+  shared to WhatsApp, Facebook, LinkedIn or X previewed as the homepage no
+  matter which page was sent. **Fix: those four fields are now absent from the
+  root layout, deliberately.** Next then falls back to each page's own resolved
+  `title` (template applied) and `description`. Verified live on 9 pages.
+  `siteName`, `type`, `locale`, `url`, og:image and the twitter card/image stay
+  in the layout — those are genuinely site-wide. `scholarships/page.tsx`
+  declares its own `openGraph` and still wins. **Do not "tidy" the titles back
+  into the root layout — that is the bug.**
 
 - **Every page was declaring the HOMEPAGE as its canonical URL.** Found while
   verifying the domain cutover; the bug predates it. `src/app/layout.tsx` set
