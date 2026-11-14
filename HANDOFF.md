@@ -207,7 +207,7 @@ simply points at Netlify instead. Buying the domain now locks nothing in.
    | `PAYSTACK_SECRET_KEY` | live key |
    | `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` | live key |
    | `SCHOLARSHIP_API_URL` | the Render URL, not `localhost:3001` |
-   | ~~`STAFF_PASSWORD`~~ | **NOT needed.** Read only by `scripts/create-staff.mjs`, a local one-off. It is not set on Vercel production either; admin login authenticates against the `staff` table in Postgres |
+   | ~~`STAFF_PASSWORD`~~ | **NOT needed.** Read only by `scripts/create-staff.mjs`, a local one-off. It is not set on Vercel production either; admin login authenticates against the `users` + `sessions` tables in Postgres (see `src/lib/auth.ts`) |
    | `NEXT_PUBLIC_SITE_URL` | set to `https://altivance.com.ng` **once DNS is live**. Leave unset until then; the `URL` fallback covers the interim |
 
    Do **not** set `NEXT_DIST_DIR` — see the comment in `netlify.toml`.

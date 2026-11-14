@@ -31,3 +31,6 @@ tsconfig.tsbuildinfo
 /tools/
 
 .vercel
+
+# Local Netlify folder
+.netlify

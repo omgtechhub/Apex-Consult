@@ -1,14 +1,9 @@
 # Netlify deployment configuration — Altivance
 # ---------------------------------------------------------------------------
-# Next.js is supported natively on Netlify via the OpenNext adapter, which is
-# installed and upgraded automatically. The adapter is deliberately NOT pinned
-# here with a [[plugins]] block: Netlify's own guidance is to let it
-# auto-upgrade so Next.js fixes arrive without a manual bump.
-#
 # `publish` must match `distDir` in next.config.ts, which defaults to `.next`.
 # Do NOT set NEXT_DIST_DIR in the Netlify UI — that variable exists only so a
 # local preview build can avoid clobbering a running dev server's `.next`.
-# Setting it here would make Netlify publish a directory it never built into.
+# Setting it would make Netlify publish a directory it never built into.
 # ---------------------------------------------------------------------------
 
 [build]
@@ -19,3 +14,23 @@
   # Next.js 16 requires Node >= 20.9. Pinned so a change to Netlify's default
   # image cannot silently alter the runtime under a live payments site.
   NODE_VERSION = "22"
+
+# ---------------------------------------------------------------------------
+# The Next.js runtime (OpenNext adapter) MUST be declared here.
+#
+# Netlify's docs say it auto-installs for Next.js sites and that you normally
+# need no configuration. That did not happen for this site — it was created
+# through the API rather than the "import from Git" UI flow, so framework
+# auto-detection never attached the plugin. The first cloud build therefore ran
+# `next build` and published the RAW `.next` directory as if it were static
+# output: the deploy contained `/build-manifest.json`, `/build/chunks/*` and
+# `/cache/*`, no HTML, no `_next/static`, and no SSR function. Every route
+# returned 404 while the deploy still reported "ready".
+#
+# Declaring the package with no version keeps Netlify's auto-upgrade behaviour
+# (it resolves the latest at build time) while guaranteeing the adapter runs.
+# Do not add a version here, and do not add it to package.json.
+# ---------------------------------------------------------------------------
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
