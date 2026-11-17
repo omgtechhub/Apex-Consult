@@ -689,10 +689,72 @@ the crawler has not run since August:
 ### Still broken — needs David
 
 1. **No new scholarships will ever arrive.** The crawler worker and cron on
-   Render are dead (nothing since 19 Aug 2026). Both are `plan: starter` in
-   `render.yaml` — roughly $14/month of paid services. Until they run, the 27
-   entries are a frozen snapshot. The code is now safe to revive against; it
-   was not before 17 Nov.
+1. **The crawler now runs on GitHub Actions — but needs TWO SECRETS ADDED.**
+
+   Querying Render's API on 17 Nov revealed the real story: the `worker` and
+   `cron` services `render.yaml` declares (`plan: starter`, ~$14/month)
+   **were never created.** Only the web service ever existed. *That* is why
+   production published zero articles from August to November — nothing was
+   ever consuming the BullMQ queue. The 35 crawler jobs that reached Neon on
+   18 Aug came from the admin endpoint crawling inline inside the web service,
+   and 32 were stranded in `RUNNING` when the free instance spun down. So
+   there was never anything to revive, and never anything being paid for.
+
+   Replaced by `.github/workflows/pipeline-cycle.yml` +
+   `src/pipeline/runtime/cycle.ts` (commit `856fb21`), which runs the whole
+   chain as a batch job every two hours. The repo is public, so Actions
+   minutes are unmetered — this costs **$0** against the $14/month the
+   blueprint asked for.
+
+   **ACTION REQUIRED — the workflow cannot run until these are set:**
+
+   ```
+   gh secret set REDIS_URL     --repo omgtechhub/Apex-Scholarship-Pipeline
+   gh secret set GROQ_API_KEY  --repo omgtechhub/Apex-Scholarship-Pipeline
+   ```
+
+   Both values are in
+   `Project-Local-Secrets\Apex-Scholarship-Pipeline\env\Details.txt`.
+   **`REDIS_URL` must use the `rediss://` scheme** (two s's) —
+   Upstash requires TLS and the scheme is what carries it; `Details.txt`
+   stores it as a `redis-cli --tls` invocation, so strip everything up to and
+   including `-u ` and change `redis://` to `rediss://`. `DATABASE_URL` is
+   already set. Then `gh workflow run pipeline-cycle.yml --ref main`.
+
+   Verified on run `44094591505`: checkout, `npm ci`, Chromium install and
+   `prisma generate` all succeed on the runner; it stops at the preflight
+   secrets check, which names the missing ones. Everything but the
+   credentials is proven.
+
+   Design notes worth not rediscovering:
+   - `cycle.ts` must NOT call `runSchedulerCron()`. That function's `finally`
+     closes the queues, Redis and Prisma — it is written for a process that
+     only enqueues, and would tear down the connections the workers are using.
+     Call `scheduler.tick()` directly and own the teardown.
+   - Drain detection counts `waiting/active/delayed/prioritized/paused/
+     waiting-children` and **not** `completed/failed`: `DEFAULT_JOB_OPTIONS`
+     retains the last 100 completed and 500 failed, so counting those means
+     the queue never looks empty and every run burns its full budget.
+     `delayed` IS counted — a job sitting out the 15-minute Groq-429 backoff
+     is real pending work.
+   - Exhausting the time budget is a `::warning::`, not a failure. Only a
+     thrown error exits non-zero.
+   - **Every two hours, not every 30 minutes.** GitHub's cron is best-effort
+     (the keep-alive missed seven consecutive `*/10` slots), so twelve
+     generous attempts a day beat forty-eight tight ones; the 45-minute budget
+     also cannot overlap a two-hour gap, and `scheduler.tick()` self-throttles
+     via `nextCrawlAt` regardless. An empty cycle exits in ~30 s.
+   - This job installs Chromium, unlike the Vercel API deployment — the
+     crawler adapters fall back to Playwright when a source blocks plain HTTP.
+   - **Watch the Upstash command budget.** Nine BullMQ workers polling for up
+     to 45 minutes is the one cost that could bite on a free Redis plan. Empty
+     cycles are cheap; long ones are not.
+   - `commonwealth` is at **4 consecutive fails** and `scheduler.tick()` skips
+     any source at 5 or more, permanently and silently. One more failure
+     removes it from the pipeline for good. It and
+     `opportunities-for-africans` have never crawled successfully
+     (`lastCrawledAt` null).
+
 2. **Deadlines are still zero, and this is a DAAD limitation.** DAAD publishes
    no deadline text for any of the 25 programmes currently in the catalogue.
    The adapter now extracts deadlines where they exist, and 11 of the 147
