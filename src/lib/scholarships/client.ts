@@ -8,8 +8,24 @@ import {
   ScholarshipsListPayload,
 } from "./types";
 
+/**
+ * The Pipeline API's origin.
+ *
+ * The fallback moved off Render on 17 Nov 2026. Render's free compute plan
+ * spins an instance down after 15 minutes without traffic and takes about a
+ * minute to wake, and REQUEST_TIMEOUT_MS below aborts at 8 seconds — so a cold
+ * start was indistinguishable from an outage and silently served
+ * FALLBACK_SCHOLARSHIPS to the first visitor after any quiet spell. The API is
+ * the same Next.js app reading the same Neon database, now deployed as its own
+ * Vercel project, where there is nothing to keep warm.
+ *
+ * This literal matters: it is what runs whenever SCHOLARSHIP_API_URL is unset
+ * or misspelled, which is a silent failure mode rather than a loud one. Leaving
+ * the Render URL here would mean a missing variable quietly reintroduced the
+ * cold start nobody could see.
+ */
 const SCHOLARSHIP_API_URL =
-  process.env.SCHOLARSHIP_API_URL || "https://apex-scholarship-api.onrender.com";
+  process.env.SCHOLARSHIP_API_URL || "https://apex-scholarship-api.vercel.app";
 
 /**
  * Hard ceiling on how long a visitor waits for the Pipeline API.

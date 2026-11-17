@@ -1,10 +1,111 @@
 # Altivance — Session Handoff
 
-**Last updated:** 14 November 2026
+**Last updated:** 15 November 2026
 **Point a new Claude session at this file to continue.**
 
 > No passwords, keys or connection strings are in this document. Real values
 > live in `.env.local` (git-ignored) and in the Vercel project settings.
+
+---
+
+## 0. HOSTING MOVED BACK TO VERCEL — 15 Nov 2026
+
+**Netlify is gone. The site runs on Vercel and `altivance.com.ng` points there.**
+This reverses the migration in §3, which lasted about 24 hours, at David's
+instruction.
+
+| | |
+|---|---|
+| Host | **Vercel**, team `omg-tech-hub` (slug), project `apex` |
+| Plan | **Hobby** — see the accepted risk below |
+| Domain | `altivance.com.ng` + `www.altivance.com.ng`, both attached and verified |
+| Stable alias | `https://apex-roan-eight.vercel.app` |
+| Deploy | `git push` to `main`. Vercel's GitHub integration is the only CD path |
+
+**The DNS change that did it** — one record, at WhoGoHost/GO54:
+
+| Type | Host | Was (Netlify) | Now (Vercel) |
+|---|---|---|---|
+| `A` | `@` | `75.2.60.5` | **`216.198.79.1`** |
+
+`www` was left as a `CNAME` to the apex, so it followed automatically — the
+cutover was a single edit. Vercel's second apex IP, `64.29.17.1`, may be added
+as a spare but is not required and was not added.
+
+**Use `vercel domains verify <domain>` to get the required records. Do NOT trust
+`76.76.21.21`** — that is Vercel's older apex IP and is still what most guides
+and blog posts say. The API returned `216.198.79.1` / `64.29.17.1` for this
+project on 15 Nov 2026.
+
+**What was done on Vercel**
+
+- `altivance.com.ng` and `www.altivance.com.ng` added to project `apex`.
+- `www` set to redirect to the apex with **308** (Netlify had used 301).
+- `NEXT_PUBLIC_SITE_URL=https://altivance.com.ng` added to **Production**, then
+  the project rebuilt. This variable is `NEXT_PUBLIC_`, therefore **build-time
+  inlined — a redeploy is mandatory** or canonicals keep the old value.
+- Deployment protection confirmed **off** (`ssoProtection: null`), so no repeat
+  of the 302-to-login trap in §4.
+
+**`altivance.com` was removed from the Vercel project.** It is a third party's
+domain and was still attached as the project's production domain, which made
+every canonical and `sitemap.xml` entry on the live Vercel site point at someone
+else's site. Removing it also removed its two aliases. This closes the
+"Outstanding" item that §2c and the old memory note both flagged. **Do not
+re-add it.**
+
+**What was deleted on Netlify** — all of it, after Vercel was verified serving:
+
+- Custom domain and aliases detached from site `altivance-ng`.
+- Site `altivance-ng` (`b47e755c-347e-48cb-baa5-869eb5267cb4`) **deleted**.
+  `https://altivance-ng.netlify.app` now returns 404. Not recoverable.
+- GitHub webhook `711694983` and Netlify deploy key `169858381` deleted from
+  `omgtechhub/Apex-Consult`. The repo now has **zero** webhooks and **zero**
+  deploy keys.
+- `netlify.toml` removed from the repo; local `.netlify/` deleted. `.gitignore`
+  still ignores `.netlify`, which is harmless.
+
+**Verified on `https://altivance.com.ng` through Vercel after the cutover:**
+all of `/`, `/services`, `/pricing`, `/contact`, `/blog`, `/scholarships`,
+`/book`, `/pay`, `/faq`, `/testimonials`, `/admin/login`, `/robots.txt`,
+`/sitemap.xml`, `/llms.txt`, `/opengraph-image` returned **200**;
+`/api/health` returned `{"ok":true}` (pooled Neon reachable); `/blog` rendered
+real posts from Postgres; `/pay` served `testMode: false`, byte-identical to the
+Netlify site, so the **live** Paystack key is readable; canonical, `og:url` and
+all 34 `sitemap.xml` entries resolved to `https://altivance.com.ng`;
+`www` returned **308** to the apex; TLS valid, Let's Encrypt.
+
+### The accepted risk — Vercel Hobby forbids commercial use
+
+**This is a known, deliberately accepted exposure, not an oversight.** It is the
+entire reason §3 moved to Netlify in the first place. The team is on **Hobby**,
+whose terms forbid commercial use, and this site takes **live** Paystack
+payments. David was shown this before the cutover on 15 Nov 2026 and chose
+"proceed on Hobby anyway".
+
+- The failure mode is the **project being paused**, not a surprise bill.
+- The fix is **Vercel Pro, $20/mo**. The analysis in §3 is still valid reading.
+- **Do not quietly re-migrate to fix this.** It is David's call.
+
+### Two differences from the Netlify setup worth knowing
+
+1. **Node version.** `netlify.toml` deliberately pinned `NODE_VERSION = "22"` so
+   a host image change could not alter the runtime under a live payments site.
+   The Vercel project builds on **Node 26.x**. Builds pass, but the pin is gone.
+   Set it in Vercel project settings if that guarantee is wanted back.
+2. **`www` redirect is 308, not 301.** Functionally equivalent for browsers and
+   search engines; 308 additionally preserves the request method.
+
+### Still outstanding (unchanged by this move)
+
+1. **Update the Paystack webhook** to
+   `https://altivance.com.ng/api/payments/webhook` (§2e). The URL is unchanged
+   by the host move, so if it was already set it still works — but it has never
+   been confirmed.
+2. **Test a real payment** (§2d). Nobody has ever completed a checkout, on
+   either host.
+3. **Mailbox for `info@altivance.com.ng`** (§2c) — still bouncing, still
+   advertised across the site.
 
 ---
 
@@ -14,34 +115,32 @@ The site is **live, public and working**.
 
 | | |
 |---|---|
-| **Primary URL** | **https://altivance.com.ng** — own domain, live on HTTPS 14 Nov 2026. `www` 301s to it |
-| Netlify URL | https://altivance-ng.netlify.app — still serves; the deploy's own hostname |
-| Hosting | **Netlify free**, team `omg-tech-hub`, project `altivance-ng`. See §3 |
-| Old URL (still up) | https://apex-roan-eight.vercel.app — Vercel, kept ~1 week as rollback |
-| Database | Neon Postgres (16 tables), **pooled** endpoint on Netlify |
+| **Primary URL** | **https://altivance.com.ng** — own domain, live on HTTPS. `www` 308s to it |
+| Vercel URL | https://apex-roan-eight.vercel.app — the project's stable alias |
+| Hosting | **Vercel Hobby**, team `omg-tech-hub`, project `apex`. See §0 and §3 |
+| Database | Neon Postgres (16 tables), **pooled** endpoint on Vercel |
 | Repo | https://github.com/omgtechhub/Apex-Consult, branch `main` |
 | Admin login | /admin/login — account `davidomigie25@gmail.com` exists and works |
 | Payments | Paystack **LIVE** keys active on both hosts. **No real checkout has ever been completed** (§2d) |
-| Scholarships | Showing 6 built-in fallbacks, NOT live pipeline data |
+| Scholarships | **LIVE pipeline data — 27 real scholarships** since 17 Nov 2026. See §5 |
 | Domain | **altivance.com.ng** — bought at WhoGoHost/GO54, DNS there, live. See §2a. `altivance.com` is NOT ours |
 
-**Deploying is `git push` to `main` — this now deploys to BOTH hosts.** Netlify
-builds via the deploy-key + webhook setup in §3. Vercel's GitHub integration is
-also live: the pushes on 14 Nov 2026 each produced a Vercel production
-deployment. An earlier note in this file claimed git push did not deploy to
-Vercel; that was wrong, inferred from a stale deployment list.
-
-Do **not** run `netlify deploy --build` on this machine — it fails at the blob
-upload step on Node 26. See §3.
+**Deploying is `git push` to `main`, which deploys to Vercel.** Vercel's GitHub
+integration is live and is now the ONLY continuous-deployment path. Netlify's
+build hook, its GitHub webhook and its deploy key were all deleted on
+15 Nov 2026, so nothing else builds from this repo.
 
 ---
 
 ## 2. TO DO — David's actions
 
-### 2a. Point altivance.com.ng at Netlify  *(LIVE — 14 Nov 2026)*
+### 2a. Point altivance.com.ng at a host  *(LIVE — now on Vercel)*
 
-**DONE. `https://altivance.com.ng` serves the site over HTTPS.** Nothing in this
-section needs action; it is kept as the record of how the domain is wired.
+> **SUPERSEDED 15 Nov 2026 — see §0.** This section describes the *Netlify*
+> wiring that was live 14–15 Nov 2026. The domain now points at Vercel and the
+> apex `A` record is `216.198.79.1`, NOT the `75.2.60.5` written below. Kept
+> because the registrar-side facts (where the zone lives, the GO54 panel traps,
+> which records must never come back) are all still true and still useful.
 
 **Domain:** `altivance.com.ng`, bought from **WhoGoHost** (their newer panel is
 branded **GO54**, at `panel.go54.com` — same account, same company).
@@ -71,7 +170,7 @@ so the zone stays at WhoGoHost and no nameserver change was ever needed):
 | `SOA` | `@` | `nsa.whogohost.com …` | zone authority — never delete |
 | `NS` | `@` | `nsa.whogohost.com` | never delete |
 | `NS` | `@` | `nsb.whogohost.com` | never delete |
-| `A` | `@` | `75.2.60.5` | Netlify's load balancer |
+| `A` | `@` | `75.2.60.5` | Netlify's load balancer — **now `216.198.79.1`, Vercel. See §0** |
 | `CNAME` | `www` | `altivance.com.ng` | follows the apex `A` — fine, and better |
 
 - `75.2.60.5` is Netlify's **published static anycast IP** for apex `A` records
@@ -223,7 +322,15 @@ the `payments` table with `status = 'success'`, then refund it in Paystack.
 
 ---
 
-## 3. DECIDED — move hosting to Netlify free
+## 3. Hosting history — the Netlify period  *(SUPERSEDED, see §0)*
+
+> **This whole section is history as of 15 Nov 2026.** The site ran on Netlify
+> for roughly 24 hours and is now back on Vercel at David's instruction (§0).
+> The reasoning below about Vercel Hobby's commercial-use term is UNCHANGED and
+> still applies — it is the known, accepted risk, not a solved problem. Read §0
+> first; read this for the terms analysis and the traps, which remain accurate.
+
+### 3.0 The original decision (Netlify free)
 
 **Verified against the primary sources on 14 Nov 2026**, not blog summaries.
 
@@ -396,40 +503,267 @@ when ready rather than pushing straight to `main` repeatedly.
   `x-forwarded-host`, used for Paystack callback URLs. Leave it alone.
 - **`DATABASE_URL` must be the Neon POOLED endpoint on BOTH hosts**
   (`...-pooler...`), not the direct one in `.env.local`.
-- **`SCHOLARSHIP_API_URL` must be the Render URL** in production. Local
-  `.env.local` says `localhost:3001`; a wrong value silently serves
-  `FALLBACK_SCHOLARSHIPS` instead of real data.
+- **`SCHOLARSHIP_API_URL` must be `https://apex-scholarship-api.vercel.app`**
+  in production — **not** the old `apex-scholarship-api.onrender.com` (moved
+  17 Nov 2026, see §5). Local `.env.local` says `localhost:3001`. A wrong value
+  silently serves `FALLBACK_SCHOLARSHIPS` instead of real data, and because the
+  code's own fallback literal is now the Vercel URL, an *unset* variable
+  degrades gracefully rather than reintroducing Render's cold start.
 - **Deployment protection** (`ssoProtection`) was ON by default and 302'd every
   public URL to a Vercel login. Disabled 5 Nov 2026. A new Vercel project will
   have it on again.
 - **After a CLI `--prod` deploy, aliases are NOT promoted automatically.** Run
   `vercel promote <deployment-url> --scope omg-tech-hub`, then curl the alias
   (not the deployment URL) to confirm. Git-push deploys do alias correctly.
+  **`vercel redeploy <deployment-id>` DOES alias automatically** — verified
+  15 Nov 2026, it printed `Aliased https://altivance.com.ng` and both the custom
+  domain and the stable alias served the new build with no `promote` step. Use
+  `redeploy` rather than `deploy --prod` when the goal is just to rebuild the
+  current commit, e.g. to pick up a changed `NEXT_PUBLIC_*` variable.
 - **`npm run dev` is started by David**, not by Claude. To test a build without
   disturbing it: `NEXT_DIST_DIR=.next-preview npx next build` then
   `npx next start -p 3100`.
 
 ---
 
-## 5. Scholarship pipeline — known broken
+## 5. Scholarship pipeline — serving real data, crawler still dead
 
 Separate repo: `C:\xampp\htdocs\apex-scholarship-pipeline` (Next.js + Prisma +
 BullMQ, ~10,500 lines).
 
-- The API at `apex-scholarship-api.onrender.com` is **up but publishes zero
-  scholarships**. Cold start takes ~60s on Render free tier.
-- The site therefore shows 6 curated fallbacks. This is by design and looks
-  fine to visitors, but no real data has ever reached production.
-- The **30-minute crawler is correctly configured** (`schedule: "*/30 * * * *"`
-  in `render.yaml`) but the worker and cron are both `plan: starter` — two
-  **paid** Render services, roughly $14/month total.
-- **Article generation fails ~47% of the time** (local DB: 33 PUBLISHED vs
-  29 FAILED). The public API only exposes scholarships that have a published
-  article, so every failure silently removes a scholarship from the site.
-- 4 crawler jobs have been stuck in `RUNNING` since 15 August 2026.
+### What was actually wrong (diagnosed 17 Nov 2026)
 
-**Recommendation: fix the article failures before paying for the workers**,
-otherwise the money buys a crawler that discards half its output.
+The production database had been **migrated and seeded but never filled**. The
+pipeline's Neon project (`spring-feather-70989599`, endpoint
+`ep-flat-sunset-b1hkbpis`, connection string in
+`Project-Local-Secrets\Apex-Scholarship-Pipeline\env\Details.txt`) held
+1 scholarship, **0 articles**, 5 sources and 1 admin user. Because
+`/api/public/scholarships` only returns scholarships that have at least one
+`PUBLISHED` article, zero articles meant an empty list — a `success: true`
+response with `total: 0`, which is why nothing ever looked broken in logs.
+
+Render was never misconfigured and `SCHOLARSHIP_API_URL` was never wrong. The
+API was up, correct, and had nothing to say.
+
+**The production pipeline last executed anything on 19 August 2026.** All 32
+crawler jobs were still sitting in `RUNNING` from 18 August, and
+`queue_history` stops dead on 19 August. The Render worker and cron services
+have not run since.
+
+### What was fixed, 17 Nov 2026
+
+- **Real data loaded into the Neon production DB** from the local
+  `scholarship_pipeline` database: 28 scholarships, 33 published articles and
+  their 33 `article_seo` rows, plus the 5 missing organizations. Source and
+  organization UUIDs were remapped on the way in (local and Neon had seeded the
+  same 5 sources under different ids), and the load was insert-only — no
+  pre-existing Neon row was overwritten.
+- **One scraper artifact rejected.** `scholarships-ofa-august-12-2026-written-by`
+  was not a scholarship at all: the Opportunities-For-Africans *category index
+  page*, scraped as an entry, titled "Scholarships", with the organization name
+  parsed out of a byline ("OFA October 28, 2026 written by"). Set to `REJECTED`
+  rather than deleted, which is the gate the API already honours. **27** remain
+  public.
+- **32 abandoned crawler jobs set to `CANCELLED`** with a reason in `metadata`.
+  Nothing read them — `CrawlerManager.crawlSource` has no guard on existing
+  `RUNNING` jobs — but they falsified the admin dashboard.
+- Pre-change CSV backup of every non-empty Neon table was taken. Note that
+  `pg_dump` cannot be used against this DB from the local machine: Neon runs
+  **PG 18.7** and the local client is 17.10, so dumps must go through
+  `psql \copy` instead.
+
+Verified live: `altivance.com.ng/scholarships` renders 27 real scholarships
+across 3 pages, and a pipeline detail slug returns HTTP 200.
+
+### Deployed 17 Nov 2026 — the six fixes that were sitting uncommitted
+
+Found in the working tree, written 29–30 Oct 2026, never committed and never
+deployed. Commit `92d6395`. Typecheck clean, tests pass. Until this was pushed,
+**the automated pipeline could not publish an article even in principle**:
+
+1. **`quality.worker.ts` never enqueued publishing.** Every other stage chains
+   to the next (crawler → processing → validation → ai → seo → quality) but
+   this branch stopped at `APPROVED`. The `PUBLISHING` queue's only producer
+   was the manual, auth-gated `POST /api/articles/[id]/publish`. A crawl could
+   run end to end, generate good articles, and still leave the public API
+   returning zero, because the gate it enforces was unreachable by automation.
+2. **The Groq model was dead.** The code read `GROQ_MODEL` only, while `.env`
+   has always set `AI_MODEL`, so the configured model was ignored and the
+   hardcoded default won. That default, `llama-3.3-70b-versatile`, has been
+   retired by Groq — re-verified against the live API on 17 Nov, it returns
+   `model_not_found`, so **every** generation request in production failed
+   before it started. Now falls back to `openai/gpt-oss-20b`, confirmed the
+   same day at 1,057 words, `finish_reason: stop`. Render sets neither
+   variable, so it takes the new fallback.
+3. **The article-reuse filter was inverted.** `PUBLISHED` was reused, so every
+   crawl flipped a live article to `GENERATING` and removed it from the public
+   API at once (observed: 15 live scholarships down to 2 after one cycle);
+   `FAILED` was excluded, so failures accumulated new rows (observed: 288
+   articles in an hour, 29 for one scholarship).
+4. **No content-change guard.** All 29 scholarships were re-queued for
+   generation every 30 minutes for content untouched since August.
+5. **`EXPIRED` now stays publicly visible**, so a passed deadline degrades into
+   archive content instead of deleting the card.
+6. **`worker.ts` / `scheduler.ts` now load dotenv.** *Local runs only* — on
+   Render the platform injects env vars directly, and the 35 crawler jobs that
+   reached Neon in August prove those processes had their environment. This was
+   **not** the cause of the August outage.
+
+**Sequencing that matters:** reviving the worker *before* this was deployed
+would have destroyed the live cards, via fix 3. It is deployed now, so that
+risk is gone.
+
+### Thin data — fixed 17 Nov 2026 (commits `a2fed70`, `9bc6e29`)
+
+Almost none of it was missing data. It was extracted correctly and then thrown
+away, or mapped wrong.
+
+**`normalizeFundingType` / `normalizeDegreeLevel` discarded canonical values.**
+Both only understood prose, but every adapter emits the enum directly. So
+`'FULL'` → `UNKNOWN`, `'LIVING_ALLOWANCE'` → `UNKNOWN`, `'SHORT_COURSE'` →
+`UNKNOWN`, and `'POSTDOCTORAL'` → `PHD` (because `'postdoctoral'` contains
+`'doctoral'`). That one line is why all 27 live rows read `fundingType: UNKNOWN`
+while the adapter that produced them had said `FULL`. Both now match the
+canonical form first and are idempotent. Two further bugs the new tests caught:
+`'mba programme'.includes('ba ')` was true and the bachelor branch ran first, so
+**every MBA was classified `UNDERGRADUATE`** — the short abbreviations are now
+`\b`-anchored; and postdoc is tested before PHD.
+
+**DAAD was reading one of four feeds.** The database is published as sibling
+TAFFY payloads under
+`www2.daad.de/bundles/daadstipendiendatenbanklsh/data/a/js/`:
+`scholarships.js` (was used), plus `deadlines.js`, `status.js` and
+`subjectgroups.js` (were not). Also `intentions.js` and `origin.js`, both
+deliberately ignored — origin is a ~200-country list open to nearly everyone.
+
+- **Every DAAD outbound link was a 404.** `?detail=` wants the programme's
+  `sapProgid` (e.g. `10000092`), not the payload's own small `id` (e.g. `94`),
+  and the adapter passed the latter. Verified: `?detail=94` → 404,
+  `?detail=10000092` → 200. Now emits DAAD's own permanent shortlink,
+  `https://www.daad.de/go/en/stipa<sapProgid>`, because what rotted here was a
+  deep link.
+- **The status → degree ladder was wrong on every branch.** DAAD's real ids are
+  `1` Undergraduates, `2` Postdoctoral, `3` Graduates, `4` Doctoral; the ladder
+  read 3 as PHD, 2 as MASTERS and 4 as POSTDOCTORAL — so master's programmes
+  were advertised as doctorates and postdocs as master's. Now keyed on the
+  English label from `status.js`, and a programme open to several levels reports
+  `ANY` instead of whichever the ladder hit first.
+- **Descriptions were a template**, `"${title}. Official DAAD Scholarship
+  Programme for…"`, the same sentence 25 times. Now `introduction.en`, filled on
+  all 147 programmes.
+- **`fieldsOfStudy`** now comes from `subjectGrps` via the legend, collapsing to
+  `'All subjects'` when all seven groups are accepted.
+- **Deadlines** come from `deadlines.js` — but only 38 of 147 carry any text and
+  it is prose, not a date. Full prose goes to `applicationInstructions`; a
+  `Date` is set **only** when day, month and year are all stated. `"17th March"`
+  stays null on purpose: the site renders a passed deadline in red and
+  `validation.worker` expires past-deadline entries, so a guessed year either
+  scares applicants off a live award or quietly archives it.
+
+**Two repair scripts, because fixing an adapter does not fix stored rows** and
+the crawler has not run since August:
+
+- `scripts/backfill-daad.ts` — re-runs the adapter and updates the live rows,
+  matching on the payload id each already stores in `raw->>'id'`. Never touches
+  `title` or `slug` (the slug is the public URL the articles are keyed to).
+  Takes `PIPELINE_DATABASE_URL`, has `DRY=1`.
+- `scripts/repair-daad-article-links.ts` — the generated article prose quoted
+  the dead URL too, so after the backfill a page showed the working link in its
+  sidebar and the 404 in its body. 28 articles held 44 occurrences and 28
+  `article_seo` rows had it inside `jsonLd`, which is what search engines read.
+  Rewritten address-for-address on the same programme.
+
+**Measured on the 27 live rows, before → after:**
+
+| | before | after |
+|---|---|---|
+| `fundingType` known | 0 | **27** |
+| `degreeLevel` corrected | — | **15 rows** |
+| `fieldsOfStudy` populated | 0 | **25** |
+| Real descriptions | 0 | **27** |
+| Working outbound links | 0 | **25** |
+| Dead links in article bodies | 44 | **0** |
+| Dead links in JSON-LD | 28 | **0** |
+| **Deadlines** | **0** | **0** — see below |
+
+### Still broken — needs David
+
+1. **No new scholarships will ever arrive.** The crawler worker and cron on
+   Render are dead (nothing since 19 Aug 2026). Both are `plan: starter` in
+   `render.yaml` — roughly $14/month of paid services. Until they run, the 27
+   entries are a frozen snapshot. The code is now safe to revive against; it
+   was not before 17 Nov.
+2. **Deadlines are still zero, and this is a DAAD limitation.** DAAD publishes
+   no deadline text for any of the 25 programmes currently in the catalogue.
+   The adapter now extracts deadlines where they exist, and 11 of the 147
+   programmes in the feed do have a parseable date — but they sit outside the
+   25-item `maxItems` cap. Raising the cap (set `maxItems` in the source's
+   `config` column) would bring them in, at the cost of one generated article
+   per new programme against a rate-limited Groq free tier. **That is the one
+   remaining lever on deadline coverage, and it is a quota decision.**
+3. **The cold-start problem is SOLVED — the API left Render on 17 Nov 2026.**
+   The Pipeline API now runs as its own Vercel project,
+   **`https://apex-scholarship-api.vercel.app`** (team `omg-tech-hub`, project
+   `apex-scholarship-api`), reading the same Neon database. It is the same
+   Next.js repo, deployed with the GitHub integration, so `git push` to `main`
+   deploys it exactly as it does the site.
+
+   Why it moved: Render's free compute plan spins an instance down after 15
+   minutes idle and takes about a minute to wake, while the site aborts its
+   fetch at 8 s — so the first visitor after any quiet spell silently got the 6
+   curated fallbacks. The GitHub keep-alive cron that was meant to paper over
+   this never fired once in an hour (seven missed slots), so it was deleted
+   along with the workflow. On Vercel every route is a function; there is
+   nothing to keep warm.
+
+   **Warm latency is unchanged — ~1.5 s on both hosts.** The entire win is the
+   cold start, so do not expect the page to feel faster in normal use.
+
+   Facts worth not rediscovering:
+   - **Deployment protection on the new project guards PREVIEW urls only.** The
+     production alias `apex-scholarship-api.vercel.app` returns 200 publicly;
+     the per-deployment url (`apex-scholarship-...-omg-tech-hub.vercel.app`)
+     302s to `vercel.com/sso-api`. Always test the alias, never the deployment
+     url, or you will think it is broken.
+   - **`PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1` is set** because `playwright` is a
+     runtime dependency and its installer would otherwise pull ~500 MB of
+     browsers into a build that never crawls.
+   - Env vars set on Production: `DATABASE_URL` (Neon pooled), `REDIS_URL`
+     (Upstash, `rediss://` — TLS is required and the scheme carries it),
+     `GROQ_API_KEY`, `JWT_SECRET`, `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD`.
+   - **`render.yaml` declares `PIPELINE_JWT_SECRET` and
+     `PIPELINE_REFRESH_TOKEN_SECRET`, which NOTHING in the code reads.** The
+     code reads `JWT_SECRET`. So on Render, JWT signing ran on the hardcoded
+     development default this whole time. The Vercel project sets the real
+     name; Render still does not.
+   - All 25 API routes build as dynamic functions; only `/_not-found` is
+     static. 3 of the 25 import queue/crawler code, and they are admin
+     triggers — on-demand crawling cannot work on serverless anyway, it needs
+     the worker.
+
+   The old Render web service still exists and still serves the admin UI, where
+   a cold start does not matter. Nothing public depends on it any more, so it
+   can be deleted whenever you like.
+4. **Article generation reliability is unproven in production.** The local
+   33 PUBLISHED / 29 FAILED split predates the model fix, and a large part of
+   it was the inverted reuse filter creating duplicate rows rather than genuine
+   generation failures. The real rate will not be known until the worker runs
+   again on the fixed code.
+5. **Eligibility text is still absent on 26 of 27.** DAAD's `qEn` field looks
+   like the place to get it but is a lowercased search-index blob — the title
+   repeated plus every country name — so it is unusable. Real eligibility would
+   mean fetching 147 detail pages, which is a separate piece of crawler work.
+6. **25 of 27 entries are DAAD.** The Chevening, Commonwealth, Erasmus and
+   Opportunities-For-Africans adapters each contributed at most one. Source
+   diversity is a content problem, not a bug.
+
+**A note on consolidation:** there is no database on Render and never was.
+Postgres is Neon, Redis is Upstash; `render.yaml` declares three compute
+services and zero datastores. Moving *compute* off Render is the real option —
+the API is a Next.js app that would run on Vercel with no cold start, and the
+pipeline repo is public so GitHub Actions minutes are free, which could replace
+both $7 services. The worker would need a one-shot entry point that enqueues
+*and* drains the queue in one job, since `scheduler:cron` only enqueues.
 
 ---
 
